@@ -1,0 +1,20 @@
+TODO
+-----
+
+- Make KioFuse multithreaded so that multiple userspace apps can access remote files at the same time. Currently, if a directory takes a long time to be accessed (simulated by a sleep(20) call in ListJobHelper::receiveEntries), all new requests to kioFuseReadDir are stalled.
+
+- Fix CMakeLists.txt so that FUSE is only linked to kiofuse.h and not to all the other source files. Currently, the following warning appears for the other files:
+        c++: -lfuse: linker input file unused because linking not done
+ 
+- Implement more filesystem operations in kiofuseops.h
+
+- Make KIO aware of KioFuse mountpoints so that it doesn't use them, but uses KIO slaves directly. Libfusi (http://www.scheinwelt.at/~norbertf/devel/fusi) would come in handy for keeping track of mountpoints and converting local paths <---> remote paths.
+
+- Integrate KioFuse into the KNetAttach GUI.
+
+- write documentation
+
+Contact
+--------
+
+Vlad Codrea, VladC6 yahoo com

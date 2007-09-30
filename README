@@ -1,0 +1,28 @@
+Introduction
+-------------
+
+KioFuse allows you to mount remote directories into the root hierarchy of your local system, thereby exposing KIO filesystems to POSIX-compliant applications: Firefox, OpenOffice, GNOME apps, shell utilities and more. Another important advantage of KioFuse is that it allows you to arrange the hierarchy of *all* your files (local or remote) in whichever way makes sense to you (just like symliks).
+
+It works by acting as a bridge between the KIO filesystem design and FUSE, a program to mount user-space filesystems.  For information about FUSE, see http://fuse.sourceforge.net .
+
+Installation
+-------------
+
+1) Install kdelibs (version 4.0 or higher) provided by your distribution or compile it according to the intructions at http://techbase.kde.org/Getting_Started/Build/KDE4 .
+2) svn checkout svn://anonsvn.kde.org/home/kde/trunk/playground/libs/kiofuse
+3) cd kiofuse
+4) cmake
+
+Usage
+------
+
+Mount with:
+kiofuse --mountpoint <mountpoint> --URL <URL>
+
+Unmount with:
+fusermount -u <mountpoint>
+
+Maintainer
+-----------
+
+Vlad Codrea, VladC6 yahoo com
