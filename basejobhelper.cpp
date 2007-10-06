@@ -22,9 +22,9 @@
 
 #include <kdebug.h>
 
-BaseJobHelper::BaseJobHelper()
+BaseJobHelper::BaseJobHelper(QEventLoop *eventLoop)
     : QObject(), m_done(false),
-      m_error(0), m_job(0)
+      m_error(0), m_eventLoop(eventLoop), m_job(0)
 {
     kDebug()<<"BaseJobHelper ctor"<<endl;
 }
@@ -36,11 +36,6 @@ void BaseJobHelper::jobDone(KJob *job)
     m_done = true;
     m_eventLoop->quit();
     m_eventLoop = 0;
-}
-
-void BaseJobHelper::setEventLoop(QEventLoop &eventLoop)
-{
-    m_eventLoop = &eventLoop;
 }
 
 BaseJobHelper::~BaseJobHelper()

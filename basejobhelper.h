@@ -30,12 +30,11 @@ class BaseJobHelper : public QObject
     Q_OBJECT
 
 public:
-    BaseJobHelper();
+    BaseJobHelper(QEventLoop *eventLoop);
     ~BaseJobHelper();
 
     bool done() const   {return m_done;}
     bool error() const  {return m_error;}
-    void setEventLoop(QEventLoop &eventLoop);
 
 protected:
     bool m_done;

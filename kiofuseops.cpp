@@ -55,13 +55,13 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t offset, struct fuse_file_info *fi)
 {
     KIO::UDSEntry entry;
-    QEventLoop eventLoop;
+    QEventLoop *eventLoop = new QEventLoop();
     KUrl url = kioFuseApp->buildUrl(QString(relPath));
 
     kDebug()<<"kioFuseReadDir relPath: "<<relPath<<endl;
 
     ListJobHelper *helper = new ListJobHelper(url, eventLoop);
-    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
 
     /*kDebug()<<"Before while() "<<endl;
     while (!helper->done())
@@ -78,6 +78,9 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     else{
         ListJobHelper *helper = new ListJobHelper(url);
     }*/
+
+    delete eventLoop;
+    eventLoop = 0;
 
     delete helper;
     helper = 0;

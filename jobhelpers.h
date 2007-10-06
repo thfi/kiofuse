@@ -31,7 +31,7 @@ class ListJobHelper : public BaseJobHelper
     Q_OBJECT
 
 public:
-    ListJobHelper(const KUrl &url, QEventLoop &eventLoop);
+    ListJobHelper(const KUrl &url, QEventLoop *eventLoop);
     ~ListJobHelper();
 
 protected:

@@ -21,12 +21,11 @@
 #include "jobhelpers.h"
 #include <kdebug.h>
 
-ListJobHelper::ListJobHelper(const KUrl &url, QEventLoop &eventLoop)
-    : BaseJobHelper(), m_url(url), m_listJob(0)
+ListJobHelper::ListJobHelper(const KUrl &url, QEventLoop *eventLoop)
+    : BaseJobHelper(eventLoop), m_url(url), m_listJob(0)
 {
     kDebug()<<"ListJobHelper() ctor for "<<m_url.prettyUrl()<<endl;
 
-    setEventLoop(eventLoop);
     m_listJob = KIO::listDir(url, false, true);
     m_job = m_listJob;
 
