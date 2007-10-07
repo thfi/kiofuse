@@ -11,7 +11,8 @@ Installation
 1) Install kdelibs (version 4.0 or higher) provided by your distribution or compile it according to the intructions at http://techbase.kde.org/Getting_Started/Build/KDE4 .
 2) svn checkout svn://anonsvn.kde.org/home/kde/trunk/playground/libs/kiofuse
 3) cd kiofuse
-4) cmake
+4) cmake .
+5) make
 
 Usage
 ------

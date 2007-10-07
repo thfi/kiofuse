@@ -38,6 +38,11 @@ void BaseJobHelper::jobDone(KJob *job)
     m_eventLoop = 0;
 }
 
+KIO::UDSEntryList BaseJobHelper::entries()
+{
+    return m_entries;
+}
+
 BaseJobHelper::~BaseJobHelper()
 {
     kDebug()<<"BaseJobHelper dtor"<<endl;

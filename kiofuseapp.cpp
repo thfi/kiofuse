@@ -20,7 +20,7 @@
 
 #include "kiofuseapp.h"
 
-KioFuseApp *kioFuseApp = 0;
+KioFuseApp *kioFuseApp = NULL;
 
 KioFuseApp::KioFuseApp(const KUrl &url)
     : KApplication(), m_baseUrl(url)
@@ -40,12 +40,12 @@ KUrl KioFuseApp::buildUrl(const QString& path)
    return url;
 }
 
-bool KioFuseApp::UDSEntryCached(const QString &path)
+bool KioFuseApp::UDSEntryCached(const KUrl &url)
 {
     return false;
 }
 
-bool KioFuseApp::UDSEntryCacheExpired(const QString &path)
+bool KioFuseApp::UDSEntryCacheExpired(const KUrl &url)
 {
     return false;
 }

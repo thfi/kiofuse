@@ -54,14 +54,14 @@ int kioFuseRead(const char *path, char *buf, size_t size, off_t offset,
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t offset, struct fuse_file_info *fi)
 {
-    KIO::UDSEntry entry;
+    //KIO::UDSEntry entry;
+    //KIO::UDSEntryList entries;
+    //QString fileName;
+    ListJobHelper *helper;
     QEventLoop *eventLoop = new QEventLoop();
     KUrl url = kioFuseApp->buildUrl(QString(relPath));
 
     kDebug()<<"kioFuseReadDir relPath: "<<relPath<<endl;
-
-    ListJobHelper *helper = new ListJobHelper(url, eventLoop);
-    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
 
     /*kDebug()<<"Before while() "<<endl;
     while (!helper->done())
@@ -72,24 +72,30 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     kDebug()<<"After while() "<<endl;*/
 
 
-    /*if (kioFuseApp->UDSEntryCached(path) && !kioFuseApp->UDSEntryCacheExpired(path)){
+    if (kioFuseApp->UDSEntryCached(url) && !kioFuseApp->UDSEntryCacheExpired(url)){
         //TODO get from cache
     }
     else{
-        ListJobHelper *helper = new ListJobHelper(url);
-    }*/
+        helper = new ListJobHelper(url, eventLoop);
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
+        const KIO::UDSEntryList& entries = helper->entries();
+        for(KIO::UDSEntryList::ConstIterator it = entries.begin();
+             it!=entries.end(); ++it){
+            const KIO::UDSEntry& entry = *it;
+            const QString& fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            //kDebug()<<fileName<<relPath<<endl;
+            filler(buf, fileName.toLatin1(), NULL, 0);
+        }
+        
+        delete helper;
+        helper = NULL;
+    }
 
     delete eventLoop;
-    eventLoop = 0;
-
-    delete helper;
-    helper = 0;
+    eventLoop = NULL;
 
     if (strcmp(relPath, "/") != 0)
         return -ENOENT;
-
-    filler(buf, ".", NULL, 0);
-    filler(buf, "..", NULL, 0);
 
     return 0;
 }

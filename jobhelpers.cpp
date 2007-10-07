@@ -41,9 +41,10 @@ ListJobHelper::~ListJobHelper()
     kDebug()<<"ListJobHelper dtor"<<endl;
 }
 
-void ListJobHelper::receiveEntries(KIO::Job *, const KIO::UDSEntryList &items)
+void ListJobHelper::receiveEntries(KIO::Job *, const KIO::UDSEntryList &entries)
 {
-    sleep(20);
+    m_entries = entries;
+    //sleep(20);
     /*for(KIO::UDSEntryList::ConstIterator it = items.begin();
         it!=items.end(); ++it)
     {

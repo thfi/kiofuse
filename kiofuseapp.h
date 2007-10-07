@@ -35,8 +35,8 @@ class KioFuseApp : public KApplication
         ~KioFuseApp();
         const KUrl &baseUrl() const {return m_baseUrl;}
         KUrl buildUrl(const QString& path);
-        bool UDSEntryCached(const QString &path);
-        bool UDSEntryCacheExpired(const QString &path);
+        bool UDSEntryCached(const KUrl &url);
+        bool UDSEntryCacheExpired(const KUrl &url);
     private:
         KUrl m_baseUrl;
 };

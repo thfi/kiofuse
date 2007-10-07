@@ -35,12 +35,14 @@ public:
 
     bool done() const   {return m_done;}
     bool error() const  {return m_error;}
+    KIO::UDSEntryList entries();
 
 protected:
     bool m_done;
     int m_error;
     QEventLoop *m_eventLoop;
     KIO::Job *m_job;
+    KIO::UDSEntryList m_entries;
 
 protected slots:
     virtual void jobDone(KJob *job);
