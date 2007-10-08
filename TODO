@@ -1,7 +1,15 @@
 TODO
 -----
 
-- Make KioFuse multithreaded so that multiple userspace apps can access remote files at the same time. Currently, if a directory takes a long time to be accessed (simulated by a sleep(20) call in ListJobHelper::receiveEntries), all new requests to kioFuseReadDir are stalled.
+- If a directory takes a long time to be accessed (simulated by a sleep(20) call in ListJobHelper::receiveEntries), all new requests to kioFuseReadDir are stalled. This problem seems to be caused by using fuse_loop() instead of fuse_main(), and can be reproduced by modifying FUSE's fusexmp.c example to use fuse_loop(). Changing KioFuse to fuse_main() only makes things worse because now if two apps try to access a slow file simultaneously, KioFuse freezes completely. Not to mention that kDebug doesn't work when using fuse_main(). I've sent an email to the FUSE mailing list explaining in detail how to reproduce the problem:
+
+http://sourceforge.net/mailarchive/forum.php?thread_name=951590.30783.qm%40web54403.mail.yahoo.com&forum_name=fuse-devel
+
+- Find a Qt or KDE-based method of caching KFileItem objects.
+
+- Implement periodic removal of cashed items that have expired.
+
+- Implement the interface for extracting file/directory information from the cache.
 
 - Fix CMakeLists.txt so that FUSE is only linked to kiofuse.h and not to all the other source files. Currently, the following warning appears for the other files:
         c++: -lfuse: linker input file unused because linking not done
