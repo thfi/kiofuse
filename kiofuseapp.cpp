@@ -23,14 +23,16 @@
 KioFuseApp *kioFuseApp = NULL;
 
 KioFuseApp::KioFuseApp(const KUrl &url)
-    : KApplication(), m_baseUrl(url)
+    : KApplication(), m_baseUrl(url), m_cacheRoot(NULL), m_numCached(0)
 {
    kDebug()<<"KioFuseApp ctor baseUrl: "<<m_baseUrl.prettyUrl()<<endl;
 }
 
 KioFuseApp::~KioFuseApp()
 {
-    kDebug()<<"KioFuseApp dtor "<<endl;
+    kDebug()<<"KioFuseApp dtor"<<endl;
+    delete m_cacheRoot;
+    m_cacheRoot = 0;
 }
 
 KUrl KioFuseApp::buildUrl(const QString& path)
@@ -40,12 +42,32 @@ KUrl KioFuseApp::buildUrl(const QString& path)
    return url;
 }
 
-bool KioFuseApp::UDSEntryCached(const KUrl &url)
+bool KioFuseApp::UDSCached(const KUrl& url)
 {
     return false;
 }
 
-bool KioFuseApp::UDSEntryCacheExpired(const KUrl &url)
+bool KioFuseApp::childrenNamesCached(const KUrl& url)
 {
-    return false;
+    //TODO Names might be cached, but other info may not be
+    return UDSCached(url);
+}
+
+bool KioFuseApp::UDSCacheExpired(const KUrl& url)
+{
+    return true;
+}
+
+void KioFuseApp::addToCache(KFileItem* item)
+{
+    kDebug()<<"addToCache"<<endl;
+    if (m_cacheRoot == NULL){
+        kDebug()<<"Creating cacheRoot"<<endl;
+        m_cacheRoot = new Cache(item);
+    }else{
+        kDebug()<<"Using extant cacheRoot"<<endl;
+        m_cacheRoot->insert(item);
+    }
+
+    m_numCached++;
 }

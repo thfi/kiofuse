@@ -72,19 +72,26 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     kDebug()<<"After while() "<<endl;*/
 
 
-    if (kioFuseApp->UDSEntryCached(url) && !kioFuseApp->UDSEntryCacheExpired(url)){
+    if (kioFuseApp->childrenNamesCached(url) && !kioFuseApp->UDSCacheExpired(url)){
         //TODO get from cache
     }
     else{
         helper = new ListJobHelper(url, eventLoop);
         eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
-        const KIO::UDSEntryList& entries = helper->entries();
+
+        //eventLoop has finished, so entries are now available
+        KIO::UDSEntryList entries = helper->entries();
         for(KIO::UDSEntryList::ConstIterator it = entries.begin();
              it!=entries.end(); ++it){
-            const KIO::UDSEntry& entry = *it;
-            const QString& fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
-            //kDebug()<<fileName<<relPath<<endl;
-            filler(buf, fileName.toLatin1(), NULL, 0);
+            KIO::UDSEntry entry = *it;
+
+            //FIXME item needs to be deleted in the cache as it expires
+            KFileItem* item = new KFileItem(entry, url, true, true);
+            filler(buf, item->name().toLatin1(), NULL, 0);
+    
+            kDebug()<<"KFileItem URL: "<<item->url().path()<<endl;
+            //kioFuseApp->updateCache(url.addPath(entryName), entry);
+            kioFuseApp->addToCache(item);
         }
         
         delete helper;

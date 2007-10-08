@@ -21,24 +21,27 @@
 #ifndef KIO_FUSE_APP_H
 #define KIO_FUSE_APP_H
 
-#include <QString>
+#include "cache.h"
+
 #include <kapplication.h>
-#include <kurl.h>
-#include <kdebug.h>
 
 class KioFuseApp : public KApplication
 {
     Q_OBJECT
 
     public:
-        KioFuseApp(const KUrl &url);
+        KioFuseApp(const KUrl& url);
         ~KioFuseApp();
-        const KUrl &baseUrl() const {return m_baseUrl;}
+        const KUrl& baseUrl() const {return m_baseUrl;}
         KUrl buildUrl(const QString& path);
-        bool UDSEntryCached(const KUrl &url);
-        bool UDSEntryCacheExpired(const KUrl &url);
+        bool UDSCached(const KUrl& url);
+        bool childrenNamesCached(const KUrl& url);
+        bool UDSCacheExpired(const KUrl& url);
+        void addToCache(KFileItem* item);
     private:
         KUrl m_baseUrl;
+        Cache* m_cacheRoot;  // Root node of cache
+        int m_numCached;  // Number of files cached
 };
 
 extern KioFuseApp *kioFuseApp;

@@ -8,7 +8,8 @@ set(kiofuse_SRCS
         kiofuseops.cpp
         kiofuseapp.cpp
         basejobhelper.cpp
-        jobhelpers.cpp)
+        jobhelpers.cpp
+	cache.cpp)
 
 kde4_add_executable(kiofuse ${kiofuse_SRCS})
 target_link_libraries(kiofuse ${KDE4_KIO_LIBS})
