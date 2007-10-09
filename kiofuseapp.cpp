@@ -23,9 +23,11 @@
 KioFuseApp *kioFuseApp = NULL;
 
 KioFuseApp::KioFuseApp(const KUrl &url)
-    : KApplication(), m_baseUrl(url), m_cacheRoot(NULL), m_numCached(0)
+    : KApplication(), m_baseUrl(url), m_cacheRoot(NULL), m_numCached(1)
 {
-   kDebug()<<"KioFuseApp ctor baseUrl: "<<m_baseUrl.prettyUrl()<<endl;
+    kDebug()<<"KioFuseApp ctor baseUrl: "<<m_baseUrl.prettyUrl()<<endl;
+    QString root = QString("/");
+    m_cacheRoot = new Cache(root);
 }
 
 KioFuseApp::~KioFuseApp()
@@ -60,14 +62,15 @@ bool KioFuseApp::UDSCacheExpired(const KUrl& url)
 
 void KioFuseApp::addToCache(KFileItem* item)
 {
-    kDebug()<<"addToCache"<<endl;
+    /*kDebug()<<"addToCache"<<endl;
     if (m_cacheRoot == NULL){
         kDebug()<<"Creating cacheRoot"<<endl;
         m_cacheRoot = new Cache(item);
     }else{
         kDebug()<<"Using extant cacheRoot"<<endl;
         m_cacheRoot->insert(item);
-    }
+    }*/
+    m_cacheRoot->insert(item);
 
     m_numCached++;
 }

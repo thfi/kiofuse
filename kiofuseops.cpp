@@ -29,11 +29,13 @@ int kioFuseGetAttr(const char *path, struct stat *stbuf)
     int res = 0;
 
     memset(stbuf, 0, sizeof(struct stat));
-    if (strcmp(path, "/") == 0) {
+    /*if (strcmp(path, "/") == 0) {
         stbuf->st_mode = S_IFDIR | 0777;
         stbuf->st_nlink = 2;
     } else
-        res = -ENOENT;
+        res = -ENOENT;*/
+    stbuf->st_mode = S_IFDIR | 0777;
+    stbuf->st_nlink = 2;
 
     return res;
 }
@@ -101,8 +103,8 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     delete eventLoop;
     eventLoop = NULL;
 
-    if (strcmp(relPath, "/") != 0)
-        return -ENOENT;
+    /*if (strcmp(relPath, "/") != 0)
+        return -ENOENT;*/
 
     return 0;
 }
