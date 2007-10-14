@@ -21,19 +21,29 @@
 #include "jobhelpers.h"
 #include <kdebug.h>
 
-ListJobHelper::ListJobHelper(const KUrl &url, QEventLoop *eventLoop)
-    : BaseJobHelper(eventLoop), m_url(url), m_listJob(0)
+ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop),  // The generalized job helper
+      m_url(url),  // The remote url that we must list
+      m_listJob(NULL)
 {
     kDebug()<<"ListJobHelper() ctor for "<<m_url.prettyUrl()<<endl;
+    kDebug()<<"eventLoop->thread()"<<eventLoop->thread()<<endl;
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
 
     m_listJob = KIO::listDir(url, false, true);
-    m_job = m_listJob;
+    kDebug()<<"m_listJob->thread()"<<m_listJob->thread()<<endl;
+    m_job = m_listJob;  // m_job belongs to the parent class
 
-    connect(m_listJob, SIGNAL(entries(KIO::Job *, const KIO::UDSEntryList &)),
-            this, SLOT(receiveEntries(KIO::Job *, const KIO::UDSEntryList &)));
+    // Load the entries into m_entries when they become available
+    connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
+            this, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)));
 
-    connect(m_listJob, SIGNAL(result(KJob *)),
-            this, SLOT( jobDone(KJob *)));
+    kDebug()<<"After connecting entries"<<endl;
+
+    // Job will be deleted when finished, and execution returned to the FUSE op
+    connect(m_listJob, SIGNAL(result(KJob*)),
+            this, SLOT( jobDone(KJob*)));
+    kDebug()<<"After connecting result"<<endl;
 }
 
 ListJobHelper::~ListJobHelper()
@@ -41,16 +51,7 @@ ListJobHelper::~ListJobHelper()
     kDebug()<<"ListJobHelper dtor"<<endl;
 }
 
-void ListJobHelper::receiveEntries(KIO::Job *, const KIO::UDSEntryList &entries)
+void ListJobHelper::receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries)  // Store entries so that the FUSE op can get them
 {
     m_entries = entries;
-    //sleep(20);
-    /*for(KIO::UDSEntryList::ConstIterator it = items.begin();
-        it!=items.end(); ++it)
-    {
-       KIO::UDSEntry entry = *it;
-       fuseApp->listDirCache()->fileItems.append(
-                                                 new KFileItem(entry, m_url, true, true)
-                                                );
-    }*/
 }

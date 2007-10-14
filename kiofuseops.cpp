@@ -29,11 +29,6 @@ int kioFuseGetAttr(const char *path, struct stat *stbuf)
     int res = 0;
 
     memset(stbuf, 0, sizeof(struct stat));
-    /*if (strcmp(path, "/") == 0) {
-        stbuf->st_mode = S_IFDIR | 0777;
-        stbuf->st_nlink = 2;
-    } else
-        res = -ENOENT;*/
     stbuf->st_mode = S_IFDIR | 0777;
     stbuf->st_nlink = 2;
 
@@ -53,33 +48,22 @@ int kioFuseRead(const char *path, char *buf, size_t size, off_t offset,
     return 0;
 }
 
+// Get the names of files and directories under a specified directory
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t offset, struct fuse_file_info *fi)
 {
-    //KIO::UDSEntry entry;
-    //KIO::UDSEntryList entries;
-    //QString fileName;
-    ListJobHelper *helper;
-    QEventLoop *eventLoop = new QEventLoop();
-    KUrl url = kioFuseApp->buildUrl(QString(relPath));
+    ListJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildUrl(QString(relPath)); // The remote URL of the directory that is being read
 
-    kDebug()<<"kioFuseReadDir relPath: "<<relPath<<endl;
-
-    /*kDebug()<<"Before while() "<<endl;
-    while (!helper->done())
-    {
-       kDebug()<<"Inside while() "<<endl;
-       kioFuseApp->processEvents();
-    }
-    kDebug()<<"After while() "<<endl;*/
-
+    kDebug()<<"kioFuseReadDir relPath: "<<relPath<<"eventLoop->thread()"<<eventLoop->thread()<<endl;
 
     if (kioFuseApp->childrenNamesCached(url) && !kioFuseApp->UDSCacheExpired(url)){
         //TODO get from cache
     }
     else{
-        helper = new ListJobHelper(url, eventLoop);
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);
+        helper = new ListJobHelper(url, eventLoop);  // Get the directory or file descriptors (entries)
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
 
         //eventLoop has finished, so entries are now available
         KIO::UDSEntryList entries = helper->entries();
@@ -87,13 +71,11 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
              it!=entries.end(); ++it){
             KIO::UDSEntry entry = *it;
 
-            //FIXME item needs to be deleted in the cache as it expires
-            KFileItem* item = new KFileItem(entry, url, true, true);
-            filler(buf, item->name().toLatin1(), NULL, 0);
+            KFileItem* item = new KFileItem(entry, url, true, true);  //FIXME item needs to be deleted in the cache as it expires
+            filler(buf, item->name().toLatin1(), NULL, 0);  // Tell the name of this item to FUSE
     
             kDebug()<<"KFileItem URL: "<<item->url().path()<<endl;
-            //kioFuseApp->updateCache(url.addPath(entryName), entry);
-            kioFuseApp->addToCache(item);
+            kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
         }
         
         delete helper;
@@ -102,9 +84,6 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 
     delete eventLoop;
     eventLoop = NULL;
-
-    /*if (strcmp(relPath, "/") != 0)
-        return -ENOENT;*/
 
     return 0;
 }

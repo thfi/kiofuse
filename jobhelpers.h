@@ -26,20 +26,20 @@
 #include <kurl.h>
 #include <kio/udsentry.h>
 
-class ListJobHelper : public BaseJobHelper
+class ListJobHelper : public BaseJobHelper  // Helps list a specified directory
 {
     Q_OBJECT
 
 public:
-    ListJobHelper(const KUrl &url, QEventLoop *eventLoop);
+    ListJobHelper(const KUrl& url, QEventLoop* eventLoop);
     ~ListJobHelper();
 
 protected:
-    KUrl m_url;
-    KIO::ListJob *m_listJob;
+    KUrl m_url;  // The remote url that we must list
+    KIO::ListJob* m_listJob;  // Job that lists files and subdirectories of a specified directory
 
 protected slots:
-    void receiveEntries(KIO::Job *job, const KIO::UDSEntryList &items);
+    void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them
 };
 
 #endif /* JOB_HELPERS_H */

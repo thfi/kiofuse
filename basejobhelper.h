@@ -30,22 +30,24 @@ class BaseJobHelper : public QObject
     Q_OBJECT
 
 public:
-    BaseJobHelper(QEventLoop *eventLoop);
+    BaseJobHelper(QEventLoop* eventLoop);
     ~BaseJobHelper();
 
-    bool done() const   {return m_done;}
+    bool done() const   {return m_done;}  // Can be polled periodically by the FUSE ops that started the job
+                                          // Not necessary however because the FUSE ops will automatically regain execution
+                                          // when this job is done
     bool error() const  {return m_error;}
-    KIO::UDSEntryList entries();
+    KIO::UDSEntryList entries();  // Sends file and directory info to the FUSE op that started the job
 
 protected:
     bool m_done;
     int m_error;
-    QEventLoop *m_eventLoop;
-    KIO::Job *m_job;
-    KIO::UDSEntryList m_entries;
+    QEventLoop* m_eventLoop;  // The event loop that will return execution to the FUSE op once the job finished
+    KIO::Job* m_job;  // Job that gathers data from KIO
+    KIO::UDSEntryList m_entries;  // file and directory info gathered by m_job and fiven to the FUSE ops that started the job
 
 protected slots:
-    virtual void jobDone(KJob *job);
+    virtual void jobDone(KJob* job);  // Returns execution to the FUSE op that created us
 };
 
 #endif /* BASE_JOB_HELPER_H */

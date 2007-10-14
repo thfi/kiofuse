@@ -23,27 +23,31 @@
 
 #include "cache.h"
 
-#include <kapplication.h>
+#include <QMutex>
+#include <QMutexLocker>
 
-class KioFuseApp : public KApplication
+class KioFuseApp : public QObject
 {
     Q_OBJECT
 
     public:
         KioFuseApp(const KUrl& url);
         ~KioFuseApp();
-        const KUrl& baseUrl() const {return m_baseUrl;}
-        KUrl buildUrl(const QString& path);
+        const KUrl& baseUrl();  // Getter method for the remote base URL
+        KUrl buildUrl(const QString& path);  // Create a full URL containing both the remote base and the relative path
         bool UDSCached(const KUrl& url);
         bool childrenNamesCached(const KUrl& url);
         bool UDSCacheExpired(const KUrl& url);
-        void addToCache(KFileItem* item);
+        void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
     private:
-        KUrl m_baseUrl;
+        KUrl m_baseUrl;  // Remote base URL
+        QMutex m_baseUrlMutex;  // Allows only one thread to access the remote base URL at a time
+
         Cache* m_cacheRoot;  // Root node of cache
         int m_numCached;  // Number of files cached
+        QMutex m_cacheMutex;  // Allows only one thread to access the cache at a time
 };
 
-extern KioFuseApp *kioFuseApp;
+extern KioFuseApp *kioFuseApp;  // Make the kioFuseApp variable known to everyone who includes this file
 
 #endif /* FUSE_KIO_FUSE_APP_H */

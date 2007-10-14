@@ -22,20 +22,23 @@
 
 #include <kdebug.h>
 
-BaseJobHelper::BaseJobHelper(QEventLoop *eventLoop)
-    : QObject(), m_done(false),
-      m_error(0), m_eventLoop(eventLoop), m_job(0)
+BaseJobHelper::BaseJobHelper(QEventLoop* eventLoop)
+    : QObject(),
+      m_done(false),  // The job has not yet been started, so it is not done
+      m_error(0),
+      m_eventLoop(eventLoop),  // The event loop that will return execution to the FUSE op once the job finished
+      m_job(NULL)
 {
     kDebug()<<"BaseJobHelper ctor"<<endl;
 }
 
-void BaseJobHelper::jobDone(KJob *job)
+void BaseJobHelper::jobDone(KJob* job)
 {
     kDebug()<<"jobDone"<<endl;
     m_error = job->error();
     m_done = true;
-    m_eventLoop->quit();
-    m_eventLoop = 0;
+    m_eventLoop->quit();  // Return execution to the FUSE op that called us
+    m_eventLoop = NULL;
 }
 
 KIO::UDSEntryList BaseJobHelper::entries()
@@ -47,15 +50,15 @@ BaseJobHelper::~BaseJobHelper()
 {
     kDebug()<<"BaseJobHelper dtor"<<endl;
 
-    if (m_job!=0)
+    if (m_job != NULL)  
     {
         m_job->kill();
-        m_job = 0;
+        m_job = NULL;
     }
 
-    if (m_eventLoop!=0)
-    {
+    if (m_eventLoop != NULL)  // Should already be NULL from  jobDone(), but it might not be if this instance of
+    {                         // BaseJobHelper is deleted before the job is done
         m_eventLoop->quit();
-        m_eventLoop = 0;
+        m_eventLoop = NULL;
     }
 }

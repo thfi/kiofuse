@@ -26,14 +26,16 @@ extern "C" {
 #include "kiofuseops.h"
 #include "kiofuseapp.h"
 
+#include <QDir>  // Needed for QDir.exists() when checking that mountPoint is a directory
+
 #include <KAboutData>
 #include <KCmdLineArgs>
+#include <kapplication.h>
 #include <kdebug.h>
 #include <kurl.h>
-#include <QDir>
 
 static const KAboutData aboutData("kiofuse",
-                        0,
+                        NULL,
                         ki18n("KioFuse"),
                         "0.1",
                         ki18n("Expose KIO filesystems to all POSIX-compliant applications"),
@@ -43,6 +45,8 @@ static const KAboutData aboutData("kiofuse",
                         "http://fuse.sourceforge.net",
                         "submit@bugs.kde.org");
 
+// Initializes mountPoint and baseUrl as specified on the command line
+// Returns false if needed argument is not found
 bool prepareArguments(KCmdLineArgs *args, KUrl &mountPoint, KUrl &baseUrl)
 {
     if (args->isSet("mountpoint")){
@@ -51,12 +55,12 @@ bool prepareArguments(KCmdLineArgs *args, KUrl &mountPoint, KUrl &baseUrl)
         }
         else{
             kDebug() <<"The specified mountpoint is not valid"<<endl;
-            return 0;
+            return false;
         }
     }
     else{
         kDebug() <<"Please specify the mountpoint"<<endl;
-        return 0;
+        return false;
     }
 
     if (args->isSet("URL")){
@@ -64,14 +68,15 @@ bool prepareArguments(KCmdLineArgs *args, KUrl &mountPoint, KUrl &baseUrl)
     }
     else{
         kDebug() <<"Please specify the URL of the remote resource"<<endl;
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 int main (int argc, char *argv[])
 {
+    // KDE initialization
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineOptions options;
     options.add("mountpoint <argument>", ki18n("Where to place the remote files within the root hierarchy"));
@@ -79,42 +84,51 @@ int main (int argc, char *argv[])
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KUrl mountPoint;
-    KUrl baseUrl;
+    KUrl mountPoint;  // Local path where files will appear
+    KUrl baseUrl;  // Remote location of the resource
 
-    if (!prepareArguments(args, mountPoint, baseUrl)){
-        exit(-1);
+    if (!prepareArguments(args, mountPoint, baseUrl)){  // Initialize mountPoint and baseUrl as specified on the commandline
+        exit(-1);  // Quit program if a needed argument is not provided by the user
     }
 
+    // FUSE variables
     struct fuse_operations ops;
     struct fuse_args fuseArguments = FUSE_ARGS_INIT(0, NULL);
-    struct fuse_chan *fuseChannel = 0;
-    struct fuse *fuseHandle = 0;
+    struct fuse_chan *fuseChannel = NULL;
+    struct fuse *fuseHandle = NULL;
 
+    // Tell FUSE where the local mountpoint is
     fuseChannel = fuse_mount(mountPoint.path().toLatin1(), &fuseArguments);
     if (fuseChannel == NULL){
         kDebug()<<"fuse_mount() failed"<<endl;
         exit(-1);
     }
 
+    // Connect the FS operations used by FUSE to their respective KioFuse implementations
     memset(&ops, 0, sizeof(ops));
     ops.getattr = kioFuseGetAttr;
     ops.open = kioFuseOpen;
     ops.read = kioFuseRead;
     ops.readdir = kioFuseReadDir;
 
+    // Tell FUSE about the KioFuse implementations of FS operations
     fuseHandle = fuse_new(fuseChannel, &fuseArguments, &ops, sizeof(ops), NULL);
-    if (fuseHandle == 0){
+    if (fuseHandle == NULL){
         kDebug()<<"fuse_new() failed"<<endl;
         exit(-1);
     }
 
-    kioFuseApp = new KioFuseApp(baseUrl);
+    KApplication app(false);  // Disable GUI
+    kioFuseApp = new KioFuseApp(baseUrl); // Holds persistent info (ie. the FS cache)
+    kDebug()<<"kioFuseApp->thread()"<<kioFuseApp->thread()<<endl;
 
-    fuse_loop(fuseHandle);
+    // Give FUSE the control. It will call functions in ops as they are requested by users of the FS.
+    // Since fuse_loop_mt() is used instead of fuse_loop(), every call to the ops will be made in a new thread
+    fuse_loop_mt(fuseHandle);
+
+    // FUSE has quit its event loop, so we'll quit too
     fuse_unmount(mountPoint.path().toLatin1(), fuseChannel);
-    
     delete kioFuseApp;
-    kioFuseApp = 0;
+    kioFuseApp = NULL;
     return 0;
 }
