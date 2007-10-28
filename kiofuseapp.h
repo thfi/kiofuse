@@ -27,6 +27,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 
+class ListJobHelper;
+
 class KioFuseApp : public QObject
 {
     Q_OBJECT
@@ -42,9 +44,7 @@ class KioFuseApp : public QObject
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
     
     public slots:
-    // FIXME: For some weird reason the compiler can't find ListJobHelper*
-    // when I try to pass it instead of BaseJobHelper* to this slot
-        void listJobMainThread(const KUrl& url, BaseJobHelper* baseJobHelper);
+        void listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper);
         void jobDone(KJob* job);
         
     signals:

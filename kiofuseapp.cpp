@@ -88,13 +88,9 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     m_numCached++;
 }
 
-void KioFuseApp::listJobMainThread(const KUrl& url, BaseJobHelper* baseJobHelper)
+void KioFuseApp::listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
-    
-    // FIXME: For some weird reason the compiler can't find ListJobHelper*
-    // when I try to pass it instead of BaseJobHelper* to this slot.
-    ListJobHelper* listJobHelper = qobject_cast<ListJobHelper*>(baseJobHelper);
     
     KIO::ListJob* listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
     

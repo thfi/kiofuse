@@ -36,9 +36,7 @@ public:
     ~ListJobHelper();
     
 signals:
-    // FIXME: For some weird reason the compiler can't find ListJobHelper*
-    // when I try to pass it instead of BaseJobHelper*
-    void reqListJob(const KUrl&, BaseJobHelper*);
+    void reqListJob(const KUrl&, ListJobHelper*);
 
 public slots:
     void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them

@@ -25,10 +25,8 @@ ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop),  // The generalized job helper
       m_url(url)  // The remote url that we must list
 {
-    // FIXME: For some weird reason the compiler can't find ListJobHelper*
-    // when I try to pass it instead of BaseJobHelper*
-    connect(this, SIGNAL(reqListJob(const KUrl&, BaseJobHelper*)), kioFuseApp,
-            SLOT(listJobMainThread(const KUrl&, BaseJobHelper*)), Qt::DirectConnection);
+    connect(this, SIGNAL(reqListJob(const KUrl&, ListJobHelper*)), kioFuseApp,
+            SLOT(listJobMainThread(const KUrl&, ListJobHelper*)), Qt::DirectConnection);
     emit reqListJob(url, this);
 }
 
