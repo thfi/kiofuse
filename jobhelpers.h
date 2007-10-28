@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kï¿½vin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -22,6 +22,7 @@
 #define JOB_HELPERS_H
 
 #include "basejobhelper.h"
+#include "kiofuseapp.h"
 
 #include <kurl.h>
 #include <kio/udsentry.h>
@@ -33,6 +34,12 @@ class ListJobHelper : public BaseJobHelper  // Helps list a specified directory
 public:
     ListJobHelper(const KUrl& url, QEventLoop* eventLoop);
     ~ListJobHelper();
+    
+public slots:
+    void testSlot1();
+    
+signals:
+    void testSignal2();
 
 protected:
     KUrl m_url;  // The remote url that we must list

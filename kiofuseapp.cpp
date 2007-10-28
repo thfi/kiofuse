@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kevin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -19,6 +19,8 @@
  ****************************************************************************/
 
 #include "kiofuseapp.h"
+
+#include <kdebug.h>
 
 KioFuseApp *kioFuseApp = NULL;
 
@@ -84,4 +86,15 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     QMutexLocker locker(&m_cacheMutex);
     m_cacheRoot->insert(item);
     m_numCached++;
+}
+
+/*void KioFuseApp::testSignal1()
+{
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+}*/
+
+void KioFuseApp::testSlot2()
+{
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+    emit testSignal1();
 }

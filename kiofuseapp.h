@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kevin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -39,6 +39,13 @@ class KioFuseApp : public QObject
         bool childrenNamesCached(const KUrl& url);
         bool UDSCacheExpired(const KUrl& url);
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
+    
+    signals:
+        void testSignal1();
+        
+    public slots:
+        void testSlot2();
+        
     private:
         KUrl m_baseUrl;  // Remote base URL
         QMutex m_baseUrlMutex;  // Allows only one thread to access the remote base URL at a time

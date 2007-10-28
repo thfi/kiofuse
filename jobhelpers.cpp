@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kevin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -30,9 +30,13 @@ ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
     kDebug()<<"eventLoop->thread()"<<eventLoop->thread()<<endl;
     kDebug()<<"this->thread()"<<this->thread()<<endl;
 
-    m_listJob = KIO::listDir(url, false, true);
+    m_listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
     kDebug()<<"m_listJob->thread()"<<m_listJob->thread()<<endl;
     m_job = m_listJob;  // m_job belongs to the parent class
+    
+    connect(kioFuseApp, SIGNAL(testSignal1()), this, SLOT(testSlot1()), Qt::QueuedConnection);
+    connect(this, SIGNAL(testSignal2()), kioFuseApp, SLOT(testSlot2()), Qt::QueuedConnection);
+    emit testSignal2();
 
     // Load the entries into m_entries when they become available
     connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
@@ -55,3 +59,13 @@ void ListJobHelper::receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries) 
 {
     m_entries = entries;
 }
+
+void ListJobHelper::testSlot1()
+{
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+}
+
+/*void ListJobHelper::testSignal2()
+{
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+}*/

@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kevin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -21,8 +21,10 @@
 #include <errno.h>
 
 #include "kiofuseops.h"
-#include "kiofuseapp.h"
+//#include "kiofuseapp.h"
 #include "jobhelpers.h"
+
+#include <kdebug.h>
 
 int kioFuseGetAttr(const char *path, struct stat *stbuf)
 {
