@@ -35,18 +35,16 @@ public:
     ListJobHelper(const KUrl& url, QEventLoop* eventLoop);
     ~ListJobHelper();
     
-public slots:
-    void testSlot1();
-    
 signals:
-    void testSignal2();
+    // FIXME: For some weird reason the compiler can't find ListJobHelper*
+    // when I try to pass it instead of BaseJobHelper*
+    void reqListJob(const KUrl&, BaseJobHelper*);
+
+public slots:
+    void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them
 
 protected:
     KUrl m_url;  // The remote url that we must list
-    KIO::ListJob* m_listJob;  // Job that lists files and subdirectories of a specified directory
-
-protected slots:
-    void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them
 };
 
 #endif /* JOB_HELPERS_H */

@@ -22,6 +22,7 @@
 #define KIO_FUSE_APP_H
 
 #include "cache.h"
+#include "jobhelpers.h"
 
 #include <QMutex>
 #include <QMutexLocker>
@@ -40,11 +41,14 @@ class KioFuseApp : public QObject
         bool UDSCacheExpired(const KUrl& url);
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
     
-    signals:
-        void testSignal1();
-        
     public slots:
-        void testSlot2();
+    // FIXME: For some weird reason the compiler can't find ListJobHelper*
+    // when I try to pass it instead of BaseJobHelper* to this slot
+        void listJobMainThread(const KUrl& url, BaseJobHelper* baseJobHelper);
+        void jobDone(KJob* job);
+        
+    signals:
+        void sendJobDone();
         
     private:
         KUrl m_baseUrl;  // Remote base URL
@@ -53,6 +57,8 @@ class KioFuseApp : public QObject
         Cache* m_cacheRoot;  // Root node of cache
         int m_numCached;  // Number of files cached
         QMutex m_cacheMutex;  // Allows only one thread to access the cache at a time
+        
+        QMap<KJob *, BaseJobHelper *> m_listJobToListJobHelper; // Correlate listJob with the ListJobHelper that needs it
 };
 
 extern KioFuseApp *kioFuseApp;  // Make the kioFuseApp variable known to everyone who includes this file

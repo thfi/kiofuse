@@ -88,13 +88,44 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     m_numCached++;
 }
 
-/*void KioFuseApp::testSignal1()
+void KioFuseApp::listJobMainThread(const KUrl& url, BaseJobHelper* baseJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
-}*/
+    
+    // FIXME: For some weird reason the compiler can't find ListJobHelper*
+    // when I try to pass it instead of BaseJobHelper* to this slot.
+    ListJobHelper* listJobHelper = qobject_cast<ListJobHelper*>(baseJobHelper);
+    
+    KIO::ListJob* listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
+    
+    // Correlate listJob with the ListJobHelper that needs it
+    m_listJobToListJobHelper.insert(qobject_cast<KJob*>(listJob),
+                                    qobject_cast<BaseJobHelper*>(listJobHelper));
+    
+    // Send the entries to listJobHelper when they become available
+    connect(listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
+            listJobHelper, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)),
+            Qt::DirectConnection);
 
-void KioFuseApp::testSlot2()
+    // Job will be deleted when finished
+    connect(listJob, SIGNAL(result(KJob*)),
+            this, SLOT( jobDone(KJob*)));
+}
+
+void KioFuseApp::jobDone(KJob* job)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
-    emit testSignal1();
+    
+    BaseJobHelper* jobHelper = m_listJobToListJobHelper.value(job);
+    connect(this, SIGNAL(sendJobDone()),
+            jobHelper, SLOT(jobDone()));
+    emit sendJobDone();
+    
+    // Remove job and jobHelper from map
+    int entriesRemoved = m_listJobToListJobHelper.remove(job);
+    Q_ASSERT(entriesRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
 }

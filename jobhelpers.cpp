@@ -23,31 +23,13 @@
 
 ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop),  // The generalized job helper
-      m_url(url),  // The remote url that we must list
-      m_listJob(NULL)
+      m_url(url)  // The remote url that we must list
 {
-    kDebug()<<"ListJobHelper() ctor for "<<m_url.prettyUrl()<<endl;
-    kDebug()<<"eventLoop->thread()"<<eventLoop->thread()<<endl;
-    kDebug()<<"this->thread()"<<this->thread()<<endl;
-
-    m_listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
-    kDebug()<<"m_listJob->thread()"<<m_listJob->thread()<<endl;
-    m_job = m_listJob;  // m_job belongs to the parent class
-    
-    connect(kioFuseApp, SIGNAL(testSignal1()), this, SLOT(testSlot1()), Qt::QueuedConnection);
-    connect(this, SIGNAL(testSignal2()), kioFuseApp, SLOT(testSlot2()), Qt::QueuedConnection);
-    emit testSignal2();
-
-    // Load the entries into m_entries when they become available
-    connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
-            this, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)));
-
-    kDebug()<<"After connecting entries"<<endl;
-
-    // Job will be deleted when finished, and execution returned to the FUSE op
-    connect(m_listJob, SIGNAL(result(KJob*)),
-            this, SLOT( jobDone(KJob*)));
-    kDebug()<<"After connecting result"<<endl;
+    // FIXME: For some weird reason the compiler can't find ListJobHelper*
+    // when I try to pass it instead of BaseJobHelper*
+    connect(this, SIGNAL(reqListJob(const KUrl&, BaseJobHelper*)), kioFuseApp,
+            SLOT(listJobMainThread(const KUrl&, BaseJobHelper*)), Qt::DirectConnection);
+    emit reqListJob(url, this);
 }
 
 ListJobHelper::~ListJobHelper()
@@ -60,12 +42,3 @@ void ListJobHelper::receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries) 
     m_entries = entries;
 }
 
-void ListJobHelper::testSlot1()
-{
-    kDebug()<<"this->thread()"<<this->thread()<<endl;
-}
-
-/*void ListJobHelper::testSignal2()
-{
-    kDebug()<<"this->thread()"<<this->thread()<<endl;
-}*/
