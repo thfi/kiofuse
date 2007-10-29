@@ -88,24 +88,34 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     m_numCached++;
 }
 
-void KioFuseApp::listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper)
+void KioFuseApp::listJobMainThread(KUrl url, ListJobHelper* listJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     
     KIO::ListJob* listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
     
-    // Correlate listJob with the ListJobHelper that needs it
-    m_listJobToListJobHelper.insert(qobject_cast<KJob*>(listJob),
-                                    qobject_cast<BaseJobHelper*>(listJobHelper));
+    kDebug()<<"listJob->thread()"<<listJob->thread()<<endl;
+    
+    //listJob->moveToThread(this->thread());
+    
+    // Job will be deleted when finished
+    connect(listJob, SIGNAL(result(KJob*)),
+            this, SLOT(jobDone(KJob*)),
+            Qt::DirectConnection);
     
     // Send the entries to listJobHelper when they become available
     connect(listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
             listJobHelper, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)),
             Qt::DirectConnection);
+    
+    //kDebug()<<"second listJob->thread()"<<listJob->thread()<<endl; 
+    
+    // Correlate listJob with the ListJobHelper that needs it
+    m_listJobToListJobHelper.insert(qobject_cast<KJob*>(listJob),
+                                    qobject_cast<BaseJobHelper*>(listJobHelper));
+    
 
-    // Job will be deleted when finished
-    connect(listJob, SIGNAL(result(KJob*)),
-            this, SLOT( jobDone(KJob*)));
+    kDebug()<<"at the end"<<endl;
 }
 
 void KioFuseApp::jobDone(KJob* job)
@@ -125,3 +135,8 @@ void KioFuseApp::jobDone(KJob* job)
     job->kill();
     job = NULL;
 }
+
+/*void KioFuseApp::receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items)
+{
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+}*/

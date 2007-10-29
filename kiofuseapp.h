@@ -44,8 +44,9 @@ class KioFuseApp : public QObject
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
     
     public slots:
-        void listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper);
+        void listJobMainThread(KUrl url, ListJobHelper* listJobHelper);
         void jobDone(KJob* job);
+        /*void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);*/
         
     signals:
         void sendJobDone();

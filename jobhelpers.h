@@ -36,7 +36,7 @@ public:
     ~ListJobHelper();
     
 signals:
-    void reqListJob(const KUrl&, ListJobHelper*);
+    void reqListJob(KUrl, ListJobHelper*);
 
 public slots:
     void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them
