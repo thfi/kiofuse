@@ -18,21 +18,15 @@
  *   MA 02111-1307, USA.                                                    *
  ****************************************************************************/
 
-#define FUSE_USE_VERSION 26
-extern "C" {
-#include <fuse.h>
-}
-
 #include "kiofuseops.h"
 #include "kiofuseapp.h"
+#include "fusethread.h"
 
 #include <QDir>  // Needed for QDir.exists() when checking that mountPoint is a directory
 
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <kapplication.h>
 #include <kdebug.h>
-#include <kurl.h>
 
 static const KAboutData aboutData("kiofuse",
                         NULL,
@@ -87,8 +81,10 @@ int main (int argc, char *argv[])
     KUrl mountPoint;  // Local path where files will appear
     KUrl baseUrl;  // Remote location of the resource
 
-    if (!prepareArguments(args, mountPoint, baseUrl)){  // Initialize mountPoint and baseUrl as specified on the commandline
-        exit(-1);  // Quit program if a needed argument is not provided by the user
+    // Initialize mountPoint and baseUrl as specified on the commandline
+    if (!prepareArguments(args, mountPoint, baseUrl)){
+        // Quit program if a needed argument is not provided by the user
+        exit(-1);
     }
 
     // FUSE variables
@@ -118,16 +114,18 @@ int main (int argc, char *argv[])
         exit(-1);
     }
 
-    KApplication app(false);  // Disable GUI
-    kioFuseApp = new KioFuseApp(baseUrl); // Holds persistent info (ie. the FS cache)
+    // Holds persistent info (ie. the FS cache)
+    kioFuseApp = new KioFuseApp(baseUrl);
     kDebug()<<"kioFuseApp->thread()"<<kioFuseApp->thread()<<endl;
 
-    // Give FUSE the control. It will call functions in ops as they are requested by users of the FS.
-    // Since fuse_loop_mt() is used instead of fuse_loop(), every call to the ops will be made in a new thread
-    fuse_loop_mt(fuseHandle);
+    // Start FUSE's event loop in a separate thread
+    FuseThread fuseThread(NULL, fuseHandle, fuseChannel, mountPoint);
+    fuseThread.start();
 
-    // FUSE has quit its event loop, so we'll quit too
-    fuse_unmount(mountPoint.path().toLatin1(), fuseChannel);
+    // An event loop needs to run in the main thread so that
+    // we can connect to slots in the main thread using Qt::QueuedConnection
+    kioFuseApp->exec();
+
     delete kioFuseApp;
     kioFuseApp = NULL;
     return 0;

@@ -9,7 +9,8 @@ set(kiofuse_SRCS
         kiofuseapp.cpp
         basejobhelper.cpp
         jobhelpers.cpp
-	cache.cpp)
+        cache.cpp
+        fusethread.cpp)
 
 kde4_add_executable(kiofuse ${kiofuse_SRCS})
 target_link_libraries(kiofuse ${KDE4_KIO_LIBS})

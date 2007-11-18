@@ -1,6 +1,6 @@
 /****************************************************************************
  *    Copyright (c) 2007 Vlad Codrea                                        *
- *    Copyright (c) 2003-2004 by Alexander Neundorf & Kévin 'ervin' Ottens  *
+ *    Copyright (c) 2003-2004 by Alexander Neundorf & Kevin 'ervin' Ottens  *
  *                                                                          *
  *   This program is free software; you can redistribute it and/or modify   *
  *   it under the terms of the GNU General Public License as published by   *
@@ -21,7 +21,10 @@
 #ifndef KIOFUSE_OPS_H
 #define KIOFUSE_OPS_H
 
+#define FUSE_USE_VERSION 26
+extern "C" {
 #include <fuse.h>
+}
 
 int kioFuseGetAttr(const char *path, struct stat *stbuf);
 //int kioFuseReadLink(const char *path, char *buf, size_t size);

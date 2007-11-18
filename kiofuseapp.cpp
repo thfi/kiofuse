@@ -20,12 +20,14 @@
 
 #include "kiofuseapp.h"
 
+#include <QThread>
+
 #include <kdebug.h>
 
 KioFuseApp *kioFuseApp = NULL;
 
 KioFuseApp::KioFuseApp(const KUrl &url)
-    : QObject(),
+    : KApplication(false),  //No GUI
       m_baseUrl(url),
       m_baseUrlMutex(QMutex::Recursive),  // Allow the mutex to be locked several times within the same thread
       m_cacheRoot(NULL),
@@ -91,6 +93,7 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
 void KioFuseApp::listJobMainThread(KUrl url, ListJobHelper* listJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
+    kDebug()<<"QThread::currentThread()"<<QThread::currentThread()<<endl;
     
     KIO::ListJob* listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
     

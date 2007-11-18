@@ -26,7 +26,7 @@ ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
       m_url(url)  // The remote url that we must list
 {
     connect(this, SIGNAL(reqListJob(KUrl, ListJobHelper*)), kioFuseApp,
-            SLOT(listJobMainThread(KUrl, ListJobHelper*)), Qt::DirectConnection);
+            SLOT(listJobMainThread(KUrl, ListJobHelper*)), Qt::QueuedConnection);
     emit reqListJob(url, this);
 }
 

@@ -26,10 +26,11 @@
 
 #include <QMutex>
 #include <QMutexLocker>
+#include <KApplication>
 
 class ListJobHelper;
 
-class KioFuseApp : public QObject
+class KioFuseApp : public KApplication
 {
     Q_OBJECT
 
