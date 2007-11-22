@@ -22,25 +22,21 @@
 
 #include <kdebug.h>
 
-BaseJobHelper::BaseJobHelper(QEventLoop* eventLoop)
+BaseJobHelper::BaseJobHelper(QEventLoop* eventLoop, const KUrl& url)
     : QObject(),
-      m_done(false),  // The job has not yet been started, so it is not done
+      m_error(0),  // Error code returned by the job
+      m_url(url),  // The remote url
       m_eventLoop(eventLoop)  // The event loop that will return execution to the FUSE op once the job finished
 {
     kDebug()<<"BaseJobHelper ctor"<<endl;
 }
 
-void BaseJobHelper::jobDone()
+void BaseJobHelper::jobDone(int error)
 {
     kDebug()<<"jobDone"<<endl;
-    m_done = true;
+    m_error = error;
     m_eventLoop->quit();  // Return execution to the FUSE op that called us
     m_eventLoop = NULL;
-}
-
-KIO::UDSEntryList BaseJobHelper::entries()
-{
-    return m_entries;
 }
 
 BaseJobHelper::~BaseJobHelper()

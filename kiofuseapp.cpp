@@ -90,56 +90,100 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     m_numCached++;
 }
 
+/*********** ListJob ***********/
 void KioFuseApp::listJobMainThread(KUrl url, ListJobHelper* listJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     kDebug()<<"QThread::currentThread()"<<QThread::currentThread()<<endl;
     
     KIO::ListJob* listJob = KIO::listDir(url, KIO::HideProgressInfo, true);
+    Q_ASSERT(listJob->thread() == this->thread());
     
     kDebug()<<"listJob->thread()"<<listJob->thread()<<endl;
     
-    //listJob->moveToThread(this->thread());
-    
     // Job will be deleted when finished
     connect(listJob, SIGNAL(result(KJob*)),
-            this, SLOT(jobDone(KJob*)),
-            Qt::DirectConnection);
+            this, SLOT(slotResult(KJob*)));
+    
+    // Needed to be able to use Qt::QueuedConnection
+    qRegisterMetaType<KIO::UDSEntryList>("KIO::UDSEntryList");
     
     // Send the entries to listJobHelper when they become available
     connect(listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
             listJobHelper, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)),
-            Qt::DirectConnection);
-    
-    //kDebug()<<"second listJob->thread()"<<listJob->thread()<<endl; 
+            Qt::QueuedConnection);
     
     // Correlate listJob with the ListJobHelper that needs it
-    m_listJobToListJobHelper.insert(qobject_cast<KJob*>(listJob),
-                                    qobject_cast<BaseJobHelper*>(listJobHelper));
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(listJob),
+                            qobject_cast<BaseJobHelper*>(listJobHelper));
     
 
     kDebug()<<"at the end"<<endl;
 }
 
-void KioFuseApp::jobDone(KJob* job)
+void KioFuseApp::slotResult(KJob* job)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     
-    BaseJobHelper* jobHelper = m_listJobToListJobHelper.value(job);
-    connect(this, SIGNAL(sendJobDone()),
-            jobHelper, SLOT(jobDone()));
-    emit sendJobDone();
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    connect(this, SIGNAL(sendJobDone(int)),
+            jobHelper, SLOT(jobDone(int)), Qt::QueuedConnection);
+    emit sendJobDone(job->error());
     
     // Remove job and jobHelper from map
-    int entriesRemoved = m_listJobToListJobHelper.remove(job);
-    Q_ASSERT(entriesRemoved == 1);
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
     
     Q_ASSERT(job);
     job->kill();
     job = NULL;
 }
 
-/*void KioFuseApp::receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items)
+/*********** StatJob ***********/
+void KioFuseApp::statJobMainThread(KUrl url, StatJobHelper* statJobHelper)
 {
-    kDebug()<<"this->thread()"<<this->thread()<<endl;
-}*/
+    /*KIO::StatJob* statJob = KIO::stat(url, KIO::StatJob::SourceSide,
+                                      2, KIO::HideProgressInfo);*/
+    KIO::StatJob* statJob = KIO::stat(url, KIO::HideProgressInfo);
+    Q_ASSERT(statJob->thread() == this->thread());
+    
+    // Job will be deleted when finished
+    connect(statJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotStatJobResult(KJob*)));
+    
+    // Correlate listJob with the ListJobHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(statJob),
+                            qobject_cast<BaseJobHelper*>(statJobHelper));
+}
+
+void KioFuseApp::slotStatJobResult(KJob* job)
+{
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    StatJobHelper* statJobHelper = qobject_cast<StatJobHelper*>(jobHelper);
+    
+    if (job->error() == 0){
+        KIO::StatJob* statJob = qobject_cast<KIO::StatJob*>(job);
+        KIO::UDSEntry entry = statJob->statResult();
+        
+        // Needed to be able to use Qt::QueuedConnection
+        qRegisterMetaType<KIO::UDSEntry>("KIO::UDSEntry");
+    
+        // Send the entry to statJobHelper
+        connect(this, SIGNAL(sendEntry(const KIO::UDSEntry &)),
+                statJobHelper, SLOT(receiveEntry(const KIO::UDSEntry &)),
+                Qt::QueuedConnection);
+        emit sendEntry(entry);
+    }
+    
+    connect(this, SIGNAL(sendJobDone(int)),
+            jobHelper, SLOT(jobDone(int)), Qt::QueuedConnection);
+    emit sendJobDone(job->error());
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
+}

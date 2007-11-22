@@ -22,6 +22,15 @@ http://sourceforge.net/mailarchive/forum.php?thread_name=951590.30783.qm%40web54
 
 - write documentation
 
+
+Long-term TODO:
+
+- KIO should be usable from non-main threads
+
+- Fix inconsistancy whereby ListJob returns its UDSEntries via the entries() signal, while StatJob returns its UDSEntries via the statResult() function
+
+- Take ideas from GVFS and GIO
+
 Contact
 --------
 

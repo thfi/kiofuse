@@ -21,9 +21,9 @@
 #include "jobhelpers.h"
 #include <kdebug.h>
 
+/*********** ListJobHelper ***********/
 ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
-    : BaseJobHelper(eventLoop),  // The generalized job helper
-      m_url(url)  // The remote url that we must list
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
 {
     connect(this, SIGNAL(reqListJob(KUrl, ListJobHelper*)), kioFuseApp,
             SLOT(listJobMainThread(KUrl, ListJobHelper*)), Qt::QueuedConnection);
@@ -35,8 +35,36 @@ ListJobHelper::~ListJobHelper()
     kDebug()<<"ListJobHelper dtor"<<endl;
 }
 
+KIO::UDSEntryList ListJobHelper::entries()
+{
+    return m_entries;
+}
+
 void ListJobHelper::receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries)  // Store entries so that the FUSE op can get them
 {
     m_entries = entries;
 }
 
+/*********** StatJobHelper ***********/
+StatJobHelper::StatJobHelper(const KUrl& url, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
+{
+    connect(this, SIGNAL(reqStatJob(KUrl, StatJobHelper*)), kioFuseApp,
+            SLOT(statJobMainThread(KUrl, StatJobHelper*)), Qt::QueuedConnection);
+    emit reqStatJob(url, this);
+}
+
+StatJobHelper::~StatJobHelper()
+{
+    kDebug()<<"StatJobHelper dtor"<<endl;
+}
+
+KIO::UDSEntry StatJobHelper::entry()
+{
+    return m_entry;
+}
+
+void StatJobHelper::receiveEntry(const KIO::UDSEntry &entry)  // Store entry so that the FUSE op can get it
+{
+    m_entry = entry;
+}

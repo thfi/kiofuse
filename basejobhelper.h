@@ -23,28 +23,26 @@
 
 #include <QEventLoop>
 
-#include <kio/job.h>
+#include <kurl.h>
+//#include <kio/job.h>
 
 class BaseJobHelper : public QObject
 {
     Q_OBJECT
 
 public:
-    BaseJobHelper(QEventLoop* eventLoop);
+    BaseJobHelper(QEventLoop* eventLoop, const KUrl& url);
     ~BaseJobHelper();
 
-    bool done() const   {return m_done;}  // Can be polled periodically by the FUSE ops that started the job
-                                          // Not necessary however because the FUSE ops will automatically regain execution
-                                          // when this job is done
-    KIO::UDSEntryList entries();  // Sends file and directory info to the FUSE op that started the job
+    int error() const   {return m_error;}  // Error code returned by the job
 
 protected:
-    bool m_done;
+    int m_error;  // Error code returned by the job
+    KUrl m_url;  // The remote url
     QEventLoop* m_eventLoop;  // The event loop that will return execution to the FUSE op once the job finished
-    KIO::UDSEntryList m_entries;  // file and directory info gathered by m_job and fiven to the FUSE ops that started the job
 
 protected slots:
-    virtual void jobDone();  // Returns execution to the FUSE op that created us
+    virtual void jobDone(int error);  // Returns execution to the FUSE op that created us
 };
 
 #endif /* BASE_JOB_HELPER_H */

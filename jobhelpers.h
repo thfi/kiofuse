@@ -24,25 +24,45 @@
 #include "basejobhelper.h"
 #include "kiofuseapp.h"
 
-#include <kurl.h>
+#include <kio/job.h>
 #include <kio/udsentry.h>
 
 class ListJobHelper : public BaseJobHelper  // Helps list a specified directory
 {
     Q_OBJECT
 
-public:
-    ListJobHelper(const KUrl& url, QEventLoop* eventLoop);
-    ~ListJobHelper();
+    public:
+        ListJobHelper(const KUrl& url, QEventLoop* eventLoop);
+        ~ListJobHelper();
+        KIO::UDSEntryList entries();  // Sends file and directory info to the FUSE op that started the job
     
-signals:
-    void reqListJob(KUrl, ListJobHelper*);
+    signals:
+        void reqListJob(KUrl, ListJobHelper*);
 
-public slots:
-    void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);  // Store entries so that the FUSE op can get them
+    public slots:
+        void receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries);  // Store entries so that the FUSE op can get them
+    
+    protected:
+        KIO::UDSEntryList m_entries;  // file and directory info gathered by m_job and given to the FUSE ops that started the job
+};
 
-protected:
-    KUrl m_url;  // The remote url that we must list
+class StatJobHelper : public BaseJobHelper  // Helps stat a specified file or directory
+{
+    Q_OBJECT
+
+    public:
+        StatJobHelper(const KUrl& url, QEventLoop* eventLoop);
+        ~StatJobHelper();
+        KIO::UDSEntry entry();  // Sends file and directory info to the FUSE op that started the job
+    
+    signals:
+        void reqStatJob(KUrl, StatJobHelper*);
+
+    public slots:
+        void receiveEntry(const KIO::UDSEntry &entry);  // Store entry so that the FUSE op can get it
+        
+    protected:
+        KIO::UDSEntry m_entry;
 };
 
 #endif /* JOB_HELPERS_H */

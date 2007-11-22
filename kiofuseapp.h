@@ -29,6 +29,7 @@
 #include <KApplication>
 
 class ListJobHelper;
+class StatJobHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -46,11 +47,13 @@ class KioFuseApp : public KApplication
     
     public slots:
         void listJobMainThread(KUrl url, ListJobHelper* listJobHelper);
-        void jobDone(KJob* job);
-        /*void receiveEntries(KIO::Job* job, const KIO::UDSEntryList& items);*/
+        void slotResult(KJob* job);
+        void statJobMainThread(KUrl url, StatJobHelper* statJobHelper);
+        void slotStatJobResult(KJob* job);
         
     signals:
-        void sendJobDone();
+        void sendJobDone(int);
+        void sendEntry(const KIO::UDSEntry &);
         
     private:
         KUrl m_baseUrl;  // Remote base URL
@@ -60,7 +63,7 @@ class KioFuseApp : public KApplication
         int m_numCached;  // Number of files cached
         QMutex m_cacheMutex;  // Allows only one thread to access the cache at a time
         
-        QMap<KJob *, BaseJobHelper *> m_listJobToListJobHelper; // Correlate listJob with the ListJobHelper that needs it
+        QMap<KJob *, BaseJobHelper *> m_jobToJobHelper; // Correlate listJob with the ListJobHelper that needs it
 };
 
 extern KioFuseApp *kioFuseApp;  // Make the kioFuseApp variable known to everyone who includes this file

@@ -18,21 +18,45 @@
  *   MA 02111-1307, USA.                                                    *
  ****************************************************************************/
 
+#include "kiofuseops.h"
+#include "jobhelpers.h"
+
 #include <errno.h>
 
-#include "kiofuseops.h"
-//#include "kiofuseapp.h"
-#include "jobhelpers.h"
+#include <QThread>
 
 #include <kdebug.h>
 
-int kioFuseGetAttr(const char *path, struct stat *stbuf)
+int kioFuseGetAttr(const char *relPath, struct stat *stbuf)
 {
+    kDebug()<<"relPath"<<relPath<<endl;
+    
     int res = 0;
+    
+    StatJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildUrl(QString(relPath)); // The remote URL of the directory that is being read
 
-    memset(stbuf, 0, sizeof(struct stat));
-    stbuf->st_mode = S_IFDIR | 0777;
-    stbuf->st_nlink = 2;
+    if (false /*kioFuseApp->UDSCacheExpired(url)*/){
+        //TODO get from cache
+    } else {
+        helper = new StatJobHelper(url, eventLoop);  // Get the directory or file descriptor (entry)
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+        //eventLoop has finished, so entry is now available
+        if (helper->error()){
+            res = -ENOENT;
+        } else {
+            KIO::UDSEntry entry = helper->entry();
+            memset(stbuf, 0, sizeof(struct stat));
+            stbuf->st_mode = S_IFDIR | entry.numberValue(KIO::UDSEntry::UDS_ACCESS);
+            stbuf->st_nlink = 2;
+        }
+        delete helper;
+        helper = NULL;
+    }
+    delete eventLoop;
+    eventLoop = NULL;
 
     return res;
 }
@@ -54,6 +78,7 @@ int kioFuseRead(const char *path, char *buf, size_t size, off_t offset,
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t offset, struct fuse_file_info *fi)
 {
+    int res = 0;
     ListJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
     KUrl url = kioFuseApp->buildUrl(QString(relPath)); // The remote URL of the directory that is being read
@@ -62,30 +87,38 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 
     if (kioFuseApp->childrenNamesCached(url) && !kioFuseApp->UDSCacheExpired(url)){
         //TODO get from cache
-    }
-    else{
+    } else {
         helper = new ListJobHelper(url, eventLoop);  // Get the directory or file descriptors (entries)
         eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
 
         //eventLoop has finished, so entries are now available
-        KIO::UDSEntryList entries = helper->entries();
-        for(KIO::UDSEntryList::ConstIterator it = entries.begin();
-             it!=entries.end(); ++it){
-            KIO::UDSEntry entry = *it;
+        if (helper->error()){
+            res = -ENOENT;
+        } else {
+            KIO::UDSEntryList entries = helper->entries();
+            for(KIO::UDSEntryList::ConstIterator it = entries.begin();
+                 it!=entries.end(); ++it){
+                KIO::UDSEntry entry = *it;
+                struct stat st;
+                /*if (entry.stringValue(KIO::UDSEntry::UDS_NAME) == ".."){
+                    kDebug()<<"continuing"<<endl;
+                    continue;
+                }*/
+                kDebug()<<" entry.numberValue(KIO::UDSEntry::UDS_ACCESS)"<<entry.numberValue(KIO::UDSEntry::UDS_ACCESS)<<endl;
+                st.st_mode = S_IFDIR | entry.numberValue(KIO::UDSEntry::UDS_ACCESS);
 
-            KFileItem* item = new KFileItem(entry, url, true, true);  //FIXME item needs to be deleted in the cache as it expires
-            filler(buf, item->name().toLatin1(), NULL, 0);  // Tell the name of this item to FUSE
+                KFileItem* item = new KFileItem(entry, url, true, true);  //FIXME item needs to be deleted in the cache as it expires
+                filler(buf, item->name().toLatin1(), &st, 0);  // Tell the name of this item to FUSE
     
-            kDebug()<<"KFileItem URL: "<<item->url().path()<<endl;
-            kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
+                kDebug()<<"KFileItem URL: "<<item->url().path()<<endl;
+                kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
+            }
         }
-        
         delete helper;
         helper = NULL;
     }
-
     delete eventLoop;
     eventLoop = NULL;
 
-    return 0;
+    return res;
 }
