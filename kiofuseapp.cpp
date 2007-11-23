@@ -26,10 +26,12 @@
 
 KioFuseApp *kioFuseApp = NULL;
 
-KioFuseApp::KioFuseApp(const KUrl &url)
+KioFuseApp::KioFuseApp(const KUrl &url, const KUrl &mountPoint)
     : KApplication(false),  //No GUI
       m_baseUrl(url),
+      m_mountPoint(mountPoint),
       m_baseUrlMutex(QMutex::Recursive),  // Allow the mutex to be locked several times within the same thread
+      m_mountPointMutex(QMutex::Recursive),  // Allow the mutex to be locked several times within the same thread
       m_cacheRoot(NULL),
       m_numCached(1),  // One stub (the root) is already cached in the constructor, so start counter at 1
       m_cacheMutex(QMutex::Recursive)  // Allow the mutex to be locked several times within the same thread
@@ -56,10 +58,29 @@ const KUrl& KioFuseApp::baseUrl()  // Getter method for the remote base URL
     return m_baseUrl;
 }
 
-KUrl KioFuseApp::buildUrl(const QString& path)  // Create a full URL containing both the remote base and the relative path
+const KUrl& KioFuseApp::mountPoint()  // Getter method for the remote base URL
+{
+    QMutexLocker locker(&m_mountPointMutex);
+    return m_mountPoint;
+}
+
+KUrl KioFuseApp::buildRemoteUrl(const QString& path)  // Create a full URL containing both the remote base and the relative path
 {
     QMutexLocker locker(&m_baseUrlMutex);
     KUrl url = baseUrl();
+    /*if (path == "/"){
+        // Don't need to append only a "/"
+        // Allows files to be baseUrls
+        return url;
+    }*/
+    url.addPath(path);
+    return url;
+}
+
+KUrl KioFuseApp::buildLocalUrl(const QString& path)  // Create a full URL containing both the remote base and the relative path
+{
+    QMutexLocker locker(&m_mountPointMutex);
+    KUrl url = mountPoint();
     url.addPath(path);
     return url;
 }

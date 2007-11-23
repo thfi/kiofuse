@@ -36,10 +36,12 @@ class KioFuseApp : public KApplication
     Q_OBJECT
 
     public:
-        KioFuseApp(const KUrl& url);
+        KioFuseApp(const KUrl &url, const KUrl &mountPoint);
         ~KioFuseApp();
         const KUrl& baseUrl();  // Getter method for the remote base URL
-        KUrl buildUrl(const QString& path);  // Create a full URL containing both the remote base and the relative path
+        const KUrl& mountPoint();  // Getter method for the mountpoint URL
+        KUrl buildRemoteUrl(const QString& path);  // Create a full URL containing both the remote base and the relative path
+        KUrl buildLocalUrl(const QString& path);  // Create a full URL containing both the local mountpoint and the relative path
         bool UDSCached(const KUrl& url);
         bool childrenNamesCached(const KUrl& url);
         bool UDSCacheExpired(const KUrl& url);
@@ -57,7 +59,9 @@ class KioFuseApp : public KApplication
         
     private:
         KUrl m_baseUrl;  // Remote base URL
+        KUrl m_mountPoint; // Local mountpoint
         QMutex m_baseUrlMutex;  // Allows only one thread to access the remote base URL at a time
+        QMutex m_mountPointMutex;  // Allows only one thread to access the local mountpoint URL at a time
 
         Cache* m_cacheRoot;  // Root node of cache
         int m_numCached;  // Number of files cached

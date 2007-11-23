@@ -1,11 +1,13 @@
 TODO
 -----
 
-- If a directory takes a long time to be accessed (simulated by a sleep(20) call in ListJobHelper::receiveEntries), all new requests to kioFuseReadDir are stalled. This problem seems to be caused by using fuse_loop() instead of fuse_main(), and can be reproduced by modifying FUSE's fusexmp.c example to use fuse_loop(). Changing KioFuse to fuse_main() only makes things worse because now if two apps try to access a slow file simultaneously, KioFuse freezes completely. Not to mention that kDebug doesn't work when using fuse_main(). I've sent an email to the FUSE mailing list explaining in detail how to reproduce the problem:
+- Find out why the baseUrl has to be a file (as opposed to a directory)
 
-http://sourceforge.net/mailarchive/forum.php?thread_name=951590.30783.qm%40web54403.mail.yahoo.com&forum_name=fuse-devel
+- Find out if the parent directory is ever stat-ed (ie. the relPath in kioFuseGetAttr is ever ".."). If so, we need to get its info using lstat().
 
-- Find a Qt or KDE-based method of caching KFileItem objects.
+- Find out how to make mounts created by one user accessible to other users. The "allow_others" FUSE option might work.
+
+- Find a Qt or KDE-based method of caching KFileItem objects in a FS tree.
 
 - Implement periodic removal of cashed items that have expired.
 
@@ -24,6 +26,8 @@ http://sourceforge.net/mailarchive/forum.php?thread_name=951590.30783.qm%40web54
 
 
 Long-term TODO:
+
+- Make permission checking in KIO reliable for network slaves. For example, KFileItem::isWritable() should check the /etc/group file on the remote server to ensure that the user we are connecting with is a member of a group that has write permission. This will allow KioFuse to display the effective permission on the client side (currently KioFuse just copies the remote stat, which is not applicable to the local system).
 
 - KIO should be usable from non-main threads
 

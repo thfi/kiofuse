@@ -24,7 +24,6 @@
 #include <QEventLoop>
 
 #include <kurl.h>
-//#include <kio/job.h>
 
 class BaseJobHelper : public QObject
 {

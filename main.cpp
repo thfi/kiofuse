@@ -103,6 +103,7 @@ int main (int argc, char *argv[])
     // Connect the FS operations used by FUSE to their respective KioFuse implementations
     memset(&ops, 0, sizeof(ops));
     ops.getattr = kioFuseGetAttr;
+    ops.readlink = kioFuseReadLink;
     ops.open = kioFuseOpen;
     ops.read = kioFuseRead;
     ops.readdir = kioFuseReadDir;
@@ -115,7 +116,7 @@ int main (int argc, char *argv[])
     }
 
     // Holds persistent info (ie. the FS cache)
-    kioFuseApp = new KioFuseApp(baseUrl);
+    kioFuseApp = new KioFuseApp(baseUrl, mountPoint);
     kDebug()<<"kioFuseApp->thread()"<<kioFuseApp->thread()<<endl;
 
     // Start FUSE's event loop in a separate thread
