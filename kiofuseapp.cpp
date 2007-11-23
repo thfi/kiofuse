@@ -34,13 +34,14 @@ KioFuseApp::KioFuseApp(const KUrl &url, const KUrl &mountPoint)
       m_mountPointMutex(QMutex::Recursive),  // Allow the mutex to be locked several times within the same thread
       m_cacheRoot(NULL),
       m_numCached(1),  // One stub (the root) is already cached in the constructor, so start counter at 1
+      m_numLeafStubsCached(0),  // Leaf stubs are for opened files that have no stat data
       m_cacheMutex(QMutex::Recursive)  // Allow the mutex to be locked several times within the same thread
 {
     QMutexLocker locker(&m_cacheMutex);
     kDebug()<<"KioFuseApp ctor baseUrl: "<<m_baseUrl.prettyUrl()<<endl;
 
     QString root = QString("/");  // Create the cache root, which represents the root directory (/)
-    m_cacheRoot = new Cache(root);  // All files and folders will be children of this node
+    m_cacheRoot = new Cache(root, Cache::innerStubType);  // All files and folders will be children of this node
 }
 
 KioFuseApp::~KioFuseApp()
@@ -111,8 +112,18 @@ void KioFuseApp::addToCache(KFileItem* item)  // Add this item (and any stub dir
     m_numCached++;
 }
 
+void KioFuseApp::storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
+                                 const uint64_t& fileHandleId)  // Add this item (and any stub directories that may be needed) to the cache
+{
+    QMutexLocker locker(&m_cacheMutex);
+    bool addedLeafStub = m_cacheRoot->setExtraData(url, fileHandleId, fileJob);
+    if (addedLeafStub){
+        m_numLeafStubsCached++;
+    }
+}
+
 /*********** ListJob ***********/
-void KioFuseApp::listJobMainThread(KUrl url, ListJobHelper* listJobHelper)
+void KioFuseApp::listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper)
 {
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     kDebug()<<"QThread::currentThread()"<<QThread::currentThread()<<endl;
@@ -147,8 +158,8 @@ void KioFuseApp::slotResult(KJob* job)
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
-    connect(this, SIGNAL(sendJobDone(int)),
-            jobHelper, SLOT(jobDone(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
     emit sendJobDone(job->error());
     
     // Remove job and jobHelper from map
@@ -161,7 +172,7 @@ void KioFuseApp::slotResult(KJob* job)
 }
 
 /*********** StatJob ***********/
-void KioFuseApp::statJobMainThread(KUrl url, StatJobHelper* statJobHelper)
+void KioFuseApp::statJobMainThread(const KUrl& url, StatJobHelper* statJobHelper)
 {
     /*KIO::StatJob* statJob = KIO::stat(url, KIO::StatJob::SourceSide,
                                       2, KIO::HideProgressInfo);*/
@@ -196,8 +207,8 @@ void KioFuseApp::slotStatJobResult(KJob* job)
         emit sendEntry(entry);
     }
     
-    connect(this, SIGNAL(sendJobDone(int)),
-            jobHelper, SLOT(jobDone(int)), Qt::QueuedConnection);
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
     emit sendJobDone(job->error());
     
     // Remove job and jobHelper from map
@@ -207,4 +218,21 @@ void KioFuseApp::slotStatJobResult(KJob* job)
     Q_ASSERT(job);
     job->kill();
     job = NULL;
+}
+
+/*********** OpenJob ***********/
+void KioFuseApp::openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper)
+{
+    KIO::FileJob* fileJob = KIO::open(url, qtMode);  // Will be cached. Kill()-ed upon close()
+    Q_ASSERT(fileJob->thread() == this->thread());
+    
+    // Send the FileJob
+    connect(this, SIGNAL(sendFileJob(KIO::FileJob*)),
+            openJobHelper, SLOT(receiveFileJob(KIO::FileJob*)),
+                                Qt::QueuedConnection);
+    emit sendFileJob(fileJob);
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            openJobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(fileJob->error());
 }

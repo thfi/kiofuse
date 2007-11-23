@@ -104,7 +104,34 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
 
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 {
-    return -ENOENT;
+    QIODevice::OpenMode qtMode = modeFromPosix(fi->flags);
+    int res = 0;
+    OpenJobHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
+    uint64_t fileHandleId = qrand();  // fi->fh is of type uint64_t
+
+    fi->fh = fileHandleId;
+    if (false /*kioFuseApp->UDSCacheExpired(url)*/){
+        // TODO get from cache
+    } else {
+        helper = new OpenJobHelper(url, qtMode, eventLoop);
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+        //eventLoop has finished, so job is now available
+        if (helper->error()){
+            res = -EACCES;  // FIXME covert KIO errors
+        } else {
+            // Store fh in cache
+            kioFuseApp->storeOpenHandle(url, helper->fileJob(), fileHandleId);
+        }
+        delete helper;
+        helper = NULL;
+    }
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
 }
 
 int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
@@ -221,3 +248,23 @@ static void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest)
     buf[len] = '\0';
 }
 
+QIODevice::OpenMode modeFromPosix(int flags)
+{
+    QIODevice::OpenMode qtMode;
+    if (flags & O_RDONLY){
+        qtMode |= QIODevice::ReadOnly;
+    }
+    if (flags & O_WRONLY){
+        qtMode |= QIODevice::WriteOnly;
+    }
+    if (flags & O_RDWR){
+        qtMode |= QIODevice::ReadWrite;
+    }
+    if (flags & O_APPEND){
+        qtMode |= QIODevice::Append;
+    }
+    if (flags & O_TRUNC){
+        qtMode |= QIODevice::Truncate;
+    }
+    return qtMode;
+}

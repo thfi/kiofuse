@@ -31,7 +31,7 @@ BaseJobHelper::BaseJobHelper(QEventLoop* eventLoop, const KUrl& url)
     kDebug()<<"BaseJobHelper ctor"<<endl;
 }
 
-void BaseJobHelper::jobDone(int error)
+void BaseJobHelper::jobDone(const int& error)
 {
     kDebug()<<"jobDone"<<endl;
     m_error = error;

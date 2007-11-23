@@ -41,7 +41,7 @@ protected:
     QEventLoop* m_eventLoop;  // The event loop that will return execution to the FUSE op once the job finished
 
 protected slots:
-    virtual void jobDone(int error);  // Returns execution to the FUSE op that created us
+    virtual void jobDone(const int& error);  // Returns execution to the FUSE op that created us
 };
 
 #endif /* BASE_JOB_HELPER_H */

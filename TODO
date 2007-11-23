@@ -1,6 +1,12 @@
 TODO
 -----
 
+- Convert KIO errors to POSIX errors
+
+- Make sure to remember the owners of the handles.
+
+- Don't delete a handle with a fh.
+
 - Find out why the baseUrl has to be a file (as opposed to a directory)
 
 - Find out if the parent directory is ever stat-ed (ie. the relPath in kioFuseGetAttr is ever ".."). If so, we need to get its info using lstat().
@@ -8,6 +14,8 @@ TODO
 - Find out how to make mounts created by one user accessible to other users. The "allow_others" FUSE option might work.
 
 - Find a Qt or KDE-based method of caching KFileItem objects in a FS tree.
+
+- Can a subdirectory of a FUSE mounpoint be a mountpoint itself?
 
 - Implement periodic removal of cashed items that have expired.
 

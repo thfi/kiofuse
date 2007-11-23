@@ -25,6 +25,7 @@
 #include "kiofuseapp.h"
 
 #include <kio/job.h>
+#include <kio/filejob.h>
 #include <kio/udsentry.h>
 
 class ListJobHelper : public BaseJobHelper  // Helps list a specified directory
@@ -37,7 +38,7 @@ class ListJobHelper : public BaseJobHelper  // Helps list a specified directory
         KIO::UDSEntryList entries();  // Sends file and directory info to the FUSE op that started the job
     
     signals:
-        void reqListJob(KUrl, ListJobHelper*);
+        void reqListJob(const KUrl&, ListJobHelper*);
 
     public slots:
         void receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries);  // Store entries so that the FUSE op can get them
@@ -56,13 +57,34 @@ class StatJobHelper : public BaseJobHelper  // Helps stat a specified file or di
         KIO::UDSEntry entry();  // Sends file and directory info to the FUSE op that started the job
     
     signals:
-        void reqStatJob(KUrl, StatJobHelper*);
+        void reqStatJob(const KUrl&, StatJobHelper*);
 
     public slots:
         void receiveEntry(const KIO::UDSEntry &entry);  // Store entry so that the FUSE op can get it
         
     protected:
         KIO::UDSEntry m_entry;
+};
+
+class OpenJobHelper : public BaseJobHelper  // Helps open a specified file or directory
+{
+    Q_OBJECT
+
+    public:
+        OpenJobHelper(const KUrl& url, const QIODevice::OpenMode& qtMode,
+                      QEventLoop* eventLoop);
+        ~OpenJobHelper();
+        KIO::FileJob* fileJob();  // Sends fileJob handle to the FUSE op that started the job
+    
+    signals:
+        void reqFileJob(const KUrl&, const QIODevice::OpenMode&, OpenJobHelper*);
+
+    public slots:
+        void receiveFileJob(KIO::FileJob* fileJob);  // Store the FileJob so that the FUSE op can get it
+        
+    protected:
+        QIODevice::OpenMode m_qtMode;  // How to open the file (read, write, both, append, etc)
+        KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
 };
 
 #endif /* JOB_HELPERS_H */

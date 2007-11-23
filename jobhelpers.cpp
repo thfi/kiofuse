@@ -25,8 +25,8 @@
 ListJobHelper::ListJobHelper(const KUrl& url, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop, url)  // The generalized job helper
 {
-    connect(this, SIGNAL(reqListJob(KUrl, ListJobHelper*)), kioFuseApp,
-            SLOT(listJobMainThread(KUrl, ListJobHelper*)), Qt::QueuedConnection);
+    connect(this, SIGNAL(reqListJob(const KUrl&, ListJobHelper*)), kioFuseApp,
+            SLOT(listJobMainThread(const KUrl&, ListJobHelper*)), Qt::QueuedConnection);
     emit reqListJob(url, this);
 }
 
@@ -49,8 +49,8 @@ void ListJobHelper::receiveEntries(KIO::Job*, const KIO::UDSEntryList &entries) 
 StatJobHelper::StatJobHelper(const KUrl& url, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop, url)  // The generalized job helper
 {
-    connect(this, SIGNAL(reqStatJob(KUrl, StatJobHelper*)), kioFuseApp,
-            SLOT(statJobMainThread(KUrl, StatJobHelper*)), Qt::QueuedConnection);
+    connect(this, SIGNAL(reqStatJob(const KUrl&, StatJobHelper*)), kioFuseApp,
+            SLOT(statJobMainThread(const KUrl&, StatJobHelper*)), Qt::QueuedConnection);
     emit reqStatJob(url, this);
 }
 
@@ -67,4 +67,34 @@ KIO::UDSEntry StatJobHelper::entry()
 void StatJobHelper::receiveEntry(const KIO::UDSEntry &entry)  // Store entry so that the FUSE op can get it
 {
     m_entry = entry;
+}
+
+/*********** OpenJobHelper ***********/
+OpenJobHelper::OpenJobHelper(const KUrl& url, const QIODevice::OpenMode& qtMode,
+                             QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url),  // The generalized job helper
+      m_qtMode(qtMode),  // How to open the file (read, write, both, append, etc)
+      m_fileJob(NULL)
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<QIODevice::OpenMode>("QIODevice::OpenMode");
+    connect(this, SIGNAL(reqFileJob(const KUrl&, const QIODevice::OpenMode&, OpenJobHelper*)),
+            kioFuseApp, SLOT(openJobMainThread(const KUrl&, const QIODevice::OpenMode&, OpenJobHelper*)),
+            Qt::QueuedConnection);
+    emit reqFileJob(url, qtMode, this);
+}
+
+OpenJobHelper::~OpenJobHelper()
+{
+    kDebug()<<"OpenJobHelper dtor"<<endl;
+}
+
+KIO::FileJob* OpenJobHelper::fileJob()
+{
+    return m_fileJob;
+}
+
+void OpenJobHelper::receiveFileJob(KIO::FileJob* fileJob)  // Store entry so that the FUSE op can get it
+{
+    m_fileJob = fileJob;
 }

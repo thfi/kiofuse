@@ -72,5 +72,12 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 
 static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item);
 static void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest);
+QIODevice::OpenMode modeFromPosix(int flags);
+
+/*QMap<int, QIODevice::OpenMode> fromPosixToQt;
+fromPosixToQt[O_RDONLY] = QIODevice::ReadOnly;
+fromPosixToQt[O_WRONLY] = QIODevice::WriteOnly;
+fromPosixToQt[O_RDWR] = QIODevice::ReadWrite;
+*/
 
 #endif /* KIOFUSE_OPS_H */

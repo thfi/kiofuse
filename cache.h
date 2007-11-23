@@ -22,6 +22,7 @@
 #include <QList>
 
 #include <kurl.h>
+#include <kio/filejob.h>
 #include <kfileitem.h>
 
 class Cache : public QObject
@@ -29,11 +30,14 @@ class Cache : public QObject
     Q_OBJECT
 
     public:
+        enum NodeType {regularType, innerStubType, leafStubType};
         Cache(KFileItem* item);
-        Cache(QString rootOfRelPath);
+        Cache(const QString& rootOfRelPath, NodeType nodeType);
         ~Cache();
         KFileItem* item() const {return m_item;}
         void insert(KFileItem* newItem);
+        bool setExtraData(const KUrl& url, const uint64_t& key,
+                          KIO::FileJob* fileJob);
         Cache find(const KUrl &url);
         void removeExpired();
 
@@ -45,7 +49,8 @@ class Cache : public QObject
 
         KFileItem* m_item;
         QList<Cache*> children;
-        bool m_stub;
+        NodeType m_nodeType;
+        QMap<uint64_t, KIO::FileJob*> fhIdtoFileJob;
 };
 
 #endif /* CACHE_H */

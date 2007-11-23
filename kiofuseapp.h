@@ -30,6 +30,7 @@
 
 class ListJobHelper;
 class StatJobHelper;
+class OpenJobHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -46,16 +47,20 @@ class KioFuseApp : public KApplication
         bool childrenNamesCached(const KUrl& url);
         bool UDSCacheExpired(const KUrl& url);
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
+        void storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
+                             const uint64_t& fileHandleId);
     
     public slots:
-        void listJobMainThread(KUrl url, ListJobHelper* listJobHelper);
+        void listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper);
         void slotResult(KJob* job);
-        void statJobMainThread(KUrl url, StatJobHelper* statJobHelper);
+        void statJobMainThread(const KUrl& url, StatJobHelper* statJobHelper);
         void slotStatJobResult(KJob* job);
+        void openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper);
         
     signals:
-        void sendJobDone(int);
+        void sendJobDone(const int&);
         void sendEntry(const KIO::UDSEntry &);
+        void sendFileJob(KIO::FileJob*);
         
     private:
         KUrl m_baseUrl;  // Remote base URL
@@ -65,6 +70,7 @@ class KioFuseApp : public KApplication
 
         Cache* m_cacheRoot;  // Root node of cache
         int m_numCached;  // Number of files cached
+        int m_numLeafStubsCached;  // Leaf stubs are for opened files that have no stat data
         QMutex m_cacheMutex;  // Allows only one thread to access the cache at a time
         
         QMap<KJob *, BaseJobHelper *> m_jobToJobHelper; // Correlate listJob with the ListJobHelper that needs it
