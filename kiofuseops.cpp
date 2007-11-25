@@ -49,8 +49,9 @@ int kioFuseGetAttr(const char *relPath, struct stat *stbuf)
             KIO::UDSEntry entry = helper->entry();
             KFileItem* item = new KFileItem(entry, url,
                                             true /*delayedMimeTypes*/,
-                                            true /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
+                                            false /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
             fillStatBufFromFileItem(stbuf, item);
+            kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
         }
         delete helper;
         helper = NULL;
@@ -82,7 +83,7 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
             KIO::UDSEntry entry = helper->entry();
             KFileItem* item = new KFileItem(entry, url,
                                             true /*delayedMimeTypes*/,
-                                            true /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
+                                            false /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
             // Make sure the item is a link and that it is under the baseURL
             if(!item->isLink() ||
                !item->linkDest().startsWith(kioFuseApp->baseUrl().path())){
@@ -91,6 +92,7 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
                 QString destRelPath = item->linkDest().section(kioFuseApp->baseUrl().path(), 1,-1);
                 QString fullLocalPath = kioFuseApp->buildLocalUrl(destRelPath).path();
                 fillLinkBufFromFileItem(buf, size, fullLocalPath);
+                kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
             }
         }
         delete helper;
@@ -137,9 +139,37 @@ int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi)
 {
-    size = 0;
+    ReadJobHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    int res = 0;
+    kDebug()<<"kioFuseRead"<<endl;
+    KIO::FileJob* fileJob = kioFuseApp->findJob(url, fileHandleId);
+    if (!fileJob){
+        res = -ENOENT;  // Didn't find an opened job
+    } else {
+        kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
+        helper = new ReadJobHelper(fileJob, url, size, offset, eventLoop);
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+        //eventLoop has finished, so job is now available
+        if (helper->error()){
+            res = -EACCES;  // FIXME covert KIO errors
+        } else {
+            // Copy data to buffer
+            QByteArray data = helper->data();
+            res = data.size();
+            Q_ASSERT(res <= size);
+            memcpy(buf, data.data(), res);
+        }
+        delete helper;
+        helper = NULL;
+    }
+    delete eventLoop;
+    eventLoop = NULL;
 
-    return 0;
+    return res;
 }
 
 // Get the names of files and directories under a specified directory

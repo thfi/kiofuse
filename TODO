@@ -1,6 +1,8 @@
 TODO
 -----
 
+- Ask Carewolf why FileJob::data() gets called twice (second time carrying an empty array) for each ::read() request and why ::position gets called twice for each ::seek(). About every three ::read() requests, the ::data() signal is not called at all.
+
 - Convert KIO errors to POSIX errors
 
 - Make sure to remember the owners of the handles.

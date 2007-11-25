@@ -31,6 +31,7 @@
 class ListJobHelper;
 class StatJobHelper;
 class OpenJobHelper;
+class ReadJobHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -49,6 +50,7 @@ class KioFuseApp : public KApplication
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
         void storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
                              const uint64_t& fileHandleId);
+        KIO::FileJob* findJob(const KUrl& url, const uint64_t& fileHandleId);  // Find the job using its ID
     
     public slots:
         void listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper);
@@ -56,11 +58,16 @@ class KioFuseApp : public KApplication
         void statJobMainThread(const KUrl& url, StatJobHelper* statJobHelper);
         void slotStatJobResult(KJob* job);
         void openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper);
+        void seekMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper);
+        void slotPosition(KIO::Job* job, KIO::filesize_t pos);
+        void readMainThread(KIO::FileJob* fileJob, const size_t& size, ReadJobHelper* readJobHelper);
+        //void slotData(KIO::Job* job, const QByteArray& data);
         
     signals:
         void sendJobDone(const int&);
         void sendEntry(const KIO::UDSEntry &);
         void sendFileJob(KIO::FileJob*);
+        void sendPosition(const off_t&, const int&);
         
     private:
         KUrl m_baseUrl;  // Remote base URL

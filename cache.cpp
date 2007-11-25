@@ -207,9 +207,49 @@ int Cache::setItem(KFileItem* newItem)
     m_nodeType = regularType;
 }
 
-Cache Cache::find(const KUrl &url)
+Cache* Cache::find(const KUrl &url)
 {
+    //sleep(3);
+    QString completePath = url.path(KUrl::RemoveTrailingSlash);
+    kDebug()<<"completePath: "<<completePath<<endl;
+    QString myPath = m_item->url().path(KUrl::RemoveTrailingSlash);
+    kDebug()<<"myPath: "<<myPath<<endl;
+    int relPathLength = completePath.length() - myPath.length();
 
+    if (relPathLength == 0){
+        // We found the item with the needed URL
+        kDebug()<<"Found item"<<myPath<<endl;
+        return this;
+    }
+
+    QString relPath = completePath.right(relPathLength);
+    relPath = stripBegSlashes(relPath);
+    kDebug()<<"relPath"<<relPath<<endl;
+    int endOfRootOfRelPath = relPath.indexOf("/");
+
+    if (endOfRootOfRelPath < 0){
+        // Url is a child and it has no children of its own
+        int i = findIdxOfChildFromFileName(url.fileName(KUrl::IgnoreTrailingSlash));
+        if (i != -1){
+            return children.at(i)->find(url);   // Found the right child
+        } else {
+            kDebug()<<"Child not found"<<myPath<<endl;
+            return NULL;  // Child not found
+        }
+    }
+
+    QString rootOfRelPath = relPath.left(endOfRootOfRelPath);
+
+    kDebug()<<"rootOfRelPath"<<rootOfRelPath<<endl;
+
+    int i = findIdxOfChildFromFileName(rootOfRelPath);
+    if (i != -1){
+        kDebug()<<"Finding"<<endl;
+        return children.at(i)->find(url);
+    } else {
+        kDebug()<<"Branch doesn't exist"<<myPath<<endl;
+        return NULL;  // Branch doesn't exist
+    }
 }
 
 void Cache::removeExpired()

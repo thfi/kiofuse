@@ -24,6 +24,8 @@
 #include "basejobhelper.h"
 #include "kiofuseapp.h"
 
+#include <QByteArray>
+
 #include <kio/job.h>
 #include <kio/filejob.h>
 #include <kio/udsentry.h>
@@ -74,7 +76,7 @@ class OpenJobHelper : public BaseJobHelper  // Helps open a specified file or di
         OpenJobHelper(const KUrl& url, const QIODevice::OpenMode& qtMode,
                       QEventLoop* eventLoop);
         ~OpenJobHelper();
-        KIO::FileJob* fileJob();  // Sends fileJob handle to the FUSE op that started the job
+        KIO::FileJob* fileJob() {return m_fileJob;}  // Sends fileJob handle to the FUSE op that started the job
     
     signals:
         void reqFileJob(const KUrl&, const QIODevice::OpenMode&, OpenJobHelper*);
@@ -85,6 +87,33 @@ class OpenJobHelper : public BaseJobHelper  // Helps open a specified file or di
     protected:
         QIODevice::OpenMode m_qtMode;  // How to open the file (read, write, both, append, etc)
         KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
+};
+
+class ReadJobHelper : public BaseJobHelper  // Helps open a specified file or directory
+{
+    Q_OBJECT
+
+    public:
+        ReadJobHelper(KIO::FileJob* fileJob, const KUrl& url, const size_t& size,
+                      const off_t& offset, QEventLoop* eventLoop);
+        ~ReadJobHelper();
+        QByteArray data() {return m_data;}  // Sends data to the FUSE op
+    
+    signals:
+        void reqSeek(KIO::FileJob*, const off_t&, ReadJobHelper*);
+        void reqRead(KIO::FileJob*, const size_t&, ReadJobHelper*);
+        void sendJobDone(const int&);
+
+    public slots:
+        void receivePosition(const off_t& pos, const int& error);
+        void receiveData(KIO::Job* job, const QByteArray& data);
+        
+    protected:
+        KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
+        QByteArray m_data;
+        size_t m_size;
+        off_t m_offset;
+        bool alreadyReceivedData;
 };
 
 #endif /* JOB_HELPERS_H */

@@ -38,7 +38,8 @@ class Cache : public QObject
         void insert(KFileItem* newItem);
         bool setExtraData(const KUrl& url, const uint64_t& key,
                           KIO::FileJob* fileJob);
-        Cache find(const KUrl &url);
+        Cache* find(const KUrl &url);
+        QMap<uint64_t, KIO::FileJob*> jobsMap() const {return fhIdtoFileJob;}
         void removeExpired();
 
     private:

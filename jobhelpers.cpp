@@ -89,12 +89,74 @@ OpenJobHelper::~OpenJobHelper()
     kDebug()<<"OpenJobHelper dtor"<<endl;
 }
 
-KIO::FileJob* OpenJobHelper::fileJob()
-{
-    return m_fileJob;
-}
-
 void OpenJobHelper::receiveFileJob(KIO::FileJob* fileJob)  // Store entry so that the FUSE op can get it
 {
     m_fileJob = fileJob;
+}
+
+/*********** ReadJobHelper ***********/
+ReadJobHelper::ReadJobHelper(KIO::FileJob* fileJob, const KUrl& url, const size_t& size,
+                             const off_t& offset, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url),  // The generalized job helper
+      m_fileJob(fileJob),
+      m_data(),
+      m_size(size),
+      m_offset(offset),
+      alreadyReceivedData(false)  // Needed because FileJob will send an extra
+                                  // data signal containing an empty string
+                                  // that we don't care about
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<off_t>("off_t");
+    connect(this, SIGNAL(reqSeek(KIO::FileJob*,
+            const off_t&, ReadJobHelper*)),
+            kioFuseApp, SLOT(seekMainThread(KIO::FileJob*,
+            const off_t&, ReadJobHelper*)),
+            Qt::QueuedConnection);
+    emit reqSeek(m_fileJob, offset, this);
+}
+
+ReadJobHelper::~ReadJobHelper()
+{
+    kDebug()<<"ReadJobHelper dtor"<<endl;
+}
+
+void ReadJobHelper::receivePosition(const off_t& pos, const int& error)
+{
+    kDebug()<<"m_offset"<<m_offset<<"pos"<<pos;
+    kDebug()<<"m_size"<<m_size<<"error"<<error;
+    //kDebug()<<"m_fileJob"<<m_fileJob<<"m_fileJob->thread()"<<m_fileJob->thread()<<endl;
+    kDebug()<<"m_fileJob"<<m_fileJob<<endl;
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+    if (pos == m_offset){
+        // Needed by Qt::QueuedConnection
+        qRegisterMetaType<size_t>("size_t");
+        connect(this, SIGNAL(reqRead(KIO::FileJob*,
+                const size_t&, ReadJobHelper*)),
+                kioFuseApp, SLOT(readMainThread(KIO::FileJob*,
+                const size_t&, ReadJobHelper*)),
+                Qt::QueuedConnection);
+        emit reqRead(m_fileJob, m_size, this);
+    } else {
+        m_size = 0;
+        connect(this, SIGNAL(sendJobDone(const int&)),
+                this, SLOT(jobDone(const int&)));
+        emit sendJobDone(error);
+    }
+}
+
+void ReadJobHelper::receiveData(KIO::Job* job, const QByteArray& data)
+{
+    if (!alreadyReceivedData){
+        kDebug()<<"data"<<data<<endl;
+        m_data = data;
+        connect(this, SIGNAL(sendJobDone(const int&)),
+                this, SLOT(jobDone(const int&)));
+        // Needed because FileJob will send an extra data signal containing
+        // an empty string that we don't care about
+        alreadyReceivedData = true;
+        emit sendJobDone(job->error());
+    } else {
+        kDebug()<<"ignoring data"<<data<<endl;
+    }
 }
