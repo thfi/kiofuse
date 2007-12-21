@@ -55,10 +55,10 @@ void TestFileJob::slotClose(KIO::Job*)
     kDebug()<<"Closed"<<endl;
 }
 
-void TestFileJob::slotPosition(KIO::Job* job, KIO::filesize_t offset)
+void TestFileJob::slotPosition(KIO::Job* /*job*/, KIO::filesize_t offset)
 {
     kDebug()<<"Position is now "<<offset<<endl;
-    KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
+    //KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
 }
 
 void TestFileJob::slotRedirection(KIO::Job*, const KUrl& url)
@@ -66,9 +66,9 @@ void TestFileJob::slotRedirection(KIO::Job*, const KUrl& url)
     kDebug()<<"New Url="<<url.path()<<endl;
 }
 
-void TestFileJob::slotMimetype(KIO::Job* job, const QString &mimetype)
+void TestFileJob::slotMimetype(KIO::Job* /*job*/, const QString &mimetype)
 {
-    KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
+    //KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
     kDebug()<<"Mimetype is "<<mimetype<<endl;
 }
 
