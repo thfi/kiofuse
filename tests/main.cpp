@@ -22,20 +22,63 @@
 #include <KApplication>
 #include <KCmdLineArgs>
 #include <KAboutData>
-#include <kio/filejob.h>
 #include <kdebug.h>
 
-using namespace std;
-
-void TestFileJob::slotData(KIO::Job* job, const QByteArray& data)
+MyThread::MyThread (TestFileJob *testFileJob) 
+    : QThread(),
+      m_testFileJob(testFileJob)
 {
-    KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
+}
+
+MyThread::~MyThread()
+{
+}
+
+void MyThread::run()
+{
+    while (!m_testFileJob->opened()){
+        kDebug()<<"Waiting for FileJob to be opened"<<endl;
+        sleep(1);
+    }
+    
+    connect(this, SIGNAL(sendReadRequest()),
+            m_testFileJob, SLOT(read()),
+            Qt::QueuedConnection);
+    
+    connect(this, SIGNAL(sendSeekRequest()),
+            m_testFileJob, SLOT(seek()),
+    Qt::QueuedConnection);
+    
+    sleep(5);
+    for (int i=0; i<4; i++){
+        //sleep(5);
+        kDebug()<<endl<<endl<<"----------------------------------------"<<endl;
+        kDebug()<<"Reading"<<endl;
+        emit(sendReadRequest());
+    
+        /*sleep(2);*/
+        kDebug()<<"Seeking"<<endl;
+        emit(sendSeekRequest());
+    }
+}
+
+TestFileJob::TestFileJob()
+    : m_job(NULL),
+      m_opened(false)
+{
+}
+
+TestFileJob::~TestFileJob()
+{
+}
+
+void TestFileJob::slotData(KIO::Job*, const QByteArray& data)
+{
     if (data.isEmpty()){
 	kDebug()<<"data="<<data<<"<---EMPTY!!!!!"<<endl;
     } else {
 	kDebug()<<"data="<<data<<endl;
     }
-    fileJob->seek(5);
 }
 
 void TestFileJob::slotResult(KJob* job)
@@ -45,9 +88,10 @@ void TestFileJob::slotResult(KJob* job)
 
 void TestFileJob::slotOpen(KIO::Job* job)
 {
+    kDebug()<<"Here "<<endl;
     KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
     kDebug()<<"Size = "<<fileJob->size()<<endl;
-    fileJob->read(1024);
+    m_opened = true;
 }
 
 void TestFileJob::slotClose(KIO::Job*)
@@ -55,10 +99,9 @@ void TestFileJob::slotClose(KIO::Job*)
     kDebug()<<"Closed"<<endl;
 }
 
-void TestFileJob::slotPosition(KIO::Job* /*job*/, KIO::filesize_t offset)
+void TestFileJob::slotPosition(KIO::Job*, KIO::filesize_t offset)
 {
     kDebug()<<"Position is now "<<offset<<endl;
-    //KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
 }
 
 void TestFileJob::slotRedirection(KIO::Job*, const KUrl& url)
@@ -66,31 +109,40 @@ void TestFileJob::slotRedirection(KIO::Job*, const KUrl& url)
     kDebug()<<"New Url="<<url.path()<<endl;
 }
 
-void TestFileJob::slotMimetype(KIO::Job* /*job*/, const QString &mimetype)
+void TestFileJob::slotMimetype(KIO::Job*, const QString &mimetype)
 {
-    //KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
     kDebug()<<"Mimetype is "<<mimetype<<endl;
 }
 
-void TestFileJob::run()
+void TestFileJob::open()
 {
     KUrl url = KUrl(QDir::currentPath() + "/data.txt");
 
-    KIO::FileJob *job = KIO::open(url, QIODevice::ReadOnly);
-    connect(job, SIGNAL(open(KIO::Job*)),
-                 SLOT(slotOpen(KIO::Job*)));
-    connect(job, SIGNAL(data(KIO::Job*, const QByteArray&)),
+    m_job = KIO::open(url, QIODevice::ReadOnly);
+    connect(m_job, SIGNAL(open(KIO::Job*)),
+                SLOT(slotOpen(KIO::Job*)));
+    connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)),
             SLOT(slotData(KIO::Job*, const QByteArray&)));
-    connect(job, SIGNAL(result(KJob*)),
+    connect(m_job, SIGNAL(result(KJob*)),
             SLOT(slotResult(KJob*)));
-    connect(job, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+    connect(m_job, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
             SLOT(slotPosition(KIO::Job*, KIO::filesize_t)));
-    connect(job, SIGNAL(redirection(KIO::Job*, const KUrl&)),
+    connect(m_job, SIGNAL(redirection(KIO::Job*, const KUrl&)),
             SLOT(slotRedirection(KIO::Job*, const KUrl&)));
-    connect(job, SIGNAL(close(KIO::Job*)),
+    connect(m_job, SIGNAL(close(KIO::Job*)),
                  SLOT(slotClose(KIO::Job*)));
-    connect(job, SIGNAL(mimetype(KIO::Job*, const QString&)),
+    connect(m_job, SIGNAL(mimetype(KIO::Job*, const QString&)),
                  SLOT(slotMimetype(KIO::Job*, const QString&)));
+}
+
+void TestFileJob::read()
+{
+    m_job->read(1024);
+}
+
+void TestFileJob::seek()
+{
+    m_job->seek(5);
 }
 
 static const KAboutData aboutData("TestFileJob",
@@ -109,8 +161,10 @@ int main (int argc, char *argv[])
     KCmdLineArgs::init( argc, argv, &aboutData );    
     KApplication app;
 
-    TestFileJob aTestFileJob;
-    aTestFileJob.run();
+    TestFileJob* aTestFileJob = new TestFileJob();
+    aTestFileJob->open();
+    MyThread* aThread = new MyThread(aTestFileJob);
+    aThread->start();
 
     return app.exec();
 }

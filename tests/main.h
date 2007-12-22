@@ -16,16 +16,43 @@
  ****************************************************************************/
 
 #include <QObject>
-#include <KIO/Job>
 #include <QIODevice>
+#include <QThread>
+
+#include <KIO/Job>
+#include <kio/filejob.h>
+
+class TestFileJob;
+
+class MyThread : public QThread
+{
+    Q_OBJECT
+            
+    public:
+        MyThread(TestFileJob *testFileJob);
+        ~MyThread();
+        
+    signals:
+        void sendReadRequest();
+        void sendSeekRequest();
+    
+    protected:
+        void run();
+        
+    private:
+        TestFileJob *m_testFileJob;
+};
 
 class TestFileJob : public QObject
 {
     Q_OBJECT
 
     public:
-        TestFileJob() {}
-        void run();
+        TestFileJob();
+        ~TestFileJob();
+        void open();
+        KIO::FileJob* job() {return m_job;}
+        bool opened() {return m_opened;}
     
     public slots:
         void slotData(KIO::Job*, const QByteArray& data);
@@ -35,4 +62,10 @@ class TestFileJob : public QObject
         void slotRedirection(KIO::Job*, const KUrl& url);
         void slotClose(KIO::Job*);
         void slotMimetype(KIO::Job* job, const QString &mimetype);
+        void read();
+        void seek();
+        
+    private:
+        KIO::FileJob *m_job;
+        bool m_opened;
 };
