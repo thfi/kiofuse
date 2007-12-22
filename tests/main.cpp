@@ -36,8 +36,13 @@ MyThread::~MyThread()
 
 void MyThread::run()
 {
-    while (!m_testFileJob->opened()){
-        kDebug()<<"Waiting for FileJob to be opened"<<endl;
+    while (!m_testFileJob->opened1()){
+        kDebug()<<"Waiting for FileJob 1 to be opened"<<endl;
+        sleep(1);
+    }
+    
+    while (!m_testFileJob->opened2()){
+        kDebug()<<"Waiting for FileJob 2 to be opened"<<endl;
         sleep(1);
     }
     
@@ -47,7 +52,7 @@ void MyThread::run()
     
     connect(this, SIGNAL(sendSeekRequest()),
             m_testFileJob, SLOT(seek()),
-    Qt::QueuedConnection);
+            Qt::QueuedConnection);
     
     sleep(5);
     for (int i=0; i<4; i++){
@@ -56,15 +61,17 @@ void MyThread::run()
         kDebug()<<"Reading"<<endl;
         emit(sendReadRequest());
     
-        /*sleep(2);*/
+        sleep(2);
         kDebug()<<"Seeking"<<endl;
         emit(sendSeekRequest());
     }
 }
 
 TestFileJob::TestFileJob()
-    : m_job(NULL),
-      m_opened(false)
+    : m_job1(NULL),
+      m_job2(NULL),
+      m_opened1(false),
+      m_opened2(false)
 {
 }
 
@@ -88,10 +95,15 @@ void TestFileJob::slotResult(KJob* job)
 
 void TestFileJob::slotOpen(KIO::Job* job)
 {
-    kDebug()<<"Here "<<endl;
+    kDebug()<<job<<endl;
     KIO::FileJob *fileJob = qobject_cast<KIO::FileJob *>(job);
     kDebug()<<"Size = "<<fileJob->size()<<endl;
-    m_opened = true;
+    
+    if (fileJob == m_job1){
+        m_opened1 = true;
+    } else {
+        m_opened2 = true;
+    }
 }
 
 void TestFileJob::slotClose(KIO::Job*)
@@ -118,31 +130,49 @@ void TestFileJob::open()
 {
     KUrl url = KUrl(QDir::currentPath() + "/data.txt");
 
-    m_job = KIO::open(url, QIODevice::ReadOnly);
-    connect(m_job, SIGNAL(open(KIO::Job*)),
+    m_job1 = KIO::open(url, QIODevice::ReadOnly);
+    connect(m_job1, SIGNAL(open(KIO::Job*)),
                 SLOT(slotOpen(KIO::Job*)));
-    connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)),
+    connect(m_job1, SIGNAL(data(KIO::Job*, const QByteArray&)),
             SLOT(slotData(KIO::Job*, const QByteArray&)));
-    connect(m_job, SIGNAL(result(KJob*)),
+    connect(m_job1, SIGNAL(result(KJob*)),
             SLOT(slotResult(KJob*)));
-    connect(m_job, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+    connect(m_job1, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
             SLOT(slotPosition(KIO::Job*, KIO::filesize_t)));
-    connect(m_job, SIGNAL(redirection(KIO::Job*, const KUrl&)),
+    connect(m_job1, SIGNAL(redirection(KIO::Job*, const KUrl&)),
             SLOT(slotRedirection(KIO::Job*, const KUrl&)));
-    connect(m_job, SIGNAL(close(KIO::Job*)),
+    connect(m_job1, SIGNAL(close(KIO::Job*)),
                  SLOT(slotClose(KIO::Job*)));
-    connect(m_job, SIGNAL(mimetype(KIO::Job*, const QString&)),
+    connect(m_job1, SIGNAL(mimetype(KIO::Job*, const QString&)),
                  SLOT(slotMimetype(KIO::Job*, const QString&)));
+    
+    m_job2 = KIO::open(url, QIODevice::ReadOnly);
+    connect(m_job2, SIGNAL(open(KIO::Job*)),
+            SLOT(slotOpen(KIO::Job*)));
+    connect(m_job2, SIGNAL(data(KIO::Job*, const QByteArray&)),
+            SLOT(slotData(KIO::Job*, const QByteArray&)));
+    connect(m_job2, SIGNAL(result(KJob*)),
+            SLOT(slotResult(KJob*)));
+    connect(m_job2, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+            SLOT(slotPosition(KIO::Job*, KIO::filesize_t)));
+    connect(m_job2, SIGNAL(redirection(KIO::Job*, const KUrl&)),
+            SLOT(slotRedirection(KIO::Job*, const KUrl&)));
+    connect(m_job2, SIGNAL(close(KIO::Job*)),
+            SLOT(slotClose(KIO::Job*)));
+    connect(m_job2, SIGNAL(mimetype(KIO::Job*, const QString&)),
+            SLOT(slotMimetype(KIO::Job*, const QString&)));
 }
 
 void TestFileJob::read()
 {
-    m_job->read(1024);
+    m_job1->read(1024);
+    m_job2->read(1024);
 }
 
 void TestFileJob::seek()
 {
-    m_job->seek(5);
+    m_job1->seek(5);
+    m_job2->seek(5);
 }
 
 static const KAboutData aboutData("TestFileJob",

@@ -51,8 +51,9 @@ class TestFileJob : public QObject
         TestFileJob();
         ~TestFileJob();
         void open();
-        KIO::FileJob* job() {return m_job;}
-        bool opened() {return m_opened;}
+        //KIO::FileJob* job() {return m_job;}
+        bool opened1() {return m_opened1;}
+        bool opened2() {return m_opened2;}
     
     public slots:
         void slotData(KIO::Job*, const QByteArray& data);
@@ -66,6 +67,8 @@ class TestFileJob : public QObject
         void seek();
         
     private:
-        KIO::FileJob *m_job;
-        bool m_opened;
+        KIO::FileJob *m_job1;
+        KIO::FileJob *m_job2;
+        bool m_opened1;
+        bool m_opened2;
 };
