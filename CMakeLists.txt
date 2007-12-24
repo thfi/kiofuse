@@ -14,4 +14,4 @@ set(kiofuse_SRCS
 
 kde4_add_executable(kiofuse ${kiofuse_SRCS})
 target_link_libraries(kiofuse ${KDE4_KIO_LIBS})
-set (CMAKE_CXX_FLAGS " -D_FILE_OFFSET_BITS=64 -lfuse")
+set (CMAKE_CXX_FLAGS "-g -D_FILE_OFFSET_BITS=64 -lfuse")

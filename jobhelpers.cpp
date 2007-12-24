@@ -101,10 +101,7 @@ ReadJobHelper::ReadJobHelper(KIO::FileJob* fileJob, const KUrl& url, const size_
       m_fileJob(fileJob),
       m_data(),
       m_size(size),
-      m_offset(offset),
-      alreadyReceivedData(false)  // Needed because FileJob will send an extra
-                                  // data signal containing an empty string
-                                  // that we don't care about
+      m_offset(offset)
 {
     // Needed by Qt::QueuedConnection
     qRegisterMetaType<off_t>("off_t");
@@ -145,18 +142,11 @@ void ReadJobHelper::receivePosition(const off_t& pos, const int& error)
     }
 }
 
-void ReadJobHelper::receiveData(KIO::Job* job, const QByteArray& data)
+void ReadJobHelper::receiveData(const QByteArray& data, const int& error)
 {
-    if (!alreadyReceivedData){
-        kDebug()<<"data"<<data<<endl;
-        m_data = data;
-        connect(this, SIGNAL(sendJobDone(const int&)),
-                this, SLOT(jobDone(const int&)));
-        // Needed because FileJob will send an extra data signal containing
-        // an empty string that we don't care about
-        alreadyReceivedData = true;
-        emit sendJobDone(job->error());
-    } else {
-        kDebug()<<"ignoring data"<<data<<endl;
-    }
+    kDebug()<<"data"<<data<<endl;
+    m_data = data;
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            this, SLOT(jobDone(const int&)));
+    emit sendJobDone(error);
 }

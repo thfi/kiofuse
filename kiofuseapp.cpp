@@ -235,7 +235,19 @@ void KioFuseApp::slotStatJobResult(KJob* job)
 void KioFuseApp::openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper)
 {
     KIO::FileJob* fileJob = KIO::open(url, qtMode);  // Will be cached. Kill()-ed upon close()
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
+                            qobject_cast<BaseJobHelper*>(openJobHelper));
+    
     Q_ASSERT(fileJob->thread() == this->thread());
+    connect(fileJob, SIGNAL(open(KIO::Job*)),
+            this, SLOT(fileJobOpened(KIO::Job*)));
+}
+
+void KioFuseApp::fileJobOpened(KIO::Job* job)
+{
+    KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
+    OpenJobHelper* openJobHelper = qobject_cast<OpenJobHelper*>(jobHelper);
     
     // Send the FileJob
     connect(this, SIGNAL(sendFileJob(KIO::FileJob*)),
@@ -246,6 +258,10 @@ void KioFuseApp::openJobMainThread(const KUrl& url, const QIODevice::OpenMode& q
     connect(this, SIGNAL(sendJobDone(const int&)),
             openJobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
     emit sendJobDone(fileJob->error());
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
+    Q_ASSERT(numJobsRemoved == 1);
 }
 
 /*********** Seek ***********/
@@ -281,7 +297,7 @@ void KioFuseApp::slotPosition(KIO::Job* job, KIO::filesize_t pos)
     emit sendPosition(static_cast<off_t>(pos), job->error());
 
     // Remove job and jobHelper from map
-    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
     Q_ASSERT(numJobsRemoved == 1);
 }
 
@@ -289,16 +305,39 @@ void KioFuseApp::readMainThread(KIO::FileJob* fileJob, const size_t& size, ReadJ
 {
     kDebug()<<"size"<<size<<endl;
     kDebug()<<"readJobHelper"<<readJobHelper<<endl;
+    
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
+                            qobject_cast<BaseJobHelper*>(readJobHelper));
+    
     Q_ASSERT(fileJob->thread() == this->thread());
     connect(fileJob, SIGNAL(data(KIO::Job*, const QByteArray&)),
-            readJobHelper, SLOT(receiveData(KIO::Job*, const QByteArray&)),
-            Qt::QueuedConnection);
-    /*connect(fileJob, SIGNAL(data(KIO::Job*, const QByteArray&)),
-            this, SLOT(slotData(KIO::Job*, const QByteArray&)));*/
+            this, SLOT(slotData(KIO::Job*, const QByteArray&)));
+    
     fileJob->read(static_cast<KIO::filesize_t>(size));
 }
 
-/*void KioFuseApp::slotData(KIO::Job* job, const QByteArray& data)
+void KioFuseApp::slotData(KIO::Job* job, const QByteArray& data)
 {
     kDebug()<<"data"<<data<<endl;
-}*/
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
+    ReadJobHelper* readJobHelper = qobject_cast<ReadJobHelper*>(jobHelper);
+    
+    if (readJobHelper == NULL){
+        if(data.size() != 0){
+            //FIXME
+            kDebug()<<"IGNORING REAL DATA. BAD!!!!!!!"<<data<<endl;
+        }
+        // Safe to ignore because FileJob sends extra empty data() signals
+        return;
+    }
+    
+    connect(this, SIGNAL(sendData(const QByteArray&, const int&)),
+            readJobHelper, SLOT(receiveData(const QByteArray&, const int&)),
+            Qt::QueuedConnection);
+    emit sendData(data, job->error());
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
+    Q_ASSERT(numJobsRemoved == 1);
+}

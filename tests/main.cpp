@@ -165,8 +165,8 @@ void TestFileJob::open()
 
 void TestFileJob::read()
 {
-    m_job1->read(1024);
-    m_job2->read(1024);
+    m_job1->read(100024);
+    m_job2->read(100024);
 }
 
 void TestFileJob::seek()

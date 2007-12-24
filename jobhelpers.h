@@ -106,14 +106,13 @@ class ReadJobHelper : public BaseJobHelper  // Helps open a specified file or di
 
     public slots:
         void receivePosition(const off_t& pos, const int& error);
-        void receiveData(KIO::Job* job, const QByteArray& data);
+        void receiveData(const QByteArray& data, const int& error);
         
     protected:
         KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
         QByteArray m_data;
         size_t m_size;
         off_t m_offset;
-        bool alreadyReceivedData;
 };
 
 #endif /* JOB_HELPERS_H */

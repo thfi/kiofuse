@@ -61,13 +61,15 @@ class KioFuseApp : public KApplication
         void seekMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper);
         void slotPosition(KIO::Job* job, KIO::filesize_t pos);
         void readMainThread(KIO::FileJob* fileJob, const size_t& size, ReadJobHelper* readJobHelper);
-        //void slotData(KIO::Job* job, const QByteArray& data);
+        void slotData(KIO::Job* job, const QByteArray& data);
+        void fileJobOpened(KIO::Job* job);
         
     signals:
         void sendJobDone(const int&);
         void sendEntry(const KIO::UDSEntry &);
         void sendFileJob(KIO::FileJob*);
         void sendPosition(const off_t&, const int&);
+        void sendData(const QByteArray&, const int&);
         
     private:
         KUrl m_baseUrl;  // Remote base URL
