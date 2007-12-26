@@ -19,6 +19,10 @@
 
 #include <kdebug.h>
 
+FileJobData::FileJobData(KIO::FileJob* aFileJob)
+    : fileJob(aFileJob), inUse(false)
+{}
+
 Cache::Cache(KFileItem* item)
     : QObject(), m_item(item), m_nodeType(regularType)
 {
@@ -41,8 +45,9 @@ Cache::~Cache()
         delete children.at(i);
     }
     
-    foreach (KIO::FileJob* fileJob, fhIdtoFileJob){
-        fileJob->close();
+    foreach (FileJobData* fileJobData, fhIdtoFileJob){
+        // FileJobData will close the FileJob
+        delete fileJobData;
     }
     fhIdtoFileJob.clear();
     
@@ -129,7 +134,7 @@ bool Cache::setExtraData(const KUrl& url, const uint64_t& key,
     if (relPathLength == 0){
         kDebug()<<"setting extra data"<<myPath<<endl;
         // Add the opened file handle to m_item
-        this->fhIdtoFileJob[key] = fileJob;
+        this->fhIdtoFileJob[key] = new FileJobData(fileJob);
 
         // We didn't have to add a leaf stub
         return false;

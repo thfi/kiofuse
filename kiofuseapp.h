@@ -50,7 +50,10 @@ class KioFuseApp : public KApplication
         void addToCache(KFileItem* item);  // Add this item (and any stub directories that may be needed) to the cache
         void storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
                              const uint64_t& fileHandleId);
-        KIO::FileJob* findJob(const KUrl& url, const uint64_t& fileHandleId);  // Find the job using its ID
+        KIO::FileJob* checkOutJob(const KUrl& url, const uint64_t& fileHandleId);  // Find the job using its ID, 
+                                                                                   // and prevent other threads from using it.
+        void checkInJob(const KUrl& url, const uint64_t& fileHandleId);  // Allow other threads to use the
+                                                                          // FileJob specified by this fileHandleId.
     
     public slots:
         void listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper);

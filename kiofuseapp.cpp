@@ -122,15 +122,44 @@ void KioFuseApp::storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
     }
 }
 
-KIO::FileJob* KioFuseApp::findJob(const KUrl& url, const uint64_t& fileHandleId)  // Find the job using its ID
+// Find the job using its ID, and prevent other threads from
+// using it
+KIO::FileJob* KioFuseApp::checkOutJob(const KUrl& url, const uint64_t& fileHandleId)
 {
     QMutexLocker locker(&m_cacheMutex);
     Cache* currCache = m_cacheRoot->find(url);
+    // FIXME when currCache == NULL
+    
     if (currCache->jobsMap().contains(fileHandleId)){
-        return currCache->jobsMap().value(fileHandleId);
+        FileJobData* fileJobData = currCache->jobsMap().value(fileHandleId);
+        while (fileJobData->inUse){
+            locker.unlock();
+            // Another FuseOp thread is using this FileJob. Sleep for a while
+            // and try again. This should be needed very rarely, if at all.
+            kDebug()<<"Waiting 1s for filejob"<<url.path()<<endl;
+            sleep(1);
+            locker.relock();
+        }
+        fileJobData->inUse = true;
+        return fileJobData->fileJob;
     } else {
+        // Didn't find the job
         return NULL;
     }
+}
+
+// Allow other threads to use the FileJob specified by this fileHandleId
+void KioFuseApp::checkInJob(const KUrl& url, const uint64_t& fileHandleId)
+{
+    QMutexLocker locker(&m_cacheMutex);
+    Cache* currCache = m_cacheRoot->find(url);
+    // FIXME when currCache == NULL
+    
+    // The fileJob *must* be there if we're checking it back in
+    Q_ASSERT(currCache->jobsMap().contains(fileHandleId));
+     
+    FileJobData* fileJobData = currCache->jobsMap().value(fileHandleId);
+    fileJobData->inUse = false;
 }
 
 /*********** ListJob ***********/
@@ -278,14 +307,22 @@ void KioFuseApp::seekMainThread(KIO::FileJob* fileJob, const off_t& offset, Read
 
 void KioFuseApp::slotPosition(KIO::Job* job, KIO::filesize_t pos)
 {
-    if (!m_jobToJobHelper.contains(qobject_cast<KJob*>(job))){
+    /*if (!m_jobToJobHelper.contains(qobject_cast<KJob*>(job))){
         // This is the second time FileJob::position() was called.
         // We must already have removed the job. Ignore the call.
         kDebug()<<"ignoring FileJob::position"<<endl;
         return;
-    }
+    }*/
+    
+    KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
+    
+    // Prevent FileJob::position() signal from being triggered multiple times
+    // upon subsequent seeks
+    fileJob->disconnect();
     
     kDebug()<<"job"<<job<<"job->thread()"<<job->thread()<<endl;
+    
+    Q_ASSERT(m_jobToJobHelper.contains(qobject_cast<KJob*>(job)));
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
     ReadJobHelper* readJobHelper = qobject_cast<ReadJobHelper*>(jobHelper);
     // Needed by Qt::QueuedConnection
@@ -320,17 +357,27 @@ void KioFuseApp::slotData(KIO::Job* job, const QByteArray& data)
 {
     kDebug()<<"data"<<data<<endl;
     
+    KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
+    
+    // Prevent FileJob::data() signal from being triggered multiple times
+    // upon subsequent reads
+    fileJob->disconnect();
+    
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
     ReadJobHelper* readJobHelper = qobject_cast<ReadJobHelper*>(jobHelper);
     
-    if (readJobHelper == NULL){
+    Q_ASSERT(readJobHelper);
+    
+    /*if (readJobHelper == NULL){
         if(data.size() != 0){
             //FIXME
-            kDebug()<<"IGNORING REAL DATA. BAD!!!!!!!"<<data<<endl;
+            kDebug()<<"IGNORING REAL DATA. BAD!!!!!!!"<<endl;
+        } else {
+            kDebug()<<"IGNORING EMPTY"<<endl;
         }
         // Safe to ignore because FileJob sends extra empty data() signals
         return;
-    }
+    }*/
     
     connect(this, SIGNAL(sendData(const QByteArray&, const int&)),
             readJobHelper, SLOT(receiveData(const QByteArray&, const int&)),

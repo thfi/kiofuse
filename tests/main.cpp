@@ -41,10 +41,10 @@ void MyThread::run()
         sleep(1);
     }
     
-    while (!m_testFileJob->opened2()){
+    /*while (!m_testFileJob->opened2()){
         kDebug()<<"Waiting for FileJob 2 to be opened"<<endl;
         sleep(1);
-    }
+    }*/
     
     connect(this, SIGNAL(sendReadRequest()),
             m_testFileJob, SLOT(read()),
@@ -146,7 +146,7 @@ void TestFileJob::open()
     connect(m_job1, SIGNAL(mimetype(KIO::Job*, const QString&)),
                  SLOT(slotMimetype(KIO::Job*, const QString&)));
     
-    m_job2 = KIO::open(url, QIODevice::ReadOnly);
+    /*m_job2 = KIO::open(url, QIODevice::ReadOnly);
     connect(m_job2, SIGNAL(open(KIO::Job*)),
             SLOT(slotOpen(KIO::Job*)));
     connect(m_job2, SIGNAL(data(KIO::Job*, const QByteArray&)),
@@ -160,19 +160,19 @@ void TestFileJob::open()
     connect(m_job2, SIGNAL(close(KIO::Job*)),
             SLOT(slotClose(KIO::Job*)));
     connect(m_job2, SIGNAL(mimetype(KIO::Job*, const QString&)),
-            SLOT(slotMimetype(KIO::Job*, const QString&)));
+            SLOT(slotMimetype(KIO::Job*, const QString&)));*/
 }
 
 void TestFileJob::read()
 {
     m_job1->read(100024);
-    m_job2->read(100024);
+    //m_job2->read(100024);
 }
 
 void TestFileJob::seek()
 {
     m_job1->seek(5);
-    m_job2->seek(5);
+    //m_job2->seek(5);
 }
 
 static const KAboutData aboutData("TestFileJob",

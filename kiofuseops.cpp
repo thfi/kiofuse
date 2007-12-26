@@ -145,7 +145,9 @@ int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
     uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
     int res = 0;
     kDebug()<<"kioFuseRead"<<endl;
-    KIO::FileJob* fileJob = kioFuseApp->findJob(url, fileHandleId);
+    
+    // No other thread can use fileJob while we're using it
+    KIO::FileJob* fileJob = kioFuseApp->checkOutJob(url, fileHandleId);
     if (!fileJob){
         res = -ENOENT;  // Didn't find an opened job
     } else {
@@ -163,6 +165,9 @@ int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
             Q_ASSERT(res <= size);
             memcpy(buf, data.data(), res);
         }
+        
+        // fileJob will now be available to other threads
+        kioFuseApp->checkInJob(url, fileHandleId);
         delete helper;
         helper = NULL;
     }

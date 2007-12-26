@@ -134,7 +134,7 @@ void ReadJobHelper::receivePosition(const off_t& pos, const int& error)
                 const size_t&, ReadJobHelper*)),
                 Qt::QueuedConnection);
         emit reqRead(m_fileJob, m_size, this);
-    } else {
+    } else {  // FIXME
         m_size = 0;
         connect(this, SIGNAL(sendJobDone(const int&)),
                 this, SLOT(jobDone(const int&)));

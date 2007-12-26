@@ -1,2 +1,1330 @@
-hi there!
-how are you doing?
+[    0.000000] Linux version 2.6.20-16-generic (root@terranova) (gcc version 4.1.2 (Ubuntu 4.1.2-0ubuntu4)) #2 SMP Thu Jun 7 20:19:32 UTC 2007 (Ubuntu 2.6.20-16.29-generic)
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] sanitize start
+[    0.000000] sanitize end
+[    0.000000] copy_e820_map() start: 0000000000000000 size: 000000000009f800 end: 000000000009f800 type: 1
+[    0.000000] copy_e820_map() type is E820_RAM
+[    0.000000] copy_e820_map() start: 000000000009f800 size: 0000000000000800 end: 00000000000a0000 type: 2
+[    0.000000] copy_e820_map() start: 00000000000d2000 size: 0000000000002000 end: 00000000000d4000 type: 2
+[    0.000000] copy_e820_map() start: 00000000000dc000 size: 0000000000024000 end: 0000000000100000 type: 2
+[    0.000000] copy_e820_map() start: 0000000000100000 size: 000000007f5d0000 end: 000000007f6d0000 type: 1
+[    0.000000] copy_e820_map() type is E820_RAM
+[    0.000000] copy_e820_map() start: 000000007f6d0000 size: 0000000000013000 end: 000000007f6e3000 type: 4
+[    0.000000] copy_e820_map() start: 000000007f6e3000 size: 000000000091d000 end: 0000000080000000 type: 2
+[    0.000000] copy_e820_map() start: 00000000fec00000 size: 0000000000010000 end: 00000000fec10000 type: 2
+[    0.000000] copy_e820_map() start: 00000000fed00000 size: 0000000000000400 end: 00000000fed00400 type: 2
+[    0.000000] copy_e820_map() start: 00000000fed14000 size: 0000000000006000 end: 00000000fed1a000 type: 2
+[    0.000000] copy_e820_map() start: 00000000fed1c000 size: 0000000000074000 end: 00000000fed90000 type: 2
+[    0.000000] copy_e820_map() start: 00000000fee00000 size: 0000000000001000 end: 00000000fee01000 type: 2
+[    0.000000] copy_e820_map() start: 00000000ff000000 size: 0000000001000000 end: 0000000100000000 type: 2
+[    0.000000]  BIOS-e820: 0000000000000000 - 000000000009f800 (usable)
+[    0.000000]  BIOS-e820: 000000000009f800 - 00000000000a0000 (reserved)
+[    0.000000]  BIOS-e820: 00000000000d2000 - 00000000000d4000 (reserved)
+[    0.000000]  BIOS-e820: 00000000000dc000 - 0000000000100000 (reserved)
+[    0.000000]  BIOS-e820: 0000000000100000 - 000000007f6d0000 (usable)
+[    0.000000]  BIOS-e820: 000000007f6d0000 - 000000007f6e3000 (ACPI NVS)
+[    0.000000]  BIOS-e820: 000000007f6e3000 - 0000000080000000 (reserved)
+[    0.000000]  BIOS-e820: 00000000fec00000 - 00000000fec10000 (reserved)
+[    0.000000]  BIOS-e820: 00000000fed00000 - 00000000fed00400 (reserved)
+[    0.000000]  BIOS-e820: 00000000fed14000 - 00000000fed1a000 (reserved)
+[    0.000000]  BIOS-e820: 00000000fed1c000 - 00000000fed90000 (reserved)
+[    0.000000]  BIOS-e820: 00000000fee00000 - 00000000fee01000 (reserved)
+[    0.000000]  BIOS-e820: 00000000ff000000 - 0000000100000000 (reserved)
+[    0.000000] 1142MB HIGHMEM available.
+[    0.000000] 896MB LOWMEM available.
+[    0.000000] found SMP MP-table at 000f7bc0
+[    0.000000] Entering add_active_range(0, 0, 521936) 0 entries of 256 used
+[    0.000000] Zone PFN ranges:
+[    0.000000]   DMA             0 ->     4096
+[    0.000000]   Normal       4096 ->   229376
+[    0.000000]   HighMem    229376 ->   521936
+[    0.000000] early_node_map[1] active PFN ranges
+[    0.000000]     0:        0 ->   521936
+[    0.000000] On node 0 totalpages: 521936
+[    0.000000]   DMA zone: 32 pages used for memmap
+[    0.000000]   DMA zone: 0 pages reserved
+[    0.000000]   DMA zone: 4064 pages, LIFO batch:0
+[    0.000000]   Normal zone: 1760 pages used for memmap
+[    0.000000]   Normal zone: 223520 pages, LIFO batch:31
+[    0.000000]   HighMem zone: 2285 pages used for memmap
+[    0.000000]   HighMem zone: 290275 pages, LIFO batch:31
+[    0.000000] DMI present.
+[    0.000000] ACPI: RSDP (v002 Compal                                ) @ 0x000f7b40
+[    0.000000] ACPI: XSDT (v001 Compal CRESTLNE 0x06040000  LTP 0x00000000) @ 0x7f6d8834
+[    0.000000] ACPI: FADT (v003 INTEL  CRESTLNE 0x06040000 ALAN 0x00000001) @ 0x7f6dfbd2
+[    0.000000] ACPI: MADT (v001 INTEL  CRESTLNE 0x06040000 LOHR 0x0000005a) @ 0x7f6dfcc6
+[    0.000000] ACPI: HPET (v001 Compal CRESTLNE 0x06040000 LOHR 0x0000005a) @ 0x7f6dfd2e
+[    0.000000] ACPI: MCFG (v001 INTEL  CRESTLNE 0x06040000 LOHR 0x0000005a) @ 0x7f6dfd66
+[    0.000000] ACPI: TCPA (v001 Intel  CRESTLNE 0x06040000 LOHR 0x0000005a) @ 0x7f6dfda2
+[    0.000000] ACPI: TMOR (v001 PTLTD           0x06040000 PTL  0x00000003) @ 0x7f6dfdd4
+[    0.000000] ACPI: SLIC (v001 Compal CRESTLNE 0x06040000 TBD  0x00000001) @ 0x7f6dfdfa
+[    0.000000] ACPI: MADT (v001 PTLTD  	 APIC   0x06040000  LTP 0x00000000) @ 0x7f6dff70
+[    0.000000] ACPI: BOOT (v001 PTLTD  $SBFTBL$ 0x06040000  LTP 0x00000001) @ 0x7f6dffd8
+[    0.000000] ACPI: SSDT (v001 SataRe SataAhci 0x00001000 INTL 0x20050624) @ 0x7f6d98da
+[    0.000000] ACPI: SSDT (v001  PmRef  Cpu0Tst 0x00003000 INTL 0x20050624) @ 0x7f6d8e4c
+[    0.000000] ACPI: SSDT (v001  PmRef  Cpu1Tst 0x00003000 INTL 0x20050624) @ 0x7f6d8da6
+[    0.000000] ACPI: SSDT (v001  PmRef    CpuPm 0x00003000 INTL 0x20050624) @ 0x7f6d88c0
+[    0.000000] ACPI: DSDT (v002 Compal CRESTLNE 0x06040000 INTL 0x20061109) @ 0x00000000
+[    0.000000] ACPI: PM-Timer IO Port: 0x1008
+[    0.000000] ACPI: Local APIC address 0xfee00000
+[    0.000000] ACPI: 2 duplicate APIC table ignored.
+[    0.000000] ACPI: LAPIC (acpi_id[0x00] lapic_id[0x00] enabled)
+[    0.000000] Processor #0 6:15 APIC version 20
+[    0.000000] ACPI: LAPIC (acpi_id[0x01] lapic_id[0x01] enabled)
+[    0.000000] Processor #1 6:15 APIC version 20
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0x00] high edge lint[0x1])
+[    0.000000] ACPI: LAPIC_NMI (acpi_id[0x01] high edge lint[0x1])
+[    0.000000] ACPI: IOAPIC (id[0x01] address[0xfec00000] gsi_base[0])
+[    0.000000] IOAPIC[0]: apic_id 1, version 32, address 0xfec00000, GSI 0-23
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.000000] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.000000] ACPI: IRQ0 used by override.
+[    0.000000] ACPI: IRQ2 used by override.
+[    0.000000] ACPI: IRQ9 used by override.
+[    0.000000] Enabling APIC mode:  Flat.  Using 1 I/O APICs
+[    0.000000] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.000000] Using ACPI (MADT) for SMP configuration information
+[    0.000000] Allocating PCI resources starting at 88000000 (gap: 80000000:7ec00000)
+[    0.000000] Detected 1795.703 MHz processor.
+[   12.762027] Built 1 zonelists.  Total pages: 517859
+[   12.762031] Kernel command line: root=/dev/mapper/ubuntu-root ro quiet splash
+[   12.762147] mapped APIC to ffffd000 (fee00000)
+[   12.762149] mapped IOAPIC to ffffc000 (fec00000)
+[   12.762151] Enabling fast FPU save and restore... done.
+[   12.762153] Enabling unmasked SIMD FPU exception support... done.
+[   12.762160] Initializing CPU#0
+[   12.762222] PID hash table entries: 4096 (order: 12, 16384 bytes)
+[   12.763610] Console: colour VGA+ 80x25
+[   12.763879] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[   12.764148] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[   12.827611] Memory: 2058456k/2087744k available (1992k kernel code, 28080k reserved, 900k data, 328k init, 1170240k highmem)
+[   12.827618] virtual kernel memory layout:
+[   12.827619]     fixmap  : 0xfff4e000 - 0xfffff000   ( 708 kB)
+[   12.827620]     pkmap   : 0xff800000 - 0xffc00000   (4096 kB)
+[   12.827621]     vmalloc : 0xf8800000 - 0xff7fe000   ( 111 MB)
+[   12.827622]     lowmem  : 0xc0000000 - 0xf8000000   ( 896 MB)
+[   12.827623]       .init : 0xc03d9000 - 0xc042b000   ( 328 kB)
+[   12.827624]       .data : 0xc02f2374 - 0xc03d36d4   ( 900 kB)
+[   12.827625]       .text : 0xc0100000 - 0xc02f2374   (1992 kB)
+[   12.827628] Checking if this processor honours the WP bit even in supervisor mode... Ok.
+[   12.827776] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[   12.827781] hpet0: 3 64-bit timers, 14318180 Hz
+[   12.828785] Using HPET for base-timer
+[   12.907736] Calibrating delay using timer specific routine.. 3594.86 BogoMIPS (lpj=7189732)
+[   12.907772] Security Framework v1.0.0 initialized
+[   12.907778] SELinux:  Disabled at boot.
+[   12.907790] Mount-cache hash table entries: 512
+[   12.907909] CPU: After generic identify, caps: bfebfbff 20000000 00000000 00000000 0000e3bd 00000000 00000001
+[   12.907915] monitor/mwait feature present.
+[   12.907917] using mwait in idle threads.
+[   12.907920] CPU: L1 I cache: 32K, L1 D cache: 32K
+[   12.907922] CPU: L2 cache: 2048K
+[   12.907924] CPU: Physical Processor ID: 0
+[   12.907926] CPU: Processor Core ID: 0
+[   12.907927] CPU: After all inits, caps: bfebfbff 20000000 00000000 00003940 0000e3bd 00000000 00000001
+[   12.907936] Compat vDSO mapped to ffffe000.
+[   12.907939] Remapping vsyscall page to ffffe000
+[   12.907949] Checking 'hlt' instruction... OK.
+[   12.923813] SMP alternatives: switching to UP code
+[   12.924117] Early unpacking initramfs... done
+[   13.206628] ACPI: Core revision 20060707
+[   13.206859] ACPI: Looking for DSDT in initramfs... file /DSDT.aml not found, using machine DSDT.
+[   13.273975] CPU0: Intel(R) Core(TM)2 Duo CPU     T7100  @ 1.80GHz stepping 0d
+[   13.273990] SMP alternatives: switching to SMP code
+[   13.274064] Booting processor 1/1 eip 3000
+[   13.284458] Initializing CPU#1
+[   13.363485] Calibrating delay using timer specific routine.. 3591.09 BogoMIPS (lpj=7182190)
+[   13.363491] CPU: After generic identify, caps: bfebfbff 20000000 00000000 00000000 0000e3bd 00000000 00000001
+[   13.363496] monitor/mwait feature present.
+[   13.363498] CPU: L1 I cache: 32K, L1 D cache: 32K
+[   13.363500] CPU: L2 cache: 2048K
+[   13.363502] CPU: Physical Processor ID: 0
+[   13.363503] CPU: Processor Core ID: 1
+[   13.363504] CPU: After all inits, caps: bfebfbff 20000000 00000000 00003940 0000e3bd 00000000 00000001
+[   13.363975] CPU1: Intel(R) Core(TM)2 Duo CPU     T7100  @ 1.80GHz stepping 0d
+[   13.363996] Total of 2 processors activated (7185.96 BogoMIPS).
+[   13.364168] ENABLING IO-APIC IRQs
+[   13.364367] ..TIMER: vector=0x31 apic1=0 pin1=2 apic2=-1 pin2=-1
+[   13.511405] checking TSC synchronization across 2 CPUs: passed.
+[    0.003998] Brought up 2 CPUs
+[    0.144098] migration_cost=120
+[    0.144323] Booting paravirtualized kernel on bare hardware
+[    0.144416] Time: 18:04:19  Date: 11/24/107
+[    0.144441] NET: Registered protocol family 16
+[    0.144513] EISA bus registered
+[    0.144519] ACPI: bus type pci registered
+[    0.144847] PCI: PCI BIOS revision 2.10 entry at 0xfdde1, last bus=14
+[    0.144849] PCI: Using configuration type 1
+[    0.144851] Setting up standard PCI resources
+[    0.148370] ACPI: Interpreter enabled
+[    0.148372] ACPI: Using IOAPIC for interrupt routing
+[    0.154411] ACPI: PCI Root Bridge [PCI0] (0000:00)
+[    0.154414] PCI: Probing PCI hardware (bus 00)
+[    0.154435] ACPI: Assume root bridge [\_SB_.PCI0] bus is 0
+[    0.155222] Boot video device is 0000:00:02.0
+[    0.157943] PCI: Transparent bridge - 0000:00:1e.0
+[    0.158073] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0._PRT]
+[    0.164295] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP01._PRT]
+[    0.164537] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP02._PRT]
+[    0.164774] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP03._PRT]
+[    0.165008] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP04._PRT]
+[    0.165240] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP05._PRT]
+[    0.165473] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.RP06._PRT]
+[    0.165943] ACPI: PCI Interrupt Routing Table [\_SB_.PCI0.PCIB._PRT]
+[    0.166332] ACPI: PCI Interrupt Link [LNKA] (IRQs 1 3 4 *5 6 7 10 12 14 15)
+[    0.166566] ACPI: PCI Interrupt Link [LNKB] (IRQs 1 3 4 5 6 7 11 12 14 15) *10
+[    0.166802] ACPI: PCI Interrupt Link [LNKC] (IRQs 1 3 4 5 6 *7 10 12 14 15)
+[    0.167034] ACPI: PCI Interrupt Link [LNKD] (IRQs 1 3 4 5 6 7 11 12 14 15) *10
+[    0.167272] ACPI: PCI Interrupt Link [LNKE] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.167506] ACPI: PCI Interrupt Link [LNKF] (IRQs 1 3 4 5 6 7 *11 12 14 15)
+[    0.167737] ACPI: PCI Interrupt Link [LNKG] (IRQs 1 3 4 5 6 7 10 12 14 15) *11
+[    0.167977] ACPI: PCI Interrupt Link [LNKH] (IRQs 1 3 4 5 6 7 11 12 14 15) *10
+[    0.224421] Linux Plug and Play Support v0.97 (c) Adam Belay
+[    0.224430] pnp: PnP ACPI init
+[    0.252012] pnp: PnP ACPI: found 10 devices
+[    0.252016] PnPBIOS: Disabled by ACPI PNP
+[    0.252056] PCI: Using ACPI for IRQ routing
+[    0.252058] PCI: If a device doesn't work, try "pci=routeirq".  If it helps, post a report
+[    0.377806] NET: Registered protocol family 8
+[    0.377808] NET: Registered protocol family 20
+[    0.378397] PCI: Ignore bogus resource 6 [0:0] of 0000:00:02.0
+[    0.378405] PCI: Bridge: 0000:00:1c.0
+[    0.378409]   IO window: 2000-2fff
+[    0.378415]   MEM window: c0000000-c3ffffff
+[    0.378420]   PREFETCH window: cc000000-cdffffff
+[    0.378427] PCI: Bridge: 0000:00:1c.1
+[    0.378429]   IO window: 3000-3fff
+[    0.378435]   MEM window: f0000000-f3ffffff
+[    0.378440]   PREFETCH window: fa000000-fbffffff
+[    0.378446] PCI: Bridge: 0000:00:1c.2
+[    0.378449]   IO window: 4000-4fff
+[    0.378455]   MEM window: f4000000-f7ffffff
+[    0.378460]   PREFETCH window: fc000000-fdffffff
+[    0.378466] PCI: Bridge: 0000:00:1c.3
+[    0.378469]   IO window: 5000-5fff
+[    0.378475]   MEM window: b8000000-bbffffff
+[    0.378479]   PREFETCH window: c8000000-c9ffffff
+[    0.378486] PCI: Bridge: 0000:00:1c.4
+[    0.378487]   IO window: disabled.
+[    0.378493]   MEM window: disabled.
+[    0.378497]   PREFETCH window: disabled.
+[    0.378503] PCI: Bridge: 0000:00:1c.5
+[    0.378504]   IO window: disabled.
+[    0.378510]   MEM window: f8200000-f82fffff
+[    0.378515]   PREFETCH window: disabled.
+[    0.378521] PCI: Bridge: 0000:00:1e.0
+[    0.378522]   IO window: disabled.
+[    0.378532]   MEM window: f8300000-f83fffff
+[    0.378541]   PREFETCH window: disabled.
+[    0.378588] ACPI: PCI Interrupt 0000:00:1c.0[A] -> GSI 17 (level, low) -> IRQ 16
+[    0.378594] PCI: Setting latency timer of device 0000:00:1c.0 to 64
+[    0.378620] ACPI: PCI Interrupt 0000:00:1c.1[B] -> GSI 16 (level, low) -> IRQ 17
+[    0.378626] PCI: Setting latency timer of device 0000:00:1c.1 to 64
+[    0.378652] ACPI: PCI Interrupt 0000:00:1c.2[C] -> GSI 18 (level, low) -> IRQ 18
+[    0.378657] PCI: Setting latency timer of device 0000:00:1c.2 to 64
+[    0.378683] ACPI: PCI Interrupt 0000:00:1c.3[D] -> GSI 19 (level, low) -> IRQ 19
+[    0.378688] PCI: Setting latency timer of device 0000:00:1c.3 to 64
+[    0.378713] ACPI: PCI Interrupt 0000:00:1c.4[A] -> GSI 17 (level, low) -> IRQ 16
+[    0.378719] PCI: Setting latency timer of device 0000:00:1c.4 to 64
+[    0.378743] ACPI: PCI Interrupt 0000:00:1c.5[B] -> GSI 16 (level, low) -> IRQ 17
+[    0.378749] PCI: Setting latency timer of device 0000:00:1c.5 to 64
+[    0.378763] PCI: Setting latency timer of device 0000:00:1e.0 to 64
+[    0.378787] NET: Registered protocol family 2
+[    0.423805] IP route cache hash table entries: 32768 (order: 5, 131072 bytes)
+[    0.423897] TCP established hash table entries: 131072 (order: 8, 1048576 bytes)
+[    0.424312] TCP bind hash table entries: 65536 (order: 7, 524288 bytes)
+[    0.424517] TCP: Hash tables configured (established 131072 bind 65536)
+[    0.424520] TCP reno registered
+[    0.439859] checking if image is initramfs... it is
+[    1.057022] Freeing initrd memory: 7206k freed
+[    1.057184] Simple Boot Flag at 0x38 set to 0x1
+[    1.057567] audit: initializing netlink socket (disabled)
+[    1.057578] audit(1198519459.764:1): initialized
+[    1.057654] highmem bounce pool size: 64 pages
+[    1.057723] VFS: Disk quotas dquot_6.5.1
+[    1.057737] Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    1.057781] io scheduler noop registered
+[    1.057783] io scheduler anticipatory registered
+[    1.057785] io scheduler deadline registered
+[    1.057795] io scheduler cfq registered (default)
+[    1.058107] PCI: Setting latency timer of device 0000:00:1c.0 to 64
+[    1.058236] assign_interrupt_mode Found MSI capability
+[    1.058238] Allocate Port Service[0000:00:1c.0:pcie00]
+[    1.058265] Allocate Port Service[0000:00:1c.0:pcie02]
+[    1.058487] PCI: Setting latency timer of device 0000:00:1c.1 to 64
+[    1.058615] assign_interrupt_mode Found MSI capability
+[    1.058618] Allocate Port Service[0000:00:1c.1:pcie00]
+[    1.058643] Allocate Port Service[0000:00:1c.1:pcie02]
+[    1.058878] PCI: Setting latency timer of device 0000:00:1c.2 to 64
+[    1.058993] assign_interrupt_mode Found MSI capability
+[    1.058995] Allocate Port Service[0000:00:1c.2:pcie00]
+[    1.059021] Allocate Port Service[0000:00:1c.2:pcie02]
+[    1.059235] PCI: Setting latency timer of device 0000:00:1c.3 to 64
+[    1.059351] assign_interrupt_mode Found MSI capability
+[    1.059353] Allocate Port Service[0000:00:1c.3:pcie00]
+[    1.059378] Allocate Port Service[0000:00:1c.3:pcie02]
+[    1.059606] PCI: Setting latency timer of device 0000:00:1c.4 to 64
+[    1.059722] assign_interrupt_mode Found MSI capability
+[    1.059724] Allocate Port Service[0000:00:1c.4:pcie00]
+[    1.059753] Allocate Port Service[0000:00:1c.4:pcie02]
+[    1.059965] PCI: Setting latency timer of device 0000:00:1c.5 to 64
+[    1.060099] assign_interrupt_mode Found MSI capability
+[    1.060101] Allocate Port Service[0000:00:1c.5:pcie00]
+[    1.060129] Allocate Port Service[0000:00:1c.5:pcie02]
+[    1.060379] isapnp: Scanning for PnP cards...
+[    1.417518] isapnp: No Plug & Play device found
+[    1.435423] Real Time Clock Driver v1.12ac
+[    1.435473] Serial: 8250/16550 driver $Revision: 1.90 $ 4 ports, IRQ sharing enabled
+[    1.436009] mice: PS/2 mouse device common for all mice
+[    1.436485] RAMDISK driver initialized: 16 RAM disks of 65536K size 1024 blocksize
+[    1.436612] input: Macintosh mouse button emulation as /class/input/input0
+[    1.436642] Uniform Multi-Platform E-IDE driver Revision: 7.00alpha2
+[    1.436645] ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
+[    1.436951] PNP: PS/2 Controller [PNP0303:PS2K,PNP0f13:PS2M] at 0x60,0x64 irq 1,12
+[    1.482924] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.482927] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.485304] EISA: Probing bus 0 at eisa.0
+[    1.485312] Cannot allocate resource for EISA slot 1
+[    1.485315] Cannot allocate resource for EISA slot 2
+[    1.485317] Cannot allocate resource for EISA slot 3
+[    1.485319] Cannot allocate resource for EISA slot 4
+[    1.485321] Cannot allocate resource for EISA slot 5
+[    1.485342] EISA: Detected 0 cards.
+[    1.515419] TCP cubic registered
+[    1.515425] NET: Registered protocol family 1
+[    1.515447] Starting balanced_irq
+[    1.515455] Using IPI No-Shortcut mode
+[    1.515535] ACPI: (supports S0 S3 S4 S5)
+[    1.515583]   Magic number: 3:264:90
+[    1.515810] Freeing unused kernel memory: 328k freed
+[    1.519170] Time: tsc clocksource has been installed.
+[    1.542417] input: AT Translated Set 2 keyboard as /class/input/input1
+[    2.699535] ICH8M: IDE controller at PCI slot 0000:00:1f.1
+[    2.699549] ACPI: PCI Interrupt 0000:00:1f.1[A] -> GSI 19 (level, low) -> IRQ 19
+[    2.699564] ICH8M: chipset revision 3
+[    2.699566] ICH8M: not 100% native mode: will probe irqs later
+[    2.699587]     ide0: BM-DMA at 0x1810-0x1817, BIOS settings: hda:DMA, hdb:pio
+[    2.699614]     ide1: BM-DMA at 0x1818-0x181f, BIOS settings: hdc:pio, hdd:pio
+[    2.699630] Probing IDE interface ide0...
+[    3.438320] hda: Optiarc DVD RW AD-7530A, ATAPI CD/DVD-ROM drive
+[    4.115903] ide0 at 0x1f0-0x1f7,0x3f6 on irq 14
+[    4.116504] Probing IDE interface ide1...
+[    4.693949] Capability LSM initialized
+[    4.707505] device-mapper: ioctl: 4.11.0-ioctl (2006-10-12) initialised: dm-devel@redhat.com
+[    4.734654] ACPI (exconfig-0455): Dynamic SSDT Load - OemId [ PmRef] OemTableId [ Cpu0Ist] [20060707]
+[    4.734892] ACPI (exconfig-0455): Dynamic SSDT Load - OemId [ PmRef] OemTableId [ Cpu0Cst] [20060707]
+[    4.735654] Monitor-Mwait will be used to enter C-1 state
+[    4.735656] Monitor-Mwait will be used to enter C-2 state
+[    4.735659] Monitor-Mwait will be used to enter C-3 state
+[    4.735664] ACPI: CPU0 (power states: C1[C1] C2[C2] C3[C3])
+[    4.735668] ACPI: Processor [CPU0] (supports 8 throttling states)
+[    4.736277] ACPI (exconfig-0455): Dynamic SSDT Load - OemId [ PmRef] OemTableId [ Cpu1Ist] [20060707]
+[    4.736472] ACPI (exconfig-0455): Dynamic SSDT Load - OemId [ PmRef] OemTableId [ Cpu1Cst] [20060707]
+[    4.737085] ACPI: CPU1 (power states: C1[C1] C2[C2] C3[C3])
+[    4.737091] ACPI: Processor [CPU1] (supports 8 throttling states)
+[    5.300000] Time: hpet clocksource has been installed.
+[    5.564000] usbcore: registered new interface driver usbfs
+[    5.564000] usbcore: registered new interface driver hub
+[    5.564000] usbcore: registered new device driver usb
+[    5.564000] USB Universal Host Controller Interface driver v3.0
+[    5.564000] ACPI: PCI Interrupt 0000:00:1a.0[A] -> GSI 16 (level, low) -> IRQ 17
+[    5.564000] PCI: Setting latency timer of device 0000:00:1a.0 to 64
+[    5.564000] uhci_hcd 0000:00:1a.0: UHCI Host Controller
+[    5.564000] uhci_hcd 0000:00:1a.0: new USB bus registered, assigned bus number 1
+[    5.564000] uhci_hcd 0000:00:1a.0: irq 17, io base 0x00001820
+[    5.564000] usb usb1: configuration #1 chosen from 1 choice
+[    5.564000] hub 1-0:1.0: USB hub found
+[    5.564000] hub 1-0:1.0: 2 ports detected
+[    5.620000] SCSI subsystem initialized
+[    5.624000] libata version 2.20 loaded.
+[    5.656000] ieee1394: Initialized config rom entry `ip1394'
+[    5.668000] ACPI: PCI Interrupt 0000:00:1a.1[B] -> GSI 21 (level, low) -> IRQ 20
+[    5.668000] PCI: Setting latency timer of device 0000:00:1a.1 to 64
+[    5.668000] uhci_hcd 0000:00:1a.1: UHCI Host Controller
+[    5.668000] uhci_hcd 0000:00:1a.1: new USB bus registered, assigned bus number 2
+[    5.668000] uhci_hcd 0000:00:1a.1: irq 20, io base 0x00001840
+[    5.668000] usb usb2: configuration #1 chosen from 1 choice
+[    5.668000] hub 2-0:1.0: USB hub found
+[    5.668000] hub 2-0:1.0: 2 ports detected
+[    5.772000] ACPI: PCI Interrupt 0000:00:1d.0[A] -> GSI 23 (level, low) -> IRQ 21
+[    5.772000] PCI: Setting latency timer of device 0000:00:1d.0 to 64
+[    5.772000] uhci_hcd 0000:00:1d.0: UHCI Host Controller
+[    5.772000] uhci_hcd 0000:00:1d.0: new USB bus registered, assigned bus number 3
+[    5.772000] uhci_hcd 0000:00:1d.0: irq 21, io base 0x00001860
+[    5.772000] usb usb3: configuration #1 chosen from 1 choice
+[    5.772000] hub 3-0:1.0: USB hub found
+[    5.772000] hub 3-0:1.0: 2 ports detected
+[    5.876000] ACPI: PCI Interrupt 0000:00:1d.1[B] -> GSI 19 (level, low) -> IRQ 19
+[    5.876000] PCI: Setting latency timer of device 0000:00:1d.1 to 64
+[    5.876000] uhci_hcd 0000:00:1d.1: UHCI Host Controller
+[    5.876000] uhci_hcd 0000:00:1d.1: new USB bus registered, assigned bus number 4
+[    5.876000] uhci_hcd 0000:00:1d.1: irq 19, io base 0x00001880
+[    5.876000] usb usb4: configuration #1 chosen from 1 choice
+[    5.876000] hub 4-0:1.0: USB hub found
+[    5.876000] hub 4-0:1.0: 2 ports detected
+[    5.980000] ACPI: PCI Interrupt 0000:00:1d.2[C] -> GSI 18 (level, low) -> IRQ 18
+[    5.980000] PCI: Setting latency timer of device 0000:00:1d.2 to 64
+[    5.980000] uhci_hcd 0000:00:1d.2: UHCI Host Controller
+[    5.980000] uhci_hcd 0000:00:1d.2: new USB bus registered, assigned bus number 5
+[    5.980000] uhci_hcd 0000:00:1d.2: irq 18, io base 0x000018a0
+[    5.980000] usb usb5: configuration #1 chosen from 1 choice
+[    5.980000] hub 5-0:1.0: USB hub found
+[    5.980000] hub 5-0:1.0: 2 ports detected
+[    6.084000] ACPI: PCI Interrupt 0000:00:1a.7[C] -> GSI 18 (level, low) -> IRQ 18
+[    6.084000] PCI: Setting latency timer of device 0000:00:1a.7 to 64
+[    6.084000] ehci_hcd 0000:00:1a.7: EHCI Host Controller
+[    6.084000] ehci_hcd 0000:00:1a.7: new USB bus registered, assigned bus number 6
+[    6.084000] ehci_hcd 0000:00:1a.7: debug port 1
+[    6.084000] PCI: cache line size of 32 is not supported by device 0000:00:1a.7
+[    6.084000] ehci_hcd 0000:00:1a.7: irq 18, io mem 0xf8604800
+[    6.088000] ehci_hcd 0000:00:1a.7: USB 2.0 started, EHCI 1.00, driver 10 Dec 2004
+[    6.088000] usb usb6: configuration #1 chosen from 1 choice
+[    6.088000] hub 6-0:1.0: USB hub found
+[    6.088000] hub 6-0:1.0: 4 ports detected
+[    6.192000] ACPI: PCI Interrupt 0000:00:1d.7[A] -> GSI 23 (level, low) -> IRQ 21
+[    6.192000] PCI: Setting latency timer of device 0000:00:1d.7 to 64
+[    6.192000] ehci_hcd 0000:00:1d.7: EHCI Host Controller
+[    6.192000] ehci_hcd 0000:00:1d.7: new USB bus registered, assigned bus number 7
+[    6.192000] ehci_hcd 0000:00:1d.7: debug port 1
+[    6.192000] PCI: cache line size of 32 is not supported by device 0000:00:1d.7
+[    6.192000] ehci_hcd 0000:00:1d.7: irq 21, io mem 0xf8604c00
+[    6.196000] ehci_hcd 0000:00:1d.7: USB 2.0 started, EHCI 1.00, driver 10 Dec 2004
+[    6.196000] usb usb7: configuration #1 chosen from 1 choice
+[    6.196000] hub 7-0:1.0: USB hub found
+[    6.196000] hub 7-0:1.0: 6 ports detected
+[    6.300000] ACPI: PCI Interrupt 0000:0e:06.0[A] -> GSI 22 (level, low) -> IRQ 22
+[    6.352000] ohci1394: fw-host0: OHCI-1394 1.1 (PCI): IRQ=[22]  MMIO=[f8300000-f83007ff]  Max Packet=[2048]  IR/IT contexts=[4/4]
+[    6.356000] ahci 0000:00:1f.2: version 2.1
+[    6.356000] ACPI: PCI Interrupt 0000:00:1f.2[B] -> GSI 19 (level, low) -> IRQ 19
+[    6.556000] usb 6-1: new high speed USB device using ehci_hcd and address 2
+[    6.836000] usb 6-1: configuration #1 chosen from 1 choice
+[    7.260000] usb 2-1: new full speed USB device using uhci_hcd and address 2
+[    7.360000] PCI: Setting latency timer of device 0000:00:1f.2 to 64
+[    7.360000] ahci 0000:00:1f.2: AHCI 0001.0100 32 slots 3 ports 3 Gbps 0x7 impl SATA mode
+[    7.360000] ahci 0000:00:1f.2: flags: 64bit ncq pm led clo pio slum part 
+[    7.360000] ata1: SATA max UDMA/133 cmd 0xf893a100 ctl 0x00000000 bmdma 0x00000000 irq 19
+[    7.360000] ata2: SATA max UDMA/133 cmd 0xf893a180 ctl 0x00000000 bmdma 0x00000000 irq 19
+[    7.360000] ata3: SATA max UDMA/133 cmd 0xf893a200 ctl 0x00000000 bmdma 0x00000000 irq 19
+[    7.360000] scsi0 : ahci
+[    7.432000] usb 2-1: configuration #1 chosen from 1 choice
+[    7.628000] ieee1394: Host added: ID:BUS[0-00:1023]  GUID[00023f76bc4012a0]
+[    7.844000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[    7.844000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[    7.844000] ata1.00: ATA-8: Hitachi HTS542525K9SA00, BBFOC31P, max UDMA/133
+[    7.844000] ata1.00: 488397168 sectors, multi 16: LBA48 NCQ (depth 31/32)
+[    7.844000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[    7.844000] ata1.00: configured for UDMA/133
+[    7.844000] scsi1 : ahci
+[    8.156000] ata2: SATA link down (SStatus 0 SControl 300)
+[    8.156000] scsi2 : ahci
+[    8.468000] ata3: SATA link down (SStatus 0 SControl 300)
+[    8.468000] scsi 0:0:0:0: Direct-Access     ATA      Hitachi HTS54252 BBFO PQ: 0 ANSI: 5
+[    8.468000] tg3.c:v3.72 (January 8, 2007)
+[    8.468000] ACPI: PCI Interrupt 0000:04:00.0[A] -> GSI 17 (level, low) -> IRQ 16
+[    8.468000] PCI: Setting latency timer of device 0000:04:00.0 to 64
+[    8.472000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[    8.472000] sda: Write Protect is off
+[    8.472000] sda: Mode Sense: 00 3a 00 00
+[    8.472000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    8.472000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[    8.472000] sda: Write Protect is off
+[    8.472000] sda: Mode Sense: 00 3a 00 00
+[    8.472000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[    8.472000]  sda: sda1 sda2 < sda5 >
+[    8.504000] sd 0:0:0:0: Attached scsi disk sda
+[    8.504000] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    8.744000] eth0: Tigon3 [partno(BCM95906) rev c002 PHY(5906)] (PCI Express) 10/100Base-TX Ethernet 00:16:d4:de:d3:81
+[    8.744000] eth0: RXcsums[1] LinkChgREG[0] MIirq[0] ASF[0] Split[0] WireSpeed[0] TSOcap[1] 
+[    8.744000] eth0: dma_rwctrl[76180000] dma_mask[64-bit]
+[    8.756000] hda: ATAPI 24X DVD-ROM DVD-R-RAM CD-R/RW drive, 2048kB Cache, UDMA(33)
+[    8.756000] Uniform CD-ROM driver Revision: 3.20
+[    8.792000] Attempting manual resume
+[    8.792000] swsusp: Resume From Partition 254:1
+[    8.792000] PM: Checking swsusp image.
+[    8.792000] PM: Resume from disk failed.
+[    8.832000] kjournald starting.  Commit interval 5 seconds
+[    8.832000] EXT3-fs: mounted filesystem with ordered data mode.
+[   16.864000] NET: Registered protocol family 10
+[   16.864000] lo: Disabled Privacy Extensions
+[   16.864000] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   17.464000] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[   17.552000] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[   17.728000] Linux agpgart interface v0.102 (c) Dave Jones
+[   18.100000] sdhci: Secure Digital Host Controller Interface driver
+[   18.100000] sdhci: Copyright(c) Pierre Ossman
+[   18.100000] sdhci: SDHCI controller found at 0000:0e:06.1 [1180:0822] (rev 22)
+[   18.100000] ACPI: PCI Interrupt 0000:0e:06.1[B] -> GSI 23 (level, low) -> IRQ 21
+[   18.100000] mmc0: SDHCI at 0xf8300800 irq 21 DMA
+[   18.284000] agpgart: Detected an Intel 965GM Chipset.
+[   18.284000] agpgart: Detected 7676K stolen memory.
+[   18.296000] agpgart: AGP aperture is 256M @ 0xd0000000
+[   18.452000] Linux video capture interface: v2.00
+[   18.476000] Bluetooth: Core ver 2.11
+[   18.476000] NET: Registered protocol family 31
+[   18.476000] Bluetooth: HCI device and connection manager initialized
+[   18.476000] Bluetooth: HCI socket layer initialized
+[   18.480000] Bluetooth: HCI USB driver ver 2.9
+[   18.512000] ieee80211_crypt: registered algorithm 'NULL'
+[   18.512000] ieee80211: 802.11 data/management/control stack, git-1.1.13
+[   18.512000] ieee80211: Copyright (C) 2004-2005 Intel Corporation <jketreno@linux.intel.com>
+[   18.532000] ipw3945: Intel(R) PRO/Wireless 3945 Network Connection driver for Linux, 1.2.0mp
+[   18.532000] ipw3945: Copyright(c) 2003-2006 Intel Corporation
+[   18.532000] ACPI: PCI Interrupt 0000:0c:00.0[A] -> GSI 17 (level, low) -> IRQ 16
+[   18.532000] PCI: Setting latency timer of device 0000:0c:00.0 to 64
+[   18.532000] ipw3945: Detected Intel PRO/Wireless 3945ABG Network Connection
+[   18.572000] usbcore: registered new interface driver hci_usb
+[   18.624000] uvcvideo: Found UVC 1.00 device <unnamed> (046d:08ce)
+[   18.640000] usbcore: registered new interface driver uvcvideo
+[   18.640000] USB Video Class driver (v0.1.0)
+[   18.784000] ACPI: PCI Interrupt 0000:00:1b.0[A] -> GSI 20 (level, low) -> IRQ 23
+[   18.784000] PCI: Setting latency timer of device 0000:00:1b.0 to 64
+[   18.840000] usbcore: registered new interface driver snd-usb-audio
+[   18.984000]  patch_alc268 start .
+[   18.984000] check board start 
+[   18.984000]  ALC268_TOSHIBA 0x1, board_config 0x1.
+[   19.380000] lp: driver loaded but no devices found
+[   19.492000] EXT3 FS on dm-0, internal journal
+[   20.024000] fuse init (API version 7.8)
+[   20.024000] fuse distribution version: 2.7.0
+[   20.080000] kjournald starting.  Commit interval 5 seconds
+[   20.088000] EXT3 FS on sda1, internal journal
+[   20.088000] EXT3-fs: mounted filesystem with ordered data mode.
+[   20.104000] Adding 4136952k swap on /dev/mapper/ubuntu-swap_1.  Priority:-1 extents:1 across:4136952k
+[   20.408000] ipw3945: Detected geography ABG (11 802.11bg channels, 13 802.11a channels)
+[   20.420000] input: ImPS/2 Logitech Wheel Mouse as /class/input/input2
+[   20.940000] ACPI: AC Adapter [ACAD] (off-line)
+[   21.072000] ACPI: Battery Slot [BAT1] (battery present)
+[   21.088000] input: Power Button (FF) as /class/input/input3
+[   21.088000] ACPI: Power Button (FF) [PWRF]
+[   21.088000] input: Lid Switch as /class/input/input4
+[   21.088000] ACPI: Lid Switch [LID0]
+[   21.088000] input: Power Button (CM) as /class/input/input5
+[   21.088000] ACPI: Power Button (CM) [PWRB]
+[   21.172000] No dock devices found.
+[   21.184000] Using specific hotkey driver
+[   21.268000] ibm_acpi: ec object not found
+[   21.320000] ACPI: Video Device [VGA] (multi-head: yes  rom: no  post: no)
+[   21.324000] ACPI: Video Device [GFX0] (multi-head: yes  rom: no  post: no)
+[   21.352000] pcc_acpi: loading...
+[   23.040000] ADDRCONF(NETDEV_UP): eth1: link is not ready
+[   25.612000] ppdev: user-space parallel port driver
+[   26.160000] apm: BIOS not found.
+[   26.532000] Bluetooth: L2CAP ver 2.8
+[   26.532000] Bluetooth: L2CAP socket layer initialized
+[   26.700000] Bluetooth: RFCOMM socket layer initialized
+[   26.700000] Bluetooth: RFCOMM TTY layer initialized
+[   26.700000] Bluetooth: RFCOMM ver 1.8
+[   27.224000] [drm] Initialized drm 1.1.0 20060810
+[   27.224000] ACPI: PCI Interrupt 0000:00:02.0[A] -> GSI 16 (level, low) -> IRQ 17
+[   27.224000] [drm] Initialized i915 1.6.0 20060119 on minor 0
+[   61.904000] NET: Registered protocol family 17
+[   61.936000] ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+[   62.080000] ieee80211_crypt: registered algorithm 'CCMP'
+[   62.968000] ieee80211_crypt: registered algorithm 'TKIP'
+[   78.544000] eth1: no IPv6 routers present
+[  269.380000] set_level status: 0
+[  269.592000] set_level status: 0
+[  269.736000] set_level status: 0
+[  270.440000] set_level status: 0
+[  270.612000] set_level status: 0
+[  636.212000] CCMP: replay detected: STA=00:1c:10:27:ae:97 previous PN 00000000b075 received PN 00000000b075
+[ 1617.344000] ata1.00: exception Emask 0x2 SAct 0x1ffc00 SErr 0x0 action 0x2 frozen
+[ 1617.344000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x1ffc00 FIS=005040a1:00000200)
+[ 1617.344000] ata1.00: cmd 61/08:50:d8:28:70/00:00:02:00:00/40 tag 10 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:58:98:28:72/00:00:02:00:00/40 tag 11 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:60:b8:aa:e4/00:00:02:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:68:28:f8:56/00:00:05:00:00/40 tag 13 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/18:70:b0:2c:3e/00:00:13:00:00/40 tag 14 cdb 0x0 data 12288 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:78:d0:2c:3e/00:00:13:00:00/40 tag 15 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:80:50:2d:3e/00:00:13:00:00/40 tag 16 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:88:60:2d:3e/00:00:13:00:00/40 tag 17 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:90:38:eb:da/00:00:05:00:00/40 tag 18 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:98:28:eb:4a/00:00:06:00:00/40 tag 19 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.344000] ata1.00: cmd 61/08:a0:70:2d:3e/00:00:13:00:00/40 tag 20 cdb 0x0 data 4096 out
+[ 1617.344000]          res 50/00:08:70:2d:3e/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 1617.656000] ata1: soft resetting port
+[ 1617.828000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 1617.828000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 1617.828000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 1617.828000] ata1.00: configured for UDMA/133
+[ 1617.828000] ata1: EH complete
+[ 1617.828000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 1617.828000] sda: Write Protect is off
+[ 1617.828000] sda: Mode Sense: 00 3a 00 00
+[ 1617.828000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 2227.244000] ata1.00: exception Emask 0x2 SAct 0x7c00 SErr 0x0 action 0x2 frozen
+[ 2227.244000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x7c00 FIS=005040a1:00000200)
+[ 2227.244000] ata1.00: cmd 61/08:50:18:be:3d/00:00:13:00:00/40 tag 10 cdb 0x0 data 4096 out
+[ 2227.244000]          res 50/00:08:68:c7:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 2227.244000] ata1.00: cmd 61/08:58:28:be:3d/00:00:13:00:00/40 tag 11 cdb 0x0 data 4096 out
+[ 2227.244000]          res 50/00:08:68:c7:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 2227.244000] ata1.00: cmd 61/08:60:00:c7:3d/00:00:13:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 2227.244000]          res 50/00:08:68:c7:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 2227.244000] ata1.00: cmd 61/08:68:18:c7:3d/00:00:13:00:00/40 tag 13 cdb 0x0 data 4096 out
+[ 2227.244000]          res 50/00:08:68:c7:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 2227.244000] ata1.00: cmd 61/08:70:68:c7:3d/00:00:13:00:00/40 tag 14 cdb 0x0 data 4096 out
+[ 2227.244000]          res 50/00:08:68:c7:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 2227.556000] ata1: soft resetting port
+[ 2228.176000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 2228.176000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 2228.176000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 2228.176000] ata1.00: configured for UDMA/133
+[ 2228.176000] ata1: EH complete
+[ 2228.176000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 2228.176000] sda: Write Protect is off
+[ 2228.176000] sda: Mode Sense: 00 3a 00 00
+[ 2228.180000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 3338.592000] ata1.00: exception Emask 0x2 SAct 0x4fffffff SErr 0x0 action 0x2 frozen
+[ 3338.592000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x4fffffff FIS=005040a1:20000000)
+[ 3338.592000] ata1.00: cmd 61/08:00:e0:39:58/00:00:13:00:00/40 tag 0 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:08:c8:3b:58/00:00:13:00:00/40 tag 1 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:10:70:4f:58/00:00:13:00:00/40 tag 2 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:18:98:61:58/00:00:13:00:00/40 tag 3 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:20:c8:77:58/00:00:13:00:00/40 tag 4 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:28:18:7d:58/00:00:13:00:00/40 tag 5 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:30:08:85:58/00:00:13:00:00/40 tag 6 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:38:b8:a0:58/00:00:13:00:00/40 tag 7 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:40:90:d5:58/00:00:13:00:00/40 tag 8 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:48:10:e5:58/00:00:13:00:00/40 tag 9 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:50:78:35:59/00:00:13:00:00/40 tag 10 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:58:a0:88:59/00:00:13:00:00/40 tag 11 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:60:70:cd:59/00:00:13:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:68:30:d7:59/00:00:13:00:00/40 tag 13 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:70:58:f9:5e/00:00:13:00:00/40 tag 14 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:78:78:06:63/00:00:13:00:00/40 tag 15 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:80:60:f4:75/00:00:13:00:00/40 tag 16 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:88:98:53:04/00:00:15:00:00/40 tag 17 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:90:08:af:04/00:00:15:00:00/40 tag 18 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:98:68:54:05/00:00:15:00:00/40 tag 19 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:a0:08:13:06/00:00:15:00:00/40 tag 20 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:a8:60:fb:08/00:00:15:00:00/40 tag 21 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:b0:e8:fe:08/00:00:15:00:00/40 tag 22 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:b8:e0:91:09/00:00:15:00:00/40 tag 23 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:c0:a8:a7:09/00:00:15:00:00/40 tag 24 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:c8:f0:ab:09/00:00:15:00:00/40 tag 25 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:d0:10:1d:0a/00:00:15:00:00/40 tag 26 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/08:d8:48:23:0a/00:00:15:00:00/40 tag 27 cdb 0x0 data 4096 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.592000] ata1.00: cmd 61/20:f0:78:30:58/00:00:13:00:00/40 tag 30 cdb 0x0 data 16384 out
+[ 3338.592000]          res 50/00:08:48:23:0a/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3338.904000] ata1: soft resetting port
+[ 3339.076000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 3339.076000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3339.076000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3339.076000] ata1.00: configured for UDMA/133
+[ 3339.076000] ata1: EH complete
+[ 3339.080000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 3339.080000] sda: Write Protect is off
+[ 3339.080000] sda: Mode Sense: 00 3a 00 00
+[ 3339.080000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 3771.440000] ata1.00: exception Emask 0x2 SAct 0x73ffffff SErr 0x0 action 0x2 frozen
+[ 3771.440000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x73ffffff FIS=005040a1:08000000)
+[ 3771.440000] ata1.00: cmd 61/00:00:98:5e:71/04:00:13:00:00/40 tag 0 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:08:98:62:71/04:00:13:00:00/40 tag 1 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:10:80:cc:71/04:00:13:00:00/40 tag 2 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:18:80:d8:71/04:00:13:00:00/40 tag 3 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/08:20:08:43:57/00:00:13:00:00/40 tag 4 cdb 0x0 data 4096 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/10:28:c0:c0:46/00:00:13:00:00/40 tag 5 cdb 0x0 data 8192 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:30:80:d0:71/04:00:13:00:00/40 tag 6 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/28:38:68:c2:46/00:00:13:00:00/40 tag 7 cdb 0x0 data 20480 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/18:40:f8:da:46/00:00:13:00:00/40 tag 8 cdb 0x0 data 12288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:48:80:d4:71/04:00:13:00:00/40 tag 9 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/e8:50:e0:b9:61/02:00:13:00:00/40 tag 10 cdb 0x0 data 380928 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/30:58:20:ad:62/00:00:13:00:00/40 tag 11 cdb 0x0 data 24576 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/08:60:a0:e0:62/00:00:13:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/20:68:b0:e0:62/00:00:13:00:00/40 tag 13 cdb 0x0 data 16384 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/40:70:50:c1:61/00:00:13:00:00/40 tag 14 cdb 0x0 data 32768 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/48:78:90:0a:63/02:00:13:00:00/40 tag 15 cdb 0x0 data 299008 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:80:e0:0c:63/04:00:13:00:00/40 tag 16 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:88:e0:10:63/04:00:13:00:00/40 tag 17 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/70:90:e0:14:63/00:00:13:00:00/40 tag 18 cdb 0x0 data 57344 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:98:98:5a:71/04:00:13:00:00/40 tag 19 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/e8:a0:98:66:71/01:00:13:00:00/40 tag 20 cdb 0x0 data 249856 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/08:a8:88:68:71/00:00:13:00:00/40 tag 21 cdb 0x0 data 4096 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:b0:80:c8:71/04:00:13:00:00/40 tag 22 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:b8:80:e0:71/04:00:13:00:00/40 tag 23 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/00:c0:80:dc:71/04:00:13:00:00/40 tag 24 cdb 0x0 data 524288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/f8:c8:80:e4:71/03:00:13:00:00/40 tag 25 cdb 0x0 data 520192 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/18:e0:78:2b:46/00:00:13:00:00/40 tag 28 cdb 0x0 data 12288 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 61/c0:e8:e0:49:71/00:00:13:00:00/40 tag 29 cdb 0x0 data 98304 out
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.440000] ata1.00: cmd 60/08:f0:60:64:2b/00:00:13:00:00/40 tag 30 cdb 0x0 data 4096 in
+[ 3771.440000]          res 50/00:f8:80:e4:71/00:03:13:00:00/40 Emask 0x2 (HSM violation)
+[ 3771.752000] ata1: soft resetting port
+[ 3771.924000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 3771.924000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3771.924000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3771.924000] ata1.00: configured for UDMA/133
+[ 3771.924000] ata1: EH complete
+[ 3771.936000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 3771.936000] sda: Write Protect is off
+[ 3771.936000] sda: Mode Sense: 00 3a 00 00
+[ 3771.948000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 3786.248000] ata1.00: exception Emask 0x2 SAct 0x7ffffff3 SErr 0x0 action 0x2 frozen
+[ 3786.248000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x7ffffff3 FIS=005040a1:00000008)
+[ 3786.248000] ata1.00: cmd 61/08:00:90:68:09/00:00:15:00:00/40 tag 0 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:08:48:f1:09/00:00:15:00:00/40 tag 1 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:20:08:a8:45/00:00:13:00:00/40 tag 4 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:28:90:a9:45/00:00:13:00:00/40 tag 5 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:30:58:aa:45/00:00:13:00:00/40 tag 6 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:38:f0:ab:45/00:00:13:00:00/40 tag 7 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:40:b8:ac:45/00:00:13:00:00/40 tag 8 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:48:80:ad:45/00:00:13:00:00/40 tag 9 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:50:60:ae:45/00:00:13:00:00/40 tag 10 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:58:f0:54:46/00:00:13:00:00/40 tag 11 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:60:f8:54:46/00:00:13:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:68:90:68:55/00:00:13:00:00/40 tag 13 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:70:90:68:61/00:00:13:00:00/40 tag 14 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:78:90:68:65/00:00:13:00:00/40 tag 15 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:80:90:68:69/00:00:13:00:00/40 tag 16 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:88:90:68:6d/00:00:13:00:00/40 tag 17 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:90:80:68:71/00:00:13:00:00/40 tag 18 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:98:90:68:71/00:00:13:00:00/40 tag 19 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:a0:78:e8:71/00:00:13:00:00/40 tag 20 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:a8:88:d0:72/00:00:13:00:00/40 tag 21 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:b0:60:26:73/00:00:13:00:00/40 tag 22 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:b8:90:68:75/00:00:13:00:00/40 tag 23 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:c0:90:68:69/00:00:14:00:00/40 tag 24 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:c8:90:68:6d/00:00:14:00:00/40 tag 25 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:d0:a0:9d:6f/00:00:14:00:00/40 tag 26 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:d8:a8:bd:6f/00:00:14:00:00/40 tag 27 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:e0:90:68:fd/00:00:14:00:00/40 tag 28 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:e8:90:68:01/00:00:15:00:00/40 tag 29 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.248000] ata1.00: cmd 61/08:f0:90:68:05/00:00:15:00:00/40 tag 30 cdb 0x0 data 4096 out
+[ 3786.248000]          res 50/00:08:48:f1:09/00:00:15:00:00/40 Emask 0x2 (HSM violation)
+[ 3786.560000] ata1: soft resetting port
+[ 3786.732000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 3786.732000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3786.732000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 3786.732000] ata1.00: configured for UDMA/133
+[ 3786.732000] ata1: EH complete
+[ 3786.736000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 3786.736000] sda: Write Protect is off
+[ 3786.736000] sda: Mode Sense: 00 3a 00 00
+[ 3786.736000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 4497.216000] ata1.00: exception Emask 0x2 SAct 0x3ff800 SErr 0x0 action 0x2 frozen
+[ 4497.216000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x3ff800 FIS=005040a1:00000400)
+[ 4497.216000] ata1.00: cmd 61/08:58:98:ba:3d/00:00:13:00:00/40 tag 11 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:60:68:bb:3d/00:00:13:00:00/40 tag 12 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:68:08:bc:3d/00:00:13:00:00/40 tag 13 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:70:a0:bc:3d/00:00:13:00:00/40 tag 14 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:78:58:bd:3d/00:00:13:00:00/40 tag 15 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:80:10:be:3d/00:00:13:00:00/40 tag 16 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:88:20:be:3d/00:00:13:00:00/40 tag 17 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:90:30:be:3d/00:00:13:00:00/40 tag 18 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:98:b0:be:3d/00:00:13:00:00/40 tag 19 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:a0:c0:be:3d/00:00:13:00:00/40 tag 20 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.216000] ata1.00: cmd 61/08:a8:d0:be:3d/00:00:13:00:00/40 tag 21 cdb 0x0 data 4096 out
+[ 4497.216000]          res 50/00:08:d0:be:3d/00:00:13:00:00/40 Emask 0x2 (HSM violation)
+[ 4497.528000] ata1: soft resetting port
+[ 4497.700000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 4497.700000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 4497.700000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 4497.700000] ata1.00: configured for UDMA/133
+[ 4497.700000] ata1: EH complete
+[ 4497.700000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 4497.700000] sda: Write Protect is off
+[ 4497.700000] sda: Mode Sense: 00 3a 00 00
+[ 4497.700000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 5812.308000] usb 6-1: USB disconnect, address 2
+[ 5891.508000] ADDRCONF(NETDEV_UP): eth1: link is not ready
+[ 5892.500000] ACPI: PCI interrupt for device 0000:04:00.0 disabled
+[ 5892.620000] ACPI: PCI interrupt for device 0000:0c:00.0 disabled
+[ 5895.840000] PM: Preparing system for mem sleep
+[ 5895.840000] Disabling non-boot CPUs ...
+[ 5895.864000] Breaking affinity for irq 12
+[ 5895.864000] Breaking affinity for irq 18
+[ 5895.864000] CPU 1 is now offline
+[ 5895.864000] SMP alternatives: switching to UP code
+[ 5895.872000] CPU1 is down
+[ 5895.872000] Stopping tasks ... done.
+[ 5895.884000] Suspending console(s)
+[ 5895.884000] platform bluetooth: suspend
+[ 5895.884000] sd 0:0:0:0: suspend
+[ 5896.592000] usb 2-1:1.3: PM: suspend 2-->2
+[ 5896.592000]  usbdev2.2_ep04: PM: suspend 0->2, parent 2-1:1.2 already 2
+[ 5896.592000]  usbdev2.2_ep84: PM: suspend 0->2, parent 2-1:1.2 already 2
+[ 5896.592000] usb 2-1:1.2: PM: suspend 2-->2
+[ 5896.592000] hci_usb 2-1:1.1: suspend
+[ 5896.592000] hci_usb 2-1:1.0: suspend
+[ 5896.592000] usb 2-1: suspend, may wakeup
+[ 5896.620000]  usbdev7.1_ep81: PM: suspend 0->2, parent 7-0:1.0 already 2
+[ 5896.620000] hub 7-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 7-0:1.0: PM: suspend 2->2, parent usb7 already 2
+[ 5896.620000]  usbdev7.1_ep00: PM: suspend 0->2, parent usb7 already 2
+[ 5896.620000] usb usb7: PM: suspend 2-->2
+[ 5896.620000]  usbdev6.1_ep81: PM: suspend 0->2, parent 6-0:1.0 already 2
+[ 5896.620000] hub 6-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 6-0:1.0: PM: suspend 2->2, parent usb6 already 2
+[ 5896.620000]  usbdev6.1_ep00: PM: suspend 0->2, parent usb6 already 2
+[ 5896.620000] usb usb6: PM: suspend 2-->2
+[ 5896.620000]  usbdev5.1_ep81: PM: suspend 0->2, parent 5-0:1.0 already 2
+[ 5896.620000] hub 5-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 5-0:1.0: PM: suspend 2->2, parent usb5 already 2
+[ 5896.620000]  usbdev5.1_ep00: PM: suspend 0->2, parent usb5 already 2
+[ 5896.620000] usb usb5: PM: suspend 2-->2
+[ 5896.620000]  usbdev4.1_ep81: PM: suspend 0->2, parent 4-0:1.0 already 2
+[ 5896.620000] hub 4-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 4-0:1.0: PM: suspend 2->2, parent usb4 already 2
+[ 5896.620000]  usbdev4.1_ep00: PM: suspend 0->2, parent usb4 already 2
+[ 5896.620000] usb usb4: PM: suspend 2-->2
+[ 5896.620000]  usbdev3.1_ep81: PM: suspend 0->2, parent 3-0:1.0 already 2
+[ 5896.620000] hub 3-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 3-0:1.0: PM: suspend 2->2, parent usb3 already 2
+[ 5896.620000]  usbdev3.1_ep00: PM: suspend 0->2, parent usb3 already 2
+[ 5896.620000] usb usb3: PM: suspend 2-->2
+[ 5896.620000] hub 2-0:1.0: suspend
+[ 5896.620000] usb usb2: suspend, may wakeup
+[ 5896.620000]  usbdev1.1_ep81: PM: suspend 0->2, parent 1-0:1.0 already 2
+[ 5896.620000] hub 1-0:1.0: PM: suspend 2-->2
+[ 5896.620000] hub 1-0:1.0: PM: suspend 2->2, parent usb1 already 2
+[ 5896.620000]  usbdev1.1_ep00: PM: suspend 0->2, parent usb1 already 2
+[ 5896.620000] usb usb1: PM: suspend 2-->2
+[ 5896.620000] platform vesafb.0: suspend
+[ 5896.620000] ide-cdrom 0.0: suspend
+[ 5896.620000] platform eisa.0: suspend
+[ 5896.620000] i8042 i8042: suspend
+[ 5897.128000] serial8250 serial8250: suspend
+[ 5897.128000] pci_express 0000:00:1c.5:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.5:pcie00: suspend
+[ 5897.128000] pci_express 0000:00:1c.4:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.4:pcie00: suspend
+[ 5897.128000] pci_express 0000:00:1c.3:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.3:pcie00: suspend
+[ 5897.128000] pci_express 0000:00:1c.2:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.2:pcie00: suspend
+[ 5897.128000] pci_express 0000:00:1c.1:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.1:pcie00: suspend
+[ 5897.128000] pci_express 0000:00:1c.0:pcie02: suspend
+[ 5897.128000] pci_express 0000:00:1c.0:pcie00: suspend
+[ 5897.128000] platform pcspkr: suspend
+[ 5897.128000] i8042 aux 00:09: suspend
+[ 5897.128000] i8042 kbd 00:08: suspend
+[ 5897.128000] pnp 00:07: suspend
+[ 5897.128000] system 00:06: suspend
+[ 5897.128000] pnp 00:05: suspend
+[ 5897.128000] system 00:04: suspend
+[ 5897.128000] pnp 00:03: suspend
+[ 5897.128000] pnp 00:02: suspend
+[ 5897.128000] system 00:01: suspend
+[ 5897.128000] pnp 00:00: suspend
+[ 5897.128000] pci 0000:0e:06.3: suspend
+[ 5897.128000] pci 0000:0e:06.2: suspend
+[ 5897.128000] sdhci 0000:0e:06.1: suspend
+[ 5897.128000] ACPI: PCI interrupt for device 0000:0e:06.1 disabled
+[ 5897.144000] ohci1394 0000:0e:06.0: suspend
+[ 5897.144000] ohci1394 does not fully support suspend and resume yet
+[ 5897.164000] pci 0000:0c:00.0: suspend
+[ 5897.164000] pci 0000:04:00.0: suspend
+[ 5897.164000] pci 0000:00:1f.3: suspend
+[ 5897.164000] ahci 0000:00:1f.2: suspend
+[ 5897.164000] ACPI: PCI interrupt for device 0000:00:1f.2 disabled
+[ 5897.180000] PIIX_IDE 0000:00:1f.1: suspend
+[ 5897.180000] pci 0000:00:1f.0: suspend
+[ 5897.180000] pci 0000:00:1e.0: suspend
+[ 5897.180000] ehci_hcd 0000:00:1d.7: suspend, may wakeup
+[ 5897.180000] ACPI: PCI interrupt for device 0000:00:1d.7 disabled
+[ 5897.196000] uhci_hcd 0000:00:1d.2: suspend
+[ 5897.196000] ACPI: PCI interrupt for device 0000:00:1d.2 disabled
+[ 5897.196000] uhci_hcd 0000:00:1d.1: suspend
+[ 5897.196000] ACPI: PCI interrupt for device 0000:00:1d.1 disabled
+[ 5897.196000] uhci_hcd 0000:00:1d.0: suspend
+[ 5897.196000] ACPI: PCI interrupt for device 0000:00:1d.0 disabled
+[ 5897.196000] pcieport-driver 0000:00:1c.5: suspend
+[ 5897.196000] pcieport-driver 0000:00:1c.4: suspend
+[ 5897.196000] pcieport-driver 0000:00:1c.3: suspend
+[ 5897.196000] pcieport-driver 0000:00:1c.2: suspend
+[ 5897.196000] pcieport-driver 0000:00:1c.1: suspend
+[ 5897.196000] pcieport-driver 0000:00:1c.0: suspend
+[ 5897.196000] HDA Intel 0000:00:1b.0: suspend
+[ 5897.204000] ACPI: PCI interrupt for device 0000:00:1b.0 disabled
+[ 5897.220000] ehci_hcd 0000:00:1a.7: suspend, may wakeup
+[ 5897.220000] ACPI: PCI interrupt for device 0000:00:1a.7 disabled
+[ 5897.236000] uhci_hcd 0000:00:1a.1: suspend
+[ 5897.236000] ACPI: PCI interrupt for device 0000:00:1a.1 disabled
+[ 5897.236000] uhci_hcd 0000:00:1a.0: suspend
+[ 5897.236000] ACPI: PCI interrupt for device 0000:00:1a.0 disabled
+[ 5897.236000] pci 0000:00:02.1: suspend
+[ 5897.236000] pci 0000:00:02.0: suspend
+[ 5897.236000] agpgart-intel 0000:00:00.0: suspend
+[ 5897.236000] acpi acpi: suspend
+[ 5897.236000] PM: Entering mem sleep
+[ 5897.236000] platform bluetooth: LATE suspend
+[ 5897.236000] platform vesafb.0: LATE suspend
+[ 5897.236000] platform eisa.0: LATE suspend
+[ 5897.236000] i8042 i8042: LATE suspend
+[ 5897.236000] serial8250 serial8250: LATE suspend
+[ 5897.236000] platform pcspkr: LATE suspend
+[ 5897.236000] pci 0000:0e:06.3: LATE suspend
+[ 5897.236000] pci 0000:0e:06.2: LATE suspend
+[ 5897.236000] sdhci 0000:0e:06.1: LATE suspend
+[ 5897.236000] ohci1394 0000:0e:06.0: LATE suspend
+[ 5897.236000] pci 0000:0c:00.0: LATE suspend
+[ 5897.236000] pci 0000:04:00.0: LATE suspend
+[ 5897.236000] pci 0000:00:1f.3: LATE suspend
+[ 5897.236000] PIIX_IDE 0000:00:1f.1: LATE suspend
+[ 5897.236000] pci 0000:00:1f.0: LATE suspend
+[ 5897.236000] pci 0000:00:1e.0: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.5: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.4: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.3: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.2: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.1: LATE suspend
+[ 5897.236000] pcieport-driver 0000:00:1c.0: LATE suspend
+[ 5897.236000] HDA Intel 0000:00:1b.0: LATE suspend
+[ 5897.236000] pci 0000:00:02.1: LATE suspend
+[ 5897.236000] pci 0000:00:02.0: LATE suspend
+[ 5897.236000] agpgart-intel 0000:00:00.0: LATE suspend
+[ 5897.236000] Back to C!
+[ 6773.236000] agpgart-intel 0000:00:00.0: EARLY resume
+[ 6773.236000] pci 0000:00:02.0: EARLY resume
+[ 6773.236000] pci 0000:00:02.1: EARLY resume
+[ 6773.236000] uhci_hcd 0000:00:1a.0: EARLY resume
+[ 6773.236000] uhci_hcd 0000:00:1a.1: EARLY resume
+[ 6773.236000] ehci_hcd 0000:00:1a.7: EARLY resume
+[ 6773.236000] HDA Intel 0000:00:1b.0: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.0: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.1: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.2: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.3: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.4: EARLY resume
+[ 6773.236000] pcieport-driver 0000:00:1c.5: EARLY resume
+[ 6773.236000] uhci_hcd 0000:00:1d.0: EARLY resume
+[ 6773.236000] uhci_hcd 0000:00:1d.1: EARLY resume
+[ 6773.236000] uhci_hcd 0000:00:1d.2: EARLY resume
+[ 6773.236000] ehci_hcd 0000:00:1d.7: EARLY resume
+[ 6773.236000] pci 0000:00:1e.0: EARLY resume
+[ 6773.236000] pci 0000:00:1f.0: EARLY resume
+[ 6773.236000] PIIX_IDE 0000:00:1f.1: EARLY resume
+[ 6773.236000] ahci 0000:00:1f.2: EARLY resume
+[ 6773.236000] pci 0000:00:1f.3: EARLY resume
+[ 6773.236000] pci 0000:04:00.0: EARLY resume
+[ 6773.236000] pci 0000:0c:00.0: EARLY resume
+[ 6773.236000] ohci1394 0000:0e:06.0: EARLY resume
+[ 6773.236000] sdhci 0000:0e:06.1: EARLY resume
+[ 6773.236000] pci 0000:0e:06.2: EARLY resume
+[ 6773.236000] pci 0000:0e:06.3: EARLY resume
+[ 6773.236000] platform pcspkr: EARLY resume
+[ 6773.236000] serial8250 serial8250: EARLY resume
+[ 6773.236000] i8042 i8042: EARLY resume
+[ 6773.236000] platform eisa.0: EARLY resume
+[ 6773.236000] platform vesafb.0: EARLY resume
+[ 6773.236000] platform bluetooth: EARLY resume
+[ 6773.236000] PM: Finishing wakeup.
+[ 6773.236000] acpi acpi: resuming
+[ 6773.264000] agpgart-intel 0000:00:00.0: resuming
+[ 6773.264000] PM: Writing back config space on device 0000:00:02.0 at offset f (was 100, writing 105)
+[ 6773.276000] pci 0000:00:02.0: resuming
+[ 6773.276000] ACPI: PCI Interrupt 0000:00:02.0[A] -> GSI 16 (level, low) -> IRQ 17
+[ 6773.276000] pci 0000:00:02.1: resuming
+[ 6773.276000] PM: Writing back config space on device 0000:00:02.1 at offset 1 (was 900006, writing 900007)
+[ 6773.276000] uhci_hcd 0000:00:1a.0: resuming
+[ 6773.276000] ACPI: PCI Interrupt 0000:00:1a.0[A] -> GSI 16 (level, low) -> IRQ 17
+[ 6773.276000] PCI: Setting latency timer of device 0000:00:1a.0 to 64
+[ 6773.276000] usb usb1: root hub lost power or was reset
+[ 6773.276000] uhci_hcd 0000:00:1a.1: resuming
+[ 6773.276000] ACPI: PCI Interrupt 0000:00:1a.1[B] -> GSI 21 (level, low) -> IRQ 20
+[ 6773.276000] PCI: Setting latency timer of device 0000:00:1a.1 to 64
+[ 6773.276000] usb usb2: root hub lost power or was reset
+[ 6773.276000] ehci_hcd 0000:00:1a.7: resuming
+[ 6773.292000] ACPI: PCI Interrupt 0000:00:1a.7[C] -> GSI 18 (level, low) -> IRQ 18
+[ 6773.292000] PCI: Setting latency timer of device 0000:00:1a.7 to 64
+[ 6773.292000] HDA Intel 0000:00:1b.0: resuming
+[ 6773.308000] PM: Writing back config space on device 0000:00:1b.0 at offset 1 (was 100106, writing 100102)
+[ 6773.308000] ACPI: PCI Interrupt 0000:00:1b.0[A] -> GSI 20 (level, low) -> IRQ 23
+[ 6773.308000] PCI: Setting latency timer of device 0000:00:1b.0 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.0: resuming
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.0 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.1: resuming
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.1 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.2: resuming
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.2 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.3: resuming
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.3 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.4: resuming
+[ 6773.392000] PM: Writing back config space on device 0000:00:1c.4 at offset 7 (was f0, writing 200000f0)
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.4 to 64
+[ 6773.392000] pcieport-driver 0000:00:1c.5: resuming
+[ 6773.392000] PM: Writing back config space on device 0000:00:1c.5 at offset 7 (was f0, writing 200000f0)
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1c.5 to 64
+[ 6773.392000] uhci_hcd 0000:00:1d.0: resuming
+[ 6773.392000] ACPI: PCI Interrupt 0000:00:1d.0[A] -> GSI 23 (level, low) -> IRQ 21
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1d.0 to 64
+[ 6773.392000] usb usb3: root hub lost power or was reset
+[ 6773.392000] uhci_hcd 0000:00:1d.1: resuming
+[ 6773.392000] ACPI: PCI Interrupt 0000:00:1d.1[B] -> GSI 19 (level, low) -> IRQ 19
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1d.1 to 64
+[ 6773.392000] usb usb4: root hub lost power or was reset
+[ 6773.392000] uhci_hcd 0000:00:1d.2: resuming
+[ 6773.392000] ACPI: PCI Interrupt 0000:00:1d.2[C] -> GSI 18 (level, low) -> IRQ 18
+[ 6773.392000] PCI: Setting latency timer of device 0000:00:1d.2 to 64
+[ 6773.392000] usb usb5: root hub lost power or was reset
+[ 6773.392000] ehci_hcd 0000:00:1d.7: resuming
+[ 6773.408000] ACPI: PCI Interrupt 0000:00:1d.7[A] -> GSI 23 (level, low) -> IRQ 21
+[ 6773.408000] PCI: Setting latency timer of device 0000:00:1d.7 to 64
+[ 6773.408000] pci 0000:00:1e.0: resuming
+[ 6773.408000] PCI: Setting latency timer of device 0000:00:1e.0 to 64
+[ 6773.408000] pci 0000:00:1f.0: resuming
+[ 6773.408000] PIIX_IDE 0000:00:1f.1: resuming
+[ 6773.408000] PM: Writing back config space on device 0000:00:1f.1 at offset 1 (was 2800005, writing 2880005)
+[ 6773.408000] ACPI: PCI Interrupt 0000:00:1f.1[A] -> GSI 19 (level, low) -> IRQ 19
+[ 6773.408000] ahci 0000:00:1f.2: resuming
+[ 6773.424000] ACPI: PCI Interrupt 0000:00:1f.2[B] -> GSI 19 (level, low) -> IRQ 19
+[ 6773.424000] PCI: Setting latency timer of device 0000:00:1f.2 to 64
+[ 6774.428000] pci 0000:00:1f.3: resuming
+[ 6774.428000] PM: Writing back config space on device 0000:00:1f.3 at offset 4 (was 0, writing 88000000)
+[ 6774.428000] pci 0000:04:00.0: resuming
+[ 6774.428000] PM: Writing back config space on device 0000:04:00.0 at offset 3 (was 0, writing 10)
+[ 6774.428000] PM: Writing back config space on device 0000:04:00.0 at offset 1 (was 100000, writing 40100102)
+[ 6774.428000] pci 0000:0c:00.0: resuming
+[ 6774.428000] PM: Writing back config space on device 0000:0c:00.0 at offset f (was 100, writing 10a)
+[ 6774.428000] PM: Writing back config space on device 0000:0c:00.0 at offset 4 (was 0, writing f8200000)
+[ 6774.428000] PM: Writing back config space on device 0000:0c:00.0 at offset 3 (was 0, writing 10)
+[ 6774.428000] PM: Writing back config space on device 0000:0c:00.0 at offset 1 (was 100000, writing 100102)
+[ 6774.428000] ohci1394 0000:0e:06.0: resuming
+[ 6774.496000] ohci1394: fw-host0: OHCI-1394 1.1 (PCI): IRQ=[22]  MMIO=[f8300000-f83007ff]  Max Packet=[2048]  IR/IT contexts=[4/4]
+[ 6774.500000] sdhci 0000:0e:06.1: resuming
+[ 6774.516000] PM: Writing back config space on device 0000:0e:06.1 at offset 1 (was 2100102, writing 2100106)
+[ 6774.516000] ACPI: PCI Interrupt 0000:0e:06.1[B] -> GSI 23 (level, low) -> IRQ 21
+[ 6774.520000] pci 0000:0e:06.2: resuming
+[ 6774.520000] pci 0000:0e:06.3: resuming
+[ 6774.520000] pnp 00:00: resuming
+[ 6774.520000] system 00:01: resuming
+[ 6774.520000] pnp 00:02: resuming
+[ 6774.520000] pnp 00:03: resuming
+[ 6774.520000] system 00:04: resuming
+[ 6774.520000] pnp 00:05: resuming
+[ 6774.520000] system 00:06: resuming
+[ 6774.520000] pnp 00:07: resuming
+[ 6774.520000] i8042 kbd 00:08: resuming
+[ 6774.520000] pnp: Device 00:08 does not support activation.
+[ 6774.520000] i8042 aux 00:09: resuming
+[ 6774.520000] pnp: Device 00:09 does not support activation.
+[ 6774.520000] platform pcspkr: resuming
+[ 6774.520000] pci_express 0000:00:1c.0:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.0:pcie02: resuming
+[ 6774.520000] pci_express 0000:00:1c.1:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.1:pcie02: resuming
+[ 6774.520000] pci_express 0000:00:1c.2:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.2:pcie02: resuming
+[ 6774.520000] pci_express 0000:00:1c.3:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.3:pcie02: resuming
+[ 6774.520000] pci_express 0000:00:1c.4:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.4:pcie02: resuming
+[ 6774.520000] pci_express 0000:00:1c.5:pcie00: resuming
+[ 6774.520000] pci_express 0000:00:1c.5:pcie02: resuming
+[ 6774.520000] serial8250 serial8250: resuming
+[ 6774.520000] i8042 i8042: resuming
+[ 6774.532000] atkbd serio0: resuming
+[ 6774.588000] platform eisa.0: resuming
+[ 6774.588000] psmouse serio1: resuming
+[ 6774.740000] ata2: SATA link down (SStatus 0 SControl 300)
+[ 6774.740000] ata3: SATA link down (SStatus 0 SControl 300)
+[ 6776.956000] ide-cdrom 0.0: resuming
+[ 6776.964000] platform vesafb.0: resuming
+[ 6776.964000] usb usb1: resuming
+[ 6777.004000] usb usb2: resuming
+[ 6777.044000] hub 2-0:1.0: resuming
+[ 6777.044000] usb usb3: resuming
+[ 6777.084000] usb usb4: resuming
+[ 6777.124000] usb usb5: resuming
+[ 6777.164000]  usbdev6.1_ep00: PM: resume from 0, parent usb6 still 2
+[ 6777.164000]  usbdev6.1_ep81: PM: resume from 0, parent 6-0:1.0 still 2
+[ 6777.164000]  usbdev7.1_ep00: PM: resume from 0, parent usb7 still 2
+[ 6777.164000]  usbdev7.1_ep81: PM: resume from 0, parent 7-0:1.0 still 2
+[ 6777.164000] usb 2-1: resuming
+[ 6777.164000]  usbdev2.2_ep00: PM: resume from 0, parent 2-1 still 2
+[ 6777.164000] hci_usb 2-1:1.0: PM: resume from 2, parent 2-1 still 2
+[ 6777.164000] hci_usb 2-1:1.0: resuming
+[ 6777.164000]  usbdev2.2_ep81: PM: resume from 0, parent 2-1:1.0 still 2
+[ 6777.164000]  usbdev2.2_ep82: PM: resume from 0, parent 2-1:1.0 still 2
+[ 6777.164000]  usbdev2.2_ep02: PM: resume from 0, parent 2-1:1.0 still 2
+[ 6777.164000] hci_usb 2-1:1.1: PM: resume from 2, parent 2-1 still 2
+[ 6777.164000] hci_usb 2-1:1.1: resuming
+[ 6777.164000]  usbdev2.2_ep84: PM: resume from 0, parent 2-1:1.2 still 2
+[ 6777.164000]  usbdev2.2_ep04: PM: resume from 0, parent 2-1:1.2 still 2
+[ 6777.164000] sd 0:0:0:0: resuming
+[ 6777.164000] platform bluetooth: resuming
+[ 6777.164000]  usbdev2.2_ep83: PM: resume from 0, parent 2-1:1.1 still 2
+[ 6777.164000]  usbdev2.2_ep03: PM: resume from 0, parent 2-1:1.1 still 2
+[ 6777.164000]  hci0: PM: resume from 0, parent 2-1:1.0 still 2
+[ 6777.164000] Restarting tasks ... <6>usb 2-1: USB disconnect, address 2
+[ 6777.204000] done.
+[ 6777.204000] Enabling non-boot CPUs ...
+[ 6777.220000] SMP alternatives: switching to SMP code
+[ 6777.220000] Booting processor 1/1 eip 3000
+[ 6777.228000] Initializing CPU#1
+[ 6777.308000] Calibrating delay using timer specific routine.. 3591.08 BogoMIPS (lpj=7182173)
+[ 6777.308000] CPU: After generic identify, caps: bfebfbff 20000000 00000000 00000000 0000e3bd 00000000 00000001
+[ 6777.308000] monitor/mwait feature present.
+[ 6777.308000] CPU: L1 I cache: 32K, L1 D cache: 32K
+[ 6777.308000] CPU: L2 cache: 2048K
+[ 6777.308000] CPU: Physical Processor ID: 0
+[ 6777.308000] CPU: Processor Core ID: 1
+[ 6777.308000] CPU: After all inits, caps: bfebfbff 20000000 00000000 00003940 0000e3bd 00000000 00000001
+[ 6777.308000] CPU1: Intel(R) Core(TM)2 Duo CPU     T7100  @ 1.80GHz stepping 0d
+[ 6777.312000] CPU1 is up
+[ 6777.312000] APIC error on CPU1: 00(40)
+[ 6777.312000] APIC error on CPU0: 00(40)
+[ 6777.692000] ata1: waiting for device to spin up (8 secs)
+[ 6778.044000] usb 2-1: new full speed USB device using uhci_hcd and address 3
+[ 6778.212000] usb 2-1: configuration #1 chosen from 1 choice
+[ 6786.052000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 6786.052000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6786.340000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6786.340000] ata1.00: configured for UDMA/133
+[ 6786.340000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 6786.340000] sda: Write Protect is off
+[ 6786.340000] sda: Mode Sense: 00 3a 00 00
+[ 6786.340000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 6786.760000] tg3.c:v3.72 (January 8, 2007)
+[ 6786.760000] ACPI: PCI Interrupt 0000:04:00.0[A] -> GSI 17 (level, low) -> IRQ 16
+[ 6786.760000] PCI: Setting latency timer of device 0000:04:00.0 to 64
+[ 6787.052000] eth0: Tigon3 [partno(BCM95906) rev c002 PHY(5906)] (PCI Express) 10/100Base-TX Ethernet 00:16:d4:de:d3:81
+[ 6787.052000] eth0: RXcsums[1] LinkChgREG[0] MIirq[0] ASF[0] Split[0] WireSpeed[0] TSOcap[1] 
+[ 6787.052000] eth0: dma_rwctrl[76180000] dma_mask[64-bit]
+[ 6787.092000] ieee80211: 802.11 data/management/control stack, git-1.1.13
+[ 6787.092000] ieee80211: Copyright (C) 2004-2005 Intel Corporation <jketreno@linux.intel.com>
+[ 6787.192000] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[ 6787.200000] ipw3945: Intel(R) PRO/Wireless 3945 Network Connection driver for Linux, 1.2.0mp
+[ 6787.200000] ipw3945: Copyright(c) 2003-2006 Intel Corporation
+[ 6787.200000] ACPI: PCI Interrupt 0000:0c:00.0[A] -> GSI 17 (level, low) -> IRQ 16
+[ 6787.200000] PCI: Setting latency timer of device 0000:0c:00.0 to 64
+[ 6787.200000] ipw3945: Detected Intel PRO/Wireless 3945ABG Network Connection
+[ 6788.204000] input: Power Button (FF) as /class/input/input6
+[ 6788.204000] ACPI: Power Button (FF) [PWRF]
+[ 6788.208000] input: Lid Switch as /class/input/input7
+[ 6788.208000] ACPI: Lid Switch [LID0]
+[ 6788.208000] input: Power Button (CM) as /class/input/input8
+[ 6788.208000] ACPI: Power Button (CM) [PWRB]
+[ 6788.444000] ACPI: AC Adapter [ACAD] (on-line)
+[ 6788.568000] ACPI: Battery Slot [BAT1] (battery present)
+[ 6789.156000] ipw3945: Detected geography ABG (11 802.11bg channels, 13 802.11a channels)
+[ 6789.428000] ADDRCONF(NETDEV_UP): eth1: link is not ready
+[ 6790.992000] ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
+[ 6809.428000] eth1: no IPv6 routers present
+[ 6817.200000] ata1.00: exception Emask 0x2 SAct 0x1fffe000 SErr 0x0 action 0x2 frozen
+[ 6817.200000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x1fffe000 FIS=005040a1:00001000)
+[ 6817.200000] ata1.00: cmd 61/10:68:88:b8:3b/00:00:13:00:00/40 tag 13 cdb 0x0 data 8192 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:70:b8:b8:3b/00:00:13:00:00/40 tag 14 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:78:90:68:3d/00:00:13:00:00/40 tag 15 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/10:80:90:68:0d/00:00:15:00:00/40 tag 16 cdb 0x0 data 8192 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:88:68:6b:0d/00:00:15:00:00/40 tag 17 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/10:90:78:6b:0d/00:00:15:00:00/40 tag 18 cdb 0x0 data 8192 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:98:90:b7:10/00:00:15:00:00/40 tag 19 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:a0:f0:06:11/00:00:15:00:00/40 tag 20 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/10:a8:b0:69:11/00:00:15:00:00/40 tag 21 cdb 0x0 data 8192 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:b0:90:68:1d/00:00:15:00:00/40 tag 22 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:b8:38:6d:d5/00:00:17:00:00/40 tag 23 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:c0:90:68:dd/00:00:17:00:00/40 tag 24 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:c8:90:68:fd/00:00:17:00:00/40 tag 25 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/10:d0:98:68:8d/00:00:1c:00:00/40 tag 26 cdb 0x0 data 8192 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:d8:b0:68:8d/00:00:1c:00:00/40 tag 27 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.200000] ata1.00: cmd 61/08:e0:78:ae:8f/00:00:1c:00:00/40 tag 28 cdb 0x0 data 4096 out
+[ 6817.200000]          res 50/00:08:78:ae:8f/00:00:1c:00:00/40 Emask 0x2 (HSM violation)
+[ 6817.512000] ata1: soft resetting port
+[ 6817.684000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 6817.684000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6817.684000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6817.684000] ata1.00: configured for UDMA/133
+[ 6817.684000] ata1: EH complete
+[ 6817.684000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 6817.684000] sda: Write Protect is off
+[ 6817.684000] sda: Mode Sense: 00 3a 00 00
+[ 6817.688000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 6838.464000] ata1.00: exception Emask 0x2 SAct 0x1500007 SErr 0x0 action 0x2 frozen
+[ 6838.464000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x1500007 FIS=005040a1:00040000)
+[ 6838.464000] ata1.00: cmd 60/08:00:80:7f:13/00:00:18:00:00/40 tag 0 cdb 0x0 data 4096 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.464000] ata1.00: cmd 60/c0:08:88:7f:13/00:00:18:00:00/40 tag 1 cdb 0x0 data 98304 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.464000] ata1.00: cmd 60/38:10:58:80:13/00:00:18:00:00/40 tag 2 cdb 0x0 data 28672 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.464000] ata1.00: cmd 60/08:a0:70:50:13/00:00:18:00:00/40 tag 20 cdb 0x0 data 4096 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.464000] ata1.00: cmd 60/08:b0:a0:50:13/00:00:18:00:00/40 tag 22 cdb 0x0 data 4096 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.464000] ata1.00: cmd 60/08:c0:d0:50:13/00:00:18:00:00/40 tag 24 cdb 0x0 data 4096 in
+[ 6838.464000]          res 50/00:38:58:80:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6838.776000] ata1: soft resetting port
+[ 6838.948000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 6838.948000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6838.948000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6838.948000] ata1.00: configured for UDMA/133
+[ 6838.948000] ata1: EH complete
+[ 6838.948000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 6838.948000] sda: Write Protect is off
+[ 6838.948000] sda: Mode Sense: 00 3a 00 00
+[ 6838.948000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 6839.168000] ata1.00: exception Emask 0x2 SAct 0x8555000 SErr 0x0 action 0x2 frozen
+[ 6839.168000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x8555000 FIS=005040a1:00000400)
+[ 6839.168000] ata1.00: cmd 60/08:60:00:46:13/00:00:18:00:00/40 tag 12 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:70:30:46:13/00:00:18:00:00/40 tag 14 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:80:60:46:13/00:00:18:00:00/40 tag 16 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:90:90:46:13/00:00:18:00:00/40 tag 18 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:a0:d0:46:13/00:00:18:00:00/40 tag 20 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:b0:00:47:13/00:00:18:00:00/40 tag 22 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.168000] ata1.00: cmd 60/08:d8:78:47:13/00:00:18:00:00/40 tag 27 cdb 0x0 data 4096 in
+[ 6839.168000]          res 50/00:08:d8:47:13/00:00:18:00:00/40 Emask 0x2 (HSM violation)
+[ 6839.480000] ata1: soft resetting port
+[ 6839.652000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 6839.652000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6839.652000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6839.652000] ata1.00: configured for UDMA/133
+[ 6839.652000] ata1: EH complete
+[ 6839.652000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 6839.652000] sda: Write Protect is off
+[ 6839.652000] sda: Mode Sense: 00 3a 00 00
+[ 6839.652000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA
+[ 6840.056000] ata1.00: NCQ disabled due to excessive errors
+[ 6840.056000] ata1.00: exception Emask 0x2 SAct 0x55542 SErr 0x0 action 0x2 frozen
+[ 6840.056000] ata1.00: (spurious completions during NCQ issue=0x0 SAct=0x55542 FIS=005040a1:00000010)
+[ 6840.056000] ata1.00: cmd 60/08:08:08:48:a1/00:00:1b:00:00/40 tag 1 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:30:90:4c:13/00:00:18:00:00/40 tag 6 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:40:c0:4c:13/00:00:18:00:00/40 tag 8 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:50:f0:4c:13/00:00:18:00:00/40 tag 10 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:60:20:4d:13/00:00:18:00:00/40 tag 12 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:70:50:4d:13/00:00:18:00:00/40 tag 14 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:80:80:4d:13/00:00:18:00:00/40 tag 16 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.056000] ata1.00: cmd 60/08:90:b0:4d:13/00:00:18:00:00/40 tag 18 cdb 0x0 data 4096 in
+[ 6840.056000]          res 50/00:08:08:48:a1/00:00:1b:00:00/40 Emask 0x2 (HSM violation)
+[ 6840.368000] ata1: soft resetting port
+[ 6840.540000] ata1: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[ 6840.540000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6840.540000] ata1.00: ata_hpa_resize 1: sectors = 488397168, hpa_sectors = 488397168
+[ 6840.540000] ata1.00: configured for UDMA/133
+[ 6840.540000] ata1: EH complete
+[ 6840.564000] SCSI device sda: 488397168 512-byte hdwr sectors (250059 MB)
+[ 6840.580000] sda: Write Protect is off
+[ 6840.580000] sda: Mode Sense: 00 3a 00 00
+[ 6840.580000] SCSI device sda: write cache: enabled, read cache: enabled, doesn't support DPO or FUA

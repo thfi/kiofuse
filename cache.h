@@ -25,6 +25,15 @@
 #include <kio/filejob.h>
 #include <kfileitem.h>
 
+class FileJobData
+{
+    public:
+        FileJobData(KIO::FileJob* aFileJob);
+        ~FileJobData() {fileJob->close();}
+        KIO::FileJob* fileJob;
+        bool inUse;
+};
+
 class Cache : public QObject
 {
     Q_OBJECT
@@ -39,7 +48,7 @@ class Cache : public QObject
         bool setExtraData(const KUrl& url, const uint64_t& key,
                           KIO::FileJob* fileJob);
         Cache* find(const KUrl &url);
-        QMap<uint64_t, KIO::FileJob*> jobsMap() const {return fhIdtoFileJob;}
+        QMap<uint64_t, FileJobData*> jobsMap() const {return fhIdtoFileJob;}
         void removeExpired();
 
     private:
@@ -51,7 +60,7 @@ class Cache : public QObject
         KFileItem* m_item;
         QList<Cache*> children;
         NodeType m_nodeType;
-        QMap<uint64_t, KIO::FileJob*> fhIdtoFileJob;
+        QMap<uint64_t, FileJobData*> fhIdtoFileJob;
 };
 
 #endif /* CACHE_H */
