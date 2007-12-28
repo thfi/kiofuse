@@ -20,7 +20,7 @@
 #include <kdebug.h>
 
 FileJobData::FileJobData(KIO::FileJob* aFileJob)
-    : fileJob(aFileJob), inUse(false)
+    : fileJob(aFileJob), jobMutex(QMutex::NonRecursive)
 {}
 
 Cache::Cache(KFileItem* item)

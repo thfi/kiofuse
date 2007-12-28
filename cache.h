@@ -20,6 +20,7 @@
 
 #include <QString>
 #include <QList>
+#include <QMutex>
 
 #include <kurl.h>
 #include <kio/filejob.h>
@@ -31,7 +32,7 @@ class FileJobData
         FileJobData(KIO::FileJob* aFileJob);
         ~FileJobData() {fileJob->close();}
         KIO::FileJob* fileJob;
-        bool inUse;
+        QMutex jobMutex;
 };
 
 class Cache : public QObject

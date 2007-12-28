@@ -21,6 +21,7 @@
 #include "kiofuseapp.h"
 
 #include <QThread>
+#include <QMutexLocker>
 
 #include <kdebug.h>
 
@@ -126,13 +127,16 @@ void KioFuseApp::storeOpenHandle(const KUrl& url, KIO::FileJob* fileJob,
 // using it
 KIO::FileJob* KioFuseApp::checkOutJob(const KUrl& url, const uint64_t& fileHandleId)
 {
-    QMutexLocker locker(&m_cacheMutex);
+    QMutexLocker cacheLocker(&m_cacheMutex);
     Cache* currCache = m_cacheRoot->find(url);
     // FIXME when currCache == NULL
     
     if (currCache->jobsMap().contains(fileHandleId)){
         FileJobData* fileJobData = currCache->jobsMap().value(fileHandleId);
-        while (fileJobData->inUse){
+        cacheLocker.unlock();
+        fileJobData->jobMutex.lock();
+        cacheLocker.relock();
+       /* while (fileJobData->inUse){
             locker.unlock();
             // Another FuseOp thread is using this FileJob. Sleep for a while
             // and try again. This should be needed very rarely, if at all.
@@ -140,7 +144,7 @@ KIO::FileJob* KioFuseApp::checkOutJob(const KUrl& url, const uint64_t& fileHandl
             sleep(1);
             locker.relock();
         }
-        fileJobData->inUse = true;
+        fileJobData->inUse = true;*/
         return fileJobData->fileJob;
     } else {
         // Didn't find the job
@@ -159,7 +163,7 @@ void KioFuseApp::checkInJob(const KUrl& url, const uint64_t& fileHandleId)
     Q_ASSERT(currCache->jobsMap().contains(fileHandleId));
      
     FileJobData* fileJobData = currCache->jobsMap().value(fileHandleId);
-    fileJobData->inUse = false;
+    fileJobData->jobMutex.unlock();
 }
 
 /*********** ListJob ***********/

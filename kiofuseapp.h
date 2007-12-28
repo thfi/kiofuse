@@ -24,8 +24,6 @@
 #include "cache.h"
 #include "jobhelpers.h"
 
-#include <QMutex>
-#include <QMutexLocker>
 #include <KApplication>
 
 class ListJobHelper;

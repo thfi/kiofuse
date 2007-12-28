@@ -35,8 +35,12 @@ void BaseJobHelper::jobDone(const int& error)
 {
     kDebug()<<"jobDone"<<endl;
     m_error = error;
-    m_eventLoop->quit();  // Return execution to the FUSE op that called us
-    m_eventLoop = NULL;
+    
+    // FIXME might be OK to remove
+    Q_ASSERT(m_eventLoop != NULL);
+    
+    m_eventLoop->exit();  // Return execution to the FUSE op that called us
+    //m_eventLoop = NULL;
 }
 
 BaseJobHelper::~BaseJobHelper()
