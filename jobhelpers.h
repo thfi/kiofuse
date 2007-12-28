@@ -89,7 +89,7 @@ class OpenJobHelper : public BaseJobHelper  // Helps open a specified file or di
         KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
 };
 
-class ReadJobHelper : public BaseJobHelper  // Helps open a specified file or directory
+class ReadJobHelper : public BaseJobHelper  // Helps read a specified file
 {
     Q_OBJECT
 
@@ -112,6 +112,33 @@ class ReadJobHelper : public BaseJobHelper  // Helps open a specified file or di
         KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
         QByteArray m_data;
         size_t m_size;
+        off_t m_offset;
+};
+
+class WriteJobHelper : public BaseJobHelper  // Helps write to a specified file
+{
+    Q_OBJECT
+
+    public:
+        WriteJobHelper(KIO::FileJob* fileJob, const KUrl& url, const QByteArray& data,
+                                       const off_t& offset, QEventLoop* eventLoop);
+        ~WriteJobHelper();
+        size_t written() {return m_written;}  // Sends number of
+                                              // bytes written to the FUSE op
+    
+    signals:
+        void reqSeek(KIO::FileJob*, const off_t&, WriteJobHelper*);
+        void reqWrite(KIO::FileJob*, const QByteArray&, WriteJobHelper*);
+        void sendJobDone(const int&);
+
+    public slots:
+        void receivePosition(const off_t& pos, const int& error);
+        void receiveWritten(const size_t& written, const int& error);
+        
+    protected:
+        KIO::FileJob* m_fileJob;  // FIXME Needs to be deleted by close() or the cache cleaner
+        QByteArray m_data;
+        size_t m_written;
         off_t m_offset;
 };
 

@@ -104,8 +104,16 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
     return res;
 }
 
+int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    return 0;
+}
+
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 {
+    kDebug()<<"relPath"<<relPath<<endl;
+    
     QIODevice::OpenMode qtMode = modeFromPosix(fi->flags);
     int res = 0;
     OpenJobHelper* helper;  // Helps retrieve the file object
@@ -139,6 +147,8 @@ int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi)
 {
+    kDebug()<<"relPath"<<relPath<<endl;
+    
     ReadJobHelper* helper;  // Helps retrieve the file object
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
     KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
@@ -164,6 +174,45 @@ int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
             res = data.size();
             Q_ASSERT(res <= size);
             memcpy(buf, data.data(), res);
+        }
+        
+        // fileJob will now be available to other threads
+        kioFuseApp->checkInJob(url, fileHandleId);
+        delete helper;
+        helper = NULL;
+    }
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
+int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
+                 struct fuse_file_info *fi)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    
+    WriteJobHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    int res = 0;
+    
+    // No other thread can use fileJob while we're using it
+    KIO::FileJob* fileJob = kioFuseApp->checkOutJob(url, fileHandleId);
+    if (!fileJob){
+        res = -ENOENT;  // Didn't find an opened job
+    } else {
+        kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
+        QByteArray data(buf, size);
+        helper = new WriteJobHelper(fileJob, url, data, offset, eventLoop);
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+        //eventLoop has finished, so job is now available
+        if (helper->error()){
+            res = -EACCES;  // FIXME covert KIO errors
+        } else {
+            Q_ASSERT(helper->written() == size);
         }
         
         // fileJob will now be available to other threads
@@ -230,6 +279,12 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     eventLoop = NULL;
 
     return res;
+}
+
+int kioFuseAccess(const char *relPath, int mask)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    return 0;
 }
 
 static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)

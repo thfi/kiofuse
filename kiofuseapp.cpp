@@ -297,27 +297,20 @@ void KioFuseApp::fileJobOpened(KIO::Job* job)
     Q_ASSERT(numJobsRemoved == 1);
 }
 
-/*********** Seek ***********/
-void KioFuseApp::seekMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper)
+/*********** Seek for Read ***********/
+void KioFuseApp::seekReadMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper)
 {
     Q_ASSERT(fileJob->thread() == this->thread());
     kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
     connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
-            this, SLOT(slotPosition(KIO::Job*, KIO::filesize_t)));
+            this, SLOT(slotReadPosition(KIO::Job*, KIO::filesize_t)));
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(readJobHelper));
     fileJob->seek(static_cast<KIO::filesize_t>(offset));
 }
 
-void KioFuseApp::slotPosition(KIO::Job* job, KIO::filesize_t pos)
+void KioFuseApp::slotReadPosition(KIO::Job* job, KIO::filesize_t pos)
 {
-    /*if (!m_jobToJobHelper.contains(qobject_cast<KJob*>(job))){
-        // This is the second time FileJob::position() was called.
-        // We must already have removed the job. Ignore the call.
-        kDebug()<<"ignoring FileJob::position"<<endl;
-        return;
-    }*/
-    
     KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
     
     // Prevent FileJob::position() signal from being triggered multiple times
@@ -329,6 +322,7 @@ void KioFuseApp::slotPosition(KIO::Job* job, KIO::filesize_t pos)
     Q_ASSERT(m_jobToJobHelper.contains(qobject_cast<KJob*>(job)));
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
     ReadJobHelper* readJobHelper = qobject_cast<ReadJobHelper*>(jobHelper);
+    
     // Needed by Qt::QueuedConnection
     qRegisterMetaType<off_t>("off_t");
     // Send the position to readJobHelper
@@ -372,21 +366,88 @@ void KioFuseApp::slotData(KIO::Job* job, const QByteArray& data)
     
     Q_ASSERT(readJobHelper);
     
-    /*if (readJobHelper == NULL){
-        if(data.size() != 0){
-            //FIXME
-            kDebug()<<"IGNORING REAL DATA. BAD!!!!!!!"<<endl;
-        } else {
-            kDebug()<<"IGNORING EMPTY"<<endl;
-        }
-        // Safe to ignore because FileJob sends extra empty data() signals
-        return;
-    }*/
-    
     connect(this, SIGNAL(sendData(const QByteArray&, const int&)),
             readJobHelper, SLOT(receiveData(const QByteArray&, const int&)),
             Qt::QueuedConnection);
     emit sendData(data, job->error());
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
+    Q_ASSERT(numJobsRemoved == 1);
+}
+
+/*********** Seek for Write ***********/
+void KioFuseApp::seekWriteMainThread(KIO::FileJob* fileJob, const off_t& offset, WriteJobHelper* writeJobHelper)
+{
+    Q_ASSERT(fileJob->thread() == this->thread());
+    kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
+    connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+            this, SLOT(slotWritePosition(KIO::Job*, KIO::filesize_t)));
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
+                            qobject_cast<BaseJobHelper*>(writeJobHelper));
+    fileJob->seek(static_cast<KIO::filesize_t>(offset));
+}
+
+void KioFuseApp::slotWritePosition(KIO::Job* job, KIO::filesize_t pos)
+{
+    KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
+    
+    // Prevent FileJob::position() signal from being triggered multiple times
+    // upon subsequent seeks
+    fileJob->disconnect();
+    
+    kDebug()<<"job"<<job<<"job->thread()"<<job->thread()<<endl;
+    
+    Q_ASSERT(m_jobToJobHelper.contains(qobject_cast<KJob*>(job)));
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
+    WriteJobHelper* writeJobHelper = qobject_cast<WriteJobHelper*>(jobHelper);
+    
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<off_t>("off_t");
+    // Send the position to writeJobHelper
+    connect(this, SIGNAL(sendPosition(const off_t&, const int&)),
+            writeJobHelper, SLOT(receivePosition(const off_t&, const int&)),
+            Qt::QueuedConnection);
+    emit sendPosition(static_cast<off_t>(pos), job->error());
+
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
+    Q_ASSERT(numJobsRemoved == 1);
+}
+
+void KioFuseApp::writeMainThread(KIO::FileJob* fileJob, const QByteArray& data, WriteJobHelper* writeJobHelper)
+{
+    kDebug()<<"writeJobHelper"<<writeJobHelper<<endl;
+    
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
+                            qobject_cast<BaseJobHelper*>(writeJobHelper));
+    
+    Q_ASSERT(fileJob->thread() == this->thread());
+    connect(fileJob, SIGNAL(written(KIO::Job*, const KIO::filesize_t&)),
+            this, SLOT(slotWritten(KIO::Job*, const KIO::filesize_t&)));
+    
+    fileJob->write(data);
+}
+
+void KioFuseApp::slotWritten(KIO::Job* job, const KIO::filesize_t& written)
+{
+    kDebug()<<"written"<<written<<endl;
+    
+    KIO::FileJob* fileJob = qobject_cast<KIO::FileJob*>(job);
+    
+    // Prevent FileJob::written() signal from being triggered multiple times
+    // upon subsequent reads
+    fileJob->disconnect();
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(qobject_cast<KJob*>(job));
+    WriteJobHelper* writeJobHelper = qobject_cast<WriteJobHelper*>(jobHelper);
+    
+    Q_ASSERT(writeJobHelper);
+    
+    connect(this, SIGNAL(sendWritten(const size_t&, const int&)),
+            writeJobHelper, SLOT(receiveWritten(const size_t&, const int&)),
+            Qt::QueuedConnection);
+    emit sendWritten(static_cast<size_t>(written), job->error());
     
     // Remove job and jobHelper from map
     int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));

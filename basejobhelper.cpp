@@ -36,20 +36,16 @@ void BaseJobHelper::jobDone(const int& error)
     kDebug()<<"jobDone"<<endl;
     m_error = error;
     
-    // FIXME might be OK to remove
-    Q_ASSERT(m_eventLoop != NULL);
-    
     m_eventLoop->exit();  // Return execution to the FUSE op that called us
-    //m_eventLoop = NULL;
 }
 
 BaseJobHelper::~BaseJobHelper()
 {
     kDebug()<<"BaseJobHelper dtor"<<endl;
 
-    if (m_eventLoop != NULL)  // Should already be NULL from  jobDone(), but it might not be if this instance of
-    {                         // BaseJobHelper is deleted before the job is done
-        m_eventLoop->quit();
+    if (!m_eventLoop->isRunning())
+    {
+        m_eventLoop->exit();
         m_eventLoop = NULL;
     }
 }

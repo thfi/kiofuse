@@ -32,7 +32,7 @@ extern "C" {
 
 int kioFuseGetAttr(const char *relPath, struct stat *stbuf);
 int kioFuseReadLink(const char *relPath, char *buf, size_t size);
-//int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
+int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
 //int kioFuseMkDir(const char *relPath, mode_t mode);
 //int kioFuseUnLink(const char *relPath);
 //int kioFuseRmDir(const char *relPath);
@@ -43,10 +43,10 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size);
 //FIXME add kioFuseChOwn
 //int kioFuseTruncate(const char *relPath, off_t size);
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi);
-int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offs,
+int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
-//int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offs,
-//                   struct fuse_file_info *fi);
+int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
+                  struct fuse_file_info *fi);
 //FIXME add kioFuseStatFS
 //FIXME add kioFuseFlush
 //int kioFuseRelease(const char* relPath, struct fuse_file_info *fi);
@@ -63,7 +63,7 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 //FIXME add kioFuseFSyncDir
 //FIXME add kioFuseInit
 //FIXME add kioFuseDestroy
-//FIXME add kioFuseAccess
+int kioFuseAccess(const char *relPath, int mask);
 //FIXME add kioFuseCreate
 //FIXME add kioFuseFTruncate
 //FIXME add kioFuseFGetAttr

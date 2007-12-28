@@ -30,6 +30,7 @@ class ListJobHelper;
 class StatJobHelper;
 class OpenJobHelper;
 class ReadJobHelper;
+class WriteJobHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -59,11 +60,15 @@ class KioFuseApp : public KApplication
         void statJobMainThread(const KUrl& url, StatJobHelper* statJobHelper);
         void slotStatJobResult(KJob* job);
         void openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper);
-        void seekMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper);
-        void slotPosition(KIO::Job* job, KIO::filesize_t pos);
+        void seekReadMainThread(KIO::FileJob* fileJob, const off_t& offset, ReadJobHelper* readJobHelper);
+        void slotReadPosition(KIO::Job* job, KIO::filesize_t pos);
         void readMainThread(KIO::FileJob* fileJob, const size_t& size, ReadJobHelper* readJobHelper);
         void slotData(KIO::Job* job, const QByteArray& data);
         void fileJobOpened(KIO::Job* job);
+        void seekWriteMainThread(KIO::FileJob* fileJob, const off_t& offset, WriteJobHelper* writeJobHelper);
+        void slotWritePosition(KIO::Job* job, KIO::filesize_t pos);
+        void writeMainThread(KIO::FileJob* fileJob, const QByteArray& data, WriteJobHelper* writeJobHelper);
+        void slotWritten(KIO::Job* job, const KIO::filesize_t& written);
         
     signals:
         void sendJobDone(const int&);
@@ -71,6 +76,7 @@ class KioFuseApp : public KApplication
         void sendFileJob(KIO::FileJob*);
         void sendPosition(const off_t&, const int&);
         void sendData(const QByteArray&, const int&);
+        void sendWritten(const size_t&, const int&);
         
     private:
         KUrl m_baseUrl;  // Remote base URL

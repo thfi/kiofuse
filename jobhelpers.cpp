@@ -107,7 +107,7 @@ ReadJobHelper::ReadJobHelper(KIO::FileJob* fileJob, const KUrl& url, const size_
     qRegisterMetaType<off_t>("off_t");
     connect(this, SIGNAL(reqSeek(KIO::FileJob*,
             const off_t&, ReadJobHelper*)),
-            kioFuseApp, SLOT(seekMainThread(KIO::FileJob*,
+            kioFuseApp, SLOT(seekReadMainThread(KIO::FileJob*,
             const off_t&, ReadJobHelper*)),
             Qt::QueuedConnection);
     emit reqSeek(m_fileJob, offset, this);
@@ -122,7 +122,6 @@ void ReadJobHelper::receivePosition(const off_t& pos, const int& error)
 {
     kDebug()<<"m_offset"<<m_offset<<"pos"<<pos;
     kDebug()<<"m_size"<<m_size<<"error"<<error;
-    //kDebug()<<"m_fileJob"<<m_fileJob<<"m_fileJob->thread()"<<m_fileJob->thread()<<endl;
     kDebug()<<"m_fileJob"<<m_fileJob<<endl;
     kDebug()<<"this->thread()"<<this->thread()<<endl;
     if (pos == m_offset){
@@ -146,6 +145,61 @@ void ReadJobHelper::receiveData(const QByteArray& data, const int& error)
 {
     kDebug()<<"data"<<data<<endl;
     m_data = data;
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            this, SLOT(jobDone(const int&)));
+    emit sendJobDone(error);
+}
+
+/*********** WriteJobHelper ***********/
+WriteJobHelper::WriteJobHelper(KIO::FileJob* fileJob, const KUrl& url, const QByteArray& data,
+                             const off_t& offset, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url),  // The generalized job helper
+      m_fileJob(fileJob),
+      m_data(data),
+      m_written(),
+      m_offset(offset)
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<off_t>("off_t");
+    connect(this, SIGNAL(reqSeek(KIO::FileJob*,
+            const off_t&, WriteJobHelper*)),
+            kioFuseApp, SLOT(seekWriteMainThread(KIO::FileJob*,
+            const off_t&, WriteJobHelper*)),
+            Qt::QueuedConnection);
+    emit reqSeek(m_fileJob, offset, this);
+}
+
+WriteJobHelper::~WriteJobHelper()
+{
+    kDebug()<<"WriteJobHelper dtor"<<endl;
+}
+
+void WriteJobHelper::receivePosition(const off_t& pos, const int& error)
+{
+    kDebug()<<"m_offset"<<m_offset<<"pos"<<pos;
+    kDebug()<<"m_fileJob"<<m_fileJob<<endl;
+    kDebug()<<"this->thread()"<<this->thread()<<endl;
+    if (pos == m_offset){
+        // Needed by Qt::QueuedConnection
+        qRegisterMetaType<size_t>("size_t");
+        connect(this, SIGNAL(reqWrite(KIO::FileJob*,
+                const QByteArray&, WriteJobHelper*)),
+                kioFuseApp, SLOT(writeMainThread(KIO::FileJob*,
+                const QByteArray&, WriteJobHelper*)),
+                Qt::QueuedConnection);
+        emit reqWrite(m_fileJob, m_data, this);
+    } else {  // FIXME
+        m_written = 0;
+        connect(this, SIGNAL(sendJobDone(const int&)),
+                this, SLOT(jobDone(const int&)));
+        emit sendJobDone(error);
+    }
+}
+
+void WriteJobHelper::receiveWritten(const size_t& written, const int& error)
+{
+    kDebug()<<"written"<<written<<endl;
+    m_written = written;
     connect(this, SIGNAL(sendJobDone(const int&)),
             this, SLOT(jobDone(const int&)));
     emit sendJobDone(error);

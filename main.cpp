@@ -104,9 +104,12 @@ int main (int argc, char *argv[])
     memset(&ops, 0, sizeof(ops));
     ops.getattr = kioFuseGetAttr;
     ops.readlink = kioFuseReadLink;
+    ops.mknod = kioFuseMkNod;
     ops.open = kioFuseOpen;
     ops.read = kioFuseRead;
+    ops.write = kioFuseWrite;
     ops.readdir = kioFuseReadDir;
+    ops.access = kioFuseAccess;
 
     // Tell FUSE about the KioFuse implementations of FS operations
     fuseHandle = fuse_new(fuseChannel, &fuseArguments, &ops, sizeof(ops), NULL);
