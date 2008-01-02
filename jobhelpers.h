@@ -154,4 +154,16 @@ class MkNodHelper : public BaseJobHelper  // Helps list a specified directory
         void reqMkNod(const KUrl&, const mode_t&, MkNodHelper*);
 };
 
+class ChModHelper : public BaseJobHelper  // Helps list a specified directory
+{
+    Q_OBJECT
+
+    public:
+        ChModHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop);
+        ~ChModHelper();
+    
+    signals:
+        void reqChMod(const KUrl&, const mode_t&, ChModHelper*);
+};
+
 #endif /* JOB_HELPERS_H */

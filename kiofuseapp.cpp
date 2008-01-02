@@ -137,15 +137,6 @@ KIO::FileJob* KioFuseApp::checkOutJob(const KUrl& url, const uint64_t& fileHandl
         cacheLocker.unlock();
         fileJobData->jobMutex.lock();
         cacheLocker.relock();
-       /* while (fileJobData->inUse){
-            locker.unlock();
-            // Another FuseOp thread is using this FileJob. Sleep for a while
-            // and try again. This should be needed very rarely, if at all.
-            kDebug()<<"Waiting 1s for filejob"<<url.path()<<endl;
-            sleep(1);
-            locker.relock();
-        }
-        fileJobData->inUse = true;*/
         return fileJobData->fileJob;
     } else {
         // Didn't find the job
@@ -463,7 +454,7 @@ void KioFuseApp::slotWritten(KIO::Job* job, const KIO::filesize_t& written)
     Q_ASSERT(numJobsRemoved == 1);
 }
 
-/*********** Seek for MkNod ***********/
+/*********** MkNod ***********/
 void KioFuseApp::MkNodMainThread(const KUrl& url, const mode_t& mode,
                                  MkNodHelper* mkNodHelper)
 {
@@ -472,7 +463,8 @@ void KioFuseApp::MkNodMainThread(const KUrl& url, const mode_t& mode,
                                  // if move fails
     temp->open();
     
-    KIO::FileCopyJob* fileCopyJob = KIO::file_move(temp->fileName(), url, mode,
+    // FIXME file_move ignores mode, BAD! file_copy seems to work OK.
+    KIO::FileCopyJob* fileCopyJob = KIO::file_move(temp->fileName(), url, mode /*33188*/,
                       KIO::Overwrite | KIO::HideProgressInfo);
     Q_ASSERT(fileCopyJob->thread() == this->thread());
     
@@ -508,6 +500,40 @@ void KioFuseApp::slotMkNodResult(KJob* job)
     int numTempFilesRemoved = m_jobToTempFile.remove(job);
     Q_ASSERT(numTempFilesRemoved == 1);
     delete(temp);
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
+}
+
+/*********** ChMod ***********/
+void KioFuseApp::ChModMainThread(const KUrl& url, const mode_t& mode,
+                                 ChModHelper* chModHelper)
+{
+    KIO::SimpleJob* simpleJob = KIO::chmod(url, mode);
+    Q_ASSERT(simpleJob->thread() == this->thread());
+    
+    // Correlate SimpleJob with the ChModHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(simpleJob),
+                            qobject_cast<BaseJobHelper*>(chModHelper));
+    kDebug()<<"mode"<<mode<<endl;
+    connect(simpleJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotChModResult(KJob*)));
+}
+
+void KioFuseApp::slotChModResult(KJob* job)
+{
+    int error = job->error();
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(error);
     
     // Remove job and jobHelper from map
     int numJobsRemoved = m_jobToJobHelper.remove(job);

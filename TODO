@@ -1,6 +1,8 @@
 TODO
 -----
 
+- KIO::file_move ignores the permissions parameter.
+
 - See whether there is a race condition if BaseJobHelper::jobDone() is called before the data is properly stored.
 
 - Ask Carewolf why FileJob::data() gets called twice (second time carrying an empty array) for each ::read() request and why ::position() gets called twice for each ::seek(). About every three ::read() requests, the ::data() signal is not called at all.

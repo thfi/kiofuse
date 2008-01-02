@@ -39,7 +39,7 @@ int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
 //int kioFuseSymLink(const char *from, const char *to);
 //int kioFuseReName(const char *from, const char *to);
 //FIXME add kioFuseLink
-//int kioFuseChmod(const char *relPath, mode_t mode);
+int kioFuseChMod(const char *relPath, mode_t mode);
 //FIXME add kioFuseChOwn
 //int kioFuseTruncate(const char *relPath, off_t size);
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi);

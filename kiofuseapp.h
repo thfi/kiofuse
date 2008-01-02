@@ -33,6 +33,7 @@ class OpenJobHelper;
 class ReadJobHelper;
 class WriteJobHelper;
 class MkNodHelper;
+class ChModHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -73,6 +74,10 @@ class KioFuseApp : public KApplication
         void slotWritten(KIO::Job* job, const KIO::filesize_t& written);
         void MkNodMainThread(const KUrl& url, const mode_t& mode, MkNodHelper* mkNodHelper);
         void slotMkNodResult(KJob* job);
+        void ChModMainThread(const KUrl& url, const mode_t& mode,
+                             ChModHelper* chModHelper);
+        void slotChModResult(KJob* job);
+
         
     signals:
         void sendJobDone(const int&);

@@ -130,6 +130,32 @@ int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
     return res;
 }
 
+int kioFuseChMod(const char *relPath, mode_t mode)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    
+    ChModHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    int res = 0;
+    
+    helper = new ChModHelper(url, mode, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+    //eventLoop has finished, so job is now available
+    if (helper->error()){
+        res = -EACCES;  // FIXME covert KIO errors
+    }
+        
+    delete helper;
+    helper = NULL;
+    
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 {
     kDebug()<<"relPath"<<relPath<<endl;
