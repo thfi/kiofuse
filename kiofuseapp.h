@@ -25,12 +25,14 @@
 #include "jobhelpers.h"
 
 #include <KApplication>
+#include <ktemporaryfile.h>
 
 class ListJobHelper;
 class StatJobHelper;
 class OpenJobHelper;
 class ReadJobHelper;
 class WriteJobHelper;
+class MkNodHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -69,6 +71,8 @@ class KioFuseApp : public KApplication
         void slotWritePosition(KIO::Job* job, KIO::filesize_t pos);
         void writeMainThread(KIO::FileJob* fileJob, const QByteArray& data, WriteJobHelper* writeJobHelper);
         void slotWritten(KIO::Job* job, const KIO::filesize_t& written);
+        void MkNodMainThread(const KUrl& url, const mode_t& mode, MkNodHelper* mkNodHelper);
+        void slotMkNodResult(KJob* job);
         
     signals:
         void sendJobDone(const int&);
@@ -89,7 +93,8 @@ class KioFuseApp : public KApplication
         int m_numLeafStubsCached;  // Leaf stubs are for opened files that have no stat data
         QMutex m_cacheMutex;  // Allows only one thread to access the cache at a time
         
-        QMap<KJob *, BaseJobHelper *> m_jobToJobHelper; // Correlate listJob with the ListJobHelper that needs it
+        QMap<KJob *, BaseJobHelper *> m_jobToJobHelper;  // Correlate listJob with the ListJobHelper that needs it
+        QMap<KJob *, KTemporaryFile *> m_jobToTempFile;  // Correlate FileCopyJob with the MkNodHelper that needs it
 };
 
 extern KioFuseApp *kioFuseApp;  // Make the kioFuseApp variable known to everyone who includes this file

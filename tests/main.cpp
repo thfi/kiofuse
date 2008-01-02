@@ -128,9 +128,9 @@ void TestFileJob::slotMimetype(KIO::Job*, const QString &mimetype)
 
 void TestFileJob::open()
 {
-    KUrl url = KUrl(QDir::currentPath() + "/data.txt");
+    KUrl url = KUrl(QDir::currentPath() + "/data_w.txt");
 
-    m_job1 = KIO::open(url, QIODevice::ReadOnly);
+    m_job1 = KIO::open(url, QIODevice::WriteOnly);
     connect(m_job1, SIGNAL(open(KIO::Job*)),
                 SLOT(slotOpen(KIO::Job*)));
     connect(m_job1, SIGNAL(data(KIO::Job*, const QByteArray&)),

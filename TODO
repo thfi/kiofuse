@@ -47,6 +47,8 @@ Long-term TODO:
 
 - Fix inconsistancy whereby ListJob returns its UDSEntries via the entries() signal, while StatJob returns its UDSEntries via the statResult() function
 
+- Synch commands via NetAccess require a GUI and don't allow KIO::HideProgressInfo.
+
 - Take ideas from GVFS and GIO
 
 Contact

@@ -204,3 +204,19 @@ void WriteJobHelper::receiveWritten(const size_t& written, const int& error)
             this, SLOT(jobDone(const int&)));
     emit sendJobDone(error);
 }
+
+/*********** MkNod ***********/
+MkNodHelper::MkNodHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<mode_t>("mode_t");
+    connect(this, SIGNAL(reqMkNod(const KUrl&, const mode_t&, MkNodHelper*)), kioFuseApp,
+            SLOT(MkNodMainThread(const KUrl&, const mode_t&, MkNodHelper*)), Qt::QueuedConnection);
+    emit reqMkNod(url, mode, this);
+}
+
+MkNodHelper::~MkNodHelper()
+{
+    kDebug()<<"MkNodHelper dtor"<<endl;
+}

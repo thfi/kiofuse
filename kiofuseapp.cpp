@@ -24,6 +24,7 @@
 #include <QMutexLocker>
 
 #include <kdebug.h>
+#include <kio/netaccess.h>
 
 KioFuseApp *kioFuseApp = NULL;
 
@@ -177,6 +178,10 @@ void KioFuseApp::listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper
     
     kDebug()<<"listJob->thread()"<<listJob->thread()<<endl;
     
+    // Correlate listJob with the ListJobHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(listJob),
+                            qobject_cast<BaseJobHelper*>(listJobHelper));
+    
     // Job will be deleted when finished
     connect(listJob, SIGNAL(result(KJob*)),
             this, SLOT(slotResult(KJob*)));
@@ -189,11 +194,6 @@ void KioFuseApp::listJobMainThread(const KUrl& url, ListJobHelper* listJobHelper
             listJobHelper, SLOT(receiveEntries(KIO::Job*, const KIO::UDSEntryList &)),
             Qt::QueuedConnection);
     
-    // Correlate listJob with the ListJobHelper that needs it
-    m_jobToJobHelper.insert(qobject_cast<KJob*>(listJob),
-                            qobject_cast<BaseJobHelper*>(listJobHelper));
-    
-
     kDebug()<<"at the end"<<endl;
 }
 
@@ -223,13 +223,13 @@ void KioFuseApp::statJobMainThread(const KUrl& url, StatJobHelper* statJobHelper
     KIO::StatJob* statJob = KIO::stat(url, KIO::HideProgressInfo);
     Q_ASSERT(statJob->thread() == this->thread());
     
-    // Job will be deleted when finished
-    connect(statJob, SIGNAL(result(KJob*)),
-            this, SLOT(slotStatJobResult(KJob*)));
-    
     // Correlate listJob with the ListJobHelper that needs it
     m_jobToJobHelper.insert(qobject_cast<KJob*>(statJob),
                             qobject_cast<BaseJobHelper*>(statJobHelper));
+    
+    // Job will be deleted when finished
+    connect(statJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotStatJobResult(KJob*)));
 }
 
 void KioFuseApp::slotStatJobResult(KJob* job)
@@ -268,10 +268,11 @@ void KioFuseApp::slotStatJobResult(KJob* job)
 void KioFuseApp::openJobMainThread(const KUrl& url, const QIODevice::OpenMode& qtMode, OpenJobHelper* openJobHelper)
 {
     KIO::FileJob* fileJob = KIO::open(url, qtMode);  // Will be cached. Kill()-ed upon close()
+    Q_ASSERT(fileJob->thread() == this->thread());
+    
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(openJobHelper));
     
-    Q_ASSERT(fileJob->thread() == this->thread());
     connect(fileJob, SIGNAL(open(KIO::Job*)),
             this, SLOT(fileJobOpened(KIO::Job*)));
 }
@@ -302,10 +303,13 @@ void KioFuseApp::seekReadMainThread(KIO::FileJob* fileJob, const off_t& offset, 
 {
     Q_ASSERT(fileJob->thread() == this->thread());
     kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
-    connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
-            this, SLOT(slotReadPosition(KIO::Job*, KIO::filesize_t)));
+    
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(readJobHelper));
+    
+    connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+            this, SLOT(slotReadPosition(KIO::Job*, KIO::filesize_t)));
+    
     fileJob->seek(static_cast<KIO::filesize_t>(offset));
 }
 
@@ -341,10 +345,11 @@ void KioFuseApp::readMainThread(KIO::FileJob* fileJob, const size_t& size, ReadJ
     kDebug()<<"size"<<size<<endl;
     kDebug()<<"readJobHelper"<<readJobHelper<<endl;
     
+    Q_ASSERT(fileJob->thread() == this->thread());
+    
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(readJobHelper));
     
-    Q_ASSERT(fileJob->thread() == this->thread());
     connect(fileJob, SIGNAL(data(KIO::Job*, const QByteArray&)),
             this, SLOT(slotData(KIO::Job*, const QByteArray&)));
     
@@ -381,10 +386,13 @@ void KioFuseApp::seekWriteMainThread(KIO::FileJob* fileJob, const off_t& offset,
 {
     Q_ASSERT(fileJob->thread() == this->thread());
     kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
-    connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
-            this, SLOT(slotWritePosition(KIO::Job*, KIO::filesize_t)));
+    
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(writeJobHelper));
+    
+    connect(fileJob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
+            this, SLOT(slotWritePosition(KIO::Job*, KIO::filesize_t)));
+    
     fileJob->seek(static_cast<KIO::filesize_t>(offset));
 }
 
@@ -419,10 +427,11 @@ void KioFuseApp::writeMainThread(KIO::FileJob* fileJob, const QByteArray& data, 
 {
     kDebug()<<"writeJobHelper"<<writeJobHelper<<endl;
     
+    Q_ASSERT(fileJob->thread() == this->thread());
+    
     m_jobToJobHelper.insert(qobject_cast<KJob*>(fileJob),
                             qobject_cast<BaseJobHelper*>(writeJobHelper));
     
-    Q_ASSERT(fileJob->thread() == this->thread());
     connect(fileJob, SIGNAL(written(KIO::Job*, const KIO::filesize_t&)),
             this, SLOT(slotWritten(KIO::Job*, const KIO::filesize_t&)));
     
@@ -452,4 +461,59 @@ void KioFuseApp::slotWritten(KIO::Job* job, const KIO::filesize_t& written)
     // Remove job and jobHelper from map
     int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
     Q_ASSERT(numJobsRemoved == 1);
+}
+
+/*********** Seek for MkNod ***********/
+void KioFuseApp::MkNodMainThread(const KUrl& url, const mode_t& mode,
+                                 MkNodHelper* mkNodHelper)
+{
+    KTemporaryFile* temp = new KTemporaryFile();
+    temp->setAutoRemove(false);  // Must remove manually in slotMkNodResult()
+                                 // if move fails
+    temp->open();
+    
+    KIO::FileCopyJob* fileCopyJob = KIO::file_move(temp->fileName(), url, mode,
+                      KIO::Overwrite | KIO::HideProgressInfo);
+    Q_ASSERT(fileCopyJob->thread() == this->thread());
+    
+    // Correlate temp file with job
+    m_jobToTempFile.insert(qobject_cast<KJob*>(fileCopyJob), temp);
+    
+    // Correlate FileCopyJob with the MkNodHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(fileCopyJob),
+                            qobject_cast<BaseJobHelper*>(mkNodHelper));
+    kDebug()<<"mode"<<mode<<"temp.fileName()"<<temp->fileName()<<url<<url<<endl;
+    connect(fileCopyJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotMkNodResult(KJob*)));
+}
+
+void KioFuseApp::slotMkNodResult(KJob* job)
+{
+    int error = job->error();
+    
+    // Delete the temp file if there was an error
+    KTemporaryFile* temp = m_jobToTempFile.value(job);
+    Q_ASSERT(temp);
+    if (error){
+        temp->setAutoRemove(true);
+    }
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(error);
+    
+    // Remove job and temp file from map
+    int numTempFilesRemoved = m_jobToTempFile.remove(job);
+    Q_ASSERT(numTempFilesRemoved == 1);
+    delete(temp);
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
 }

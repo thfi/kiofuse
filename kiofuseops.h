@@ -58,7 +58,6 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
 //FIXME add kioFuseOpenDir
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                    off_t offset, struct fuse_file_info *fi);
-//FIXME add kioFuseReadDir
 //FIXME add kioFuseReleaseDir
 //FIXME add kioFuseFSyncDir
 //FIXME add kioFuseInit
