@@ -49,7 +49,7 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
                   struct fuse_file_info *fi);
 //FIXME add kioFuseStatFS
 //FIXME add kioFuseFlush
-//int kioFuseRelease(const char* relPath, struct fuse_file_info *fi);
+int kioFuseRelease(const char* relPath, struct fuse_file_info *fi);
 //FIXME add kioFuseFSync
 //FIXME add kioFuseSetXAttr
 //FIXME add kioFuseGetXAttr
@@ -62,9 +62,9 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 //FIXME add kioFuseFSyncDir
 //FIXME add kioFuseInit
 //FIXME add kioFuseDestroy
-int kioFuseAccess(const char *relPath, int mask);
+//int kioFuseAccess(const char *relPath, int mask); // TODO when KIO can check permissions
 //FIXME add kioFuseCreate
-//FIXME add kioFuseFTruncate
+int kioFuseTruncate(const char *relPath, off_t size);
 //FIXME add kioFuseFGetAttr
 //FIXME add kioFuseLock
 //FIXME add kioFuseUTimeNS

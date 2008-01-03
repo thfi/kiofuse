@@ -273,6 +273,33 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
     return res;
 }
 
+int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    
+    ReleaseJobHelper* helper;  // Helps release the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper releases FileJob
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    int res = 0;
+    
+    helper = new ReleaseJobHelper(url, fileHandleId, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+    //eventLoop has finished, so job is now available
+    if (helper->error()){
+        res = -EACCES;  // FIXME covert KIO errors
+    }   
+
+    delete helper;
+    helper = NULL;
+
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
 // Get the names of files and directories under a specified directory
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t offset, struct fuse_file_info *fi)
@@ -328,9 +355,34 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     return res;
 }
 
-int kioFuseAccess(const char *relPath, int mask)
+// TODO when KIO can check permissions
+/*int kioFuseAccess(const char *relPath, int mask)
 {
     kDebug()<<"relPath"<<relPath<<endl;
+    return 0;
+}*/
+
+int kioFuseTruncate(const char *relPath, off_t size)
+{
+    kDebug()<<"relPath"<<relPath<<"size"<<size<<endl;
+    int res = size;
+    int read;
+    char buf[size];
+    
+    // Read contents up to size
+    struct fuse_file_info* fi = new fuse_file_info();
+    fi->flags = O_RDONLY;
+    kioFuseOpen(relPath, fi);
+    int readSize = kioFuseRead(relPath, buf, size, 0, fi);
+    kioFuseRelease(relPath, fi);
+    
+    // Write shortened file
+    fi->flags = O_WRONLY | O_TRUNC;
+    kioFuseOpen(relPath, fi);
+    kioFuseWrite(relPath, buf, readSize, 0, fi);
+    kioFuseRelease(relPath, fi);
+    
+    // FIXME covert KIO errors
     return 0;
 }
 

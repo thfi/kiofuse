@@ -236,3 +236,19 @@ ChModHelper::~ChModHelper()
 {
     kDebug()<<"ChModHelper dtor"<<endl;
 }
+
+/*********** ReleaseJob ***********/
+ReleaseJobHelper::ReleaseJobHelper(const KUrl& url, const uint64_t& fileHandleId, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<uint64_t>("uint64_t");
+    connect(this, SIGNAL(reqReleaseJob(const KUrl&, const uint64_t&, ReleaseJobHelper*)), kioFuseApp,
+            SLOT(releaseJobMainThread(const KUrl&, const uint64_t&, ReleaseJobHelper*)), Qt::QueuedConnection);
+    emit reqReleaseJob(url, fileHandleId, this);
+}
+
+ReleaseJobHelper::~ReleaseJobHelper()
+{
+    kDebug()<<"ReleaseJobHelper dtor"<<endl;
+}

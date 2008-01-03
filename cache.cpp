@@ -257,6 +257,24 @@ Cache* Cache::find(const KUrl &url)
     }
 }
 
+// Releases FileJob
+bool Cache::releaseJob(const uint64_t& fileHandleId)
+{
+    if (this->jobsMap().contains(fileHandleId)){
+        FileJobData* fileJobData = this->jobsMap().value(fileHandleId);
+        int removed = fhIdtoFileJob.remove(fileHandleId);
+        Q_ASSERT(removed == 1);
+        
+        delete fileJobData;
+        fileJobData = NULL;
+        
+        kDebug()<<"Deleted job"<<endl;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void Cache::removeExpired()
 {
 

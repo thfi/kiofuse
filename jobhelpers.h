@@ -166,4 +166,17 @@ class ChModHelper : public BaseJobHelper  // Helps list a specified directory
         void reqChMod(const KUrl&, const mode_t&, ChModHelper*);
 };
 
+class ReleaseJobHelper : public BaseJobHelper  // Helps list a specified directory
+{
+    Q_OBJECT
+
+    public:
+        ReleaseJobHelper(const KUrl& url, const uint64_t& fileHandleId,
+                         QEventLoop* eventLoop);
+        ~ReleaseJobHelper();
+    
+    signals:
+        void reqReleaseJob(const KUrl&, const uint64_t&, ReleaseJobHelper*);
+};
+
 #endif /* JOB_HELPERS_H */

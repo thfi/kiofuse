@@ -455,7 +455,7 @@ void KioFuseApp::slotWritten(KIO::Job* job, const KIO::filesize_t& written)
 }
 
 /*********** MkNod ***********/
-void KioFuseApp::MkNodMainThread(const KUrl& url, const mode_t& mode,
+void KioFuseApp::mkNodMainThread(const KUrl& url, const mode_t& mode,
                                  MkNodHelper* mkNodHelper)
 {
     KTemporaryFile* temp = new KTemporaryFile();
@@ -511,7 +511,7 @@ void KioFuseApp::slotMkNodResult(KJob* job)
 }
 
 /*********** ChMod ***********/
-void KioFuseApp::ChModMainThread(const KUrl& url, const mode_t& mode,
+void KioFuseApp::chModMainThread(const KUrl& url, const mode_t& mode,
                                  ChModHelper* chModHelper)
 {
     KIO::SimpleJob* simpleJob = KIO::chmod(url, mode);
@@ -542,4 +542,25 @@ void KioFuseApp::slotChModResult(KJob* job)
     Q_ASSERT(job);
     job->kill();
     job = NULL;
+}
+
+
+// Releases FileJob
+void KioFuseApp::releaseJobMainThread(const KUrl& url, const uint64_t& fileHandleId, ReleaseJobHelper* releaseJobHelper)
+{
+    int error;
+    QMutexLocker locker(&m_cacheMutex);
+    Cache* currCache = m_cacheRoot->find(url);
+    int foundJob = currCache->releaseJob(fileHandleId);
+    
+    if (foundJob){
+        error = 0;
+    } else {
+        // FIXME There should be an error KIO::ERR_ALREADY_CLOSED
+        error = KIO::ERR_DOES_NOT_EXIST;
+    }
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            releaseJobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(error);
 }

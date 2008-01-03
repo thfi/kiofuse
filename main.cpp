@@ -110,7 +110,9 @@ int main (int argc, char *argv[])
     ops.read = kioFuseRead;
     ops.write = kioFuseWrite;
     ops.readdir = kioFuseReadDir;
-    ops.access = kioFuseAccess;
+    ops.release = kioFuseRelease;
+    ops.truncate = kioFuseTruncate;
+    //ops.access = kioFuseAccess;
 
     // Tell FUSE about the KioFuse implementations of FS operations
     fuseHandle = fuse_new(fuseChannel, &fuseArguments, &ops, sizeof(ops), NULL);

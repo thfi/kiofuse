@@ -1,6 +1,8 @@
 TODO
 -----
 
+- There should be an error KIO::ERR_ALREADY_CLOSED.
+
 - KIO::file_move ignores the permissions parameter.
 
 - See whether there is a race condition if BaseJobHelper::jobDone() is called before the data is properly stored.
@@ -43,7 +45,9 @@ TODO
 
 Long-term TODO:
 
-- Make permission checking in KIO reliable for network slaves. For example, KFileItem::isWritable() should check the /etc/group file on the remote server to ensure that the user we are connecting with is a member of a group that has write permission. This will allow KioFuse to display the effective permission on the client side (currently KioFuse just copies the remote stat, which is not applicable to the local system).
+- KIO::open() using O_WRONLY deletes and replaces the existing file. POSIX open() doesn't do that. KIO::open() using O_RDWR causes subsequent writes to append to the beginning. POSIX open() using O_RDWR or O_WRONLY replaces characters at the beginning.
+
+- Make permission checking in KIO reliable for network slaves (POSIX access). For example, KFileItem::isWritable() should check the /etc/group file on the remote server to ensure that the user we are connecting with is a member of a group that has write permission. This will allow KioFuse to display the effective permission on the client side (currently KioFuse just copies the remote stat, which is not applicable to the local system).
 
 - KIO should be usable from non-main threads
 
