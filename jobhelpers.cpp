@@ -205,6 +205,22 @@ void WriteJobHelper::receiveWritten(const size_t& written, const int& error)
     emit sendJobDone(error);
 }
 
+/*********** MkDir ***********/
+MkDirHelper::MkDirHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
+{
+    // Needed by Qt::QueuedConnection
+    qRegisterMetaType<mode_t>("mode_t");
+    connect(this, SIGNAL(reqMkDir(const KUrl&, const mode_t&, MkDirHelper*)), kioFuseApp,
+            SLOT(mkDirMainThread(const KUrl&, const mode_t&, MkDirHelper*)), Qt::QueuedConnection);
+    emit reqMkDir(url, mode, this);
+}
+
+MkDirHelper::~MkDirHelper()
+{
+    kDebug()<<"MkDirHelper dtor"<<endl;
+}
+
 /*********** MkNod ***********/
 MkNodHelper::MkNodHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop, url)  // The generalized job helper

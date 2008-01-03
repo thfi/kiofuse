@@ -142,6 +142,18 @@ class WriteJobHelper : public BaseJobHelper  // Helps write to a specified file
         off_t m_offset;
 };
 
+class MkDirHelper : public BaseJobHelper  // Helps list a specified directory
+{
+    Q_OBJECT
+
+    public:
+        MkDirHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop);
+        ~MkDirHelper();
+    
+    signals:
+        void reqMkDir(const KUrl&, const mode_t&, MkDirHelper*);
+};
+
 class MkNodHelper : public BaseJobHelper  // Helps list a specified directory
 {
     Q_OBJECT

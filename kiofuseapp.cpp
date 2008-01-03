@@ -454,6 +454,40 @@ void KioFuseApp::slotWritten(KIO::Job* job, const KIO::filesize_t& written)
     Q_ASSERT(numJobsRemoved == 1);
 }
 
+/*********** MkDir ***********/
+void KioFuseApp::mkDirMainThread(const KUrl& url, const mode_t& mode,
+                                 MkDirHelper* mkDirHelper)
+{
+    KIO::SimpleJob* simpleJob = KIO::mkdir(url, mode);
+    Q_ASSERT(simpleJob->thread() == this->thread());
+    
+    // Correlate SimpleJob with the MkDirHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(simpleJob),
+                            qobject_cast<BaseJobHelper*>(mkDirHelper));
+    kDebug()<<"mode"<<mode<<url<<url<<endl;
+    connect(simpleJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotMkDirResult(KJob*)));
+}
+
+void KioFuseApp::slotMkDirResult(KJob* job)
+{
+    int error = job->error();
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(error);
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
+}
+
 /*********** MkNod ***********/
 void KioFuseApp::mkNodMainThread(const KUrl& url, const mode_t& mode,
                                  MkNodHelper* mkNodHelper)

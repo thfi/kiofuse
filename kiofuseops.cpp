@@ -104,6 +104,32 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
     return res;
 }
 
+int kioFuseMkDir(const char *relPath, mode_t mode)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    
+    MkDirHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    int res = 0;
+    
+    helper = new MkDirHelper(url, mode, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+    //eventLoop has finished, so job is now available
+    if (helper->error()){
+        res = -EACCES;  // FIXME covert KIO errors
+    }
+        
+    delete helper;
+    helper = NULL;
+    
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
 int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
 {
     kDebug()<<"relPath"<<relPath<<endl;
@@ -154,6 +180,30 @@ int kioFuseChMod(const char *relPath, mode_t mode)
     eventLoop = NULL;
 
     return res;
+}
+
+int kioFuseTruncate(const char *relPath, off_t size)
+{
+    kDebug()<<"relPath"<<relPath<<"size"<<size<<endl;
+    int res = size;
+    int read;
+    char buf[size];
+    
+    // Read contents up to size
+    struct fuse_file_info* fi = new fuse_file_info();
+    fi->flags = O_RDONLY;
+    kioFuseOpen(relPath, fi);
+    int readSize = kioFuseRead(relPath, buf, size, 0, fi);
+    kioFuseRelease(relPath, fi);
+    
+    // Write shortened file
+    fi->flags = O_WRONLY | O_TRUNC;
+    kioFuseOpen(relPath, fi);
+    kioFuseWrite(relPath, buf, readSize, 0, fi);
+    kioFuseRelease(relPath, fi);
+    
+    // FIXME covert KIO errors
+    return 0;
 }
 
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
@@ -361,30 +411,6 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     kDebug()<<"relPath"<<relPath<<endl;
     return 0;
 }*/
-
-int kioFuseTruncate(const char *relPath, off_t size)
-{
-    kDebug()<<"relPath"<<relPath<<"size"<<size<<endl;
-    int res = size;
-    int read;
-    char buf[size];
-    
-    // Read contents up to size
-    struct fuse_file_info* fi = new fuse_file_info();
-    fi->flags = O_RDONLY;
-    kioFuseOpen(relPath, fi);
-    int readSize = kioFuseRead(relPath, buf, size, 0, fi);
-    kioFuseRelease(relPath, fi);
-    
-    // Write shortened file
-    fi->flags = O_WRONLY | O_TRUNC;
-    kioFuseOpen(relPath, fi);
-    kioFuseWrite(relPath, buf, readSize, 0, fi);
-    kioFuseRelease(relPath, fi);
-    
-    // FIXME covert KIO errors
-    return 0;
-}
 
 static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
 {

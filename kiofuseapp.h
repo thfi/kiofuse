@@ -35,6 +35,7 @@ class WriteJobHelper;
 class MkNodHelper;
 class ChModHelper;
 class ReleaseJobHelper;
+class MkDirHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -73,6 +74,8 @@ class KioFuseApp : public KApplication
         void slotWritePosition(KIO::Job* job, KIO::filesize_t pos);
         void writeMainThread(KIO::FileJob* fileJob, const QByteArray& data, WriteJobHelper* writeJobHelper);
         void slotWritten(KIO::Job* job, const KIO::filesize_t& written);
+        void mkDirMainThread(const KUrl& url, const mode_t& mode, MkDirHelper* mkDirHelper);
+        void slotMkDirResult(KJob* job);
         void mkNodMainThread(const KUrl& url, const mode_t& mode, MkNodHelper* mkNodHelper);
         void slotMkNodResult(KJob* job);
         void chModMainThread(const KUrl& url, const mode_t& mode,

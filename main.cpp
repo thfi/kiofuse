@@ -104,6 +104,7 @@ int main (int argc, char *argv[])
     memset(&ops, 0, sizeof(ops));
     ops.getattr = kioFuseGetAttr;
     ops.readlink = kioFuseReadLink;
+    ops.mkdir = kioFuseMkDir;
     ops.mknod = kioFuseMkNod;
     ops.chmod = kioFuseChMod;
     ops.open = kioFuseOpen;

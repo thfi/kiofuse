@@ -33,7 +33,7 @@ extern "C" {
 int kioFuseGetAttr(const char *relPath, struct stat *stbuf);
 int kioFuseReadLink(const char *relPath, char *buf, size_t size);
 int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
-//int kioFuseMkDir(const char *relPath, mode_t mode);
+int kioFuseMkDir(const char *relPath, mode_t mode);
 //int kioFuseUnLink(const char *relPath);
 //int kioFuseRmDir(const char *relPath);
 //int kioFuseSymLink(const char *from, const char *to);
@@ -41,7 +41,7 @@ int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
 //FIXME add kioFuseLink
 int kioFuseChMod(const char *relPath, mode_t mode);
 //FIXME add kioFuseChOwn
-//int kioFuseTruncate(const char *relPath, off_t size);
+int kioFuseTruncate(const char *relPath, off_t size);
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi);
 int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
@@ -64,7 +64,7 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 //FIXME add kioFuseDestroy
 //int kioFuseAccess(const char *relPath, int mask); // TODO when KIO can check permissions
 //FIXME add kioFuseCreate
-int kioFuseTruncate(const char *relPath, off_t size);
+//int kioFuseFTruncate(const char *relPath, off_t size, struct fuse_file_info *fi);  // TODO only possible if KIO gets a truncate method
 //FIXME add kioFuseFGetAttr
 //FIXME add kioFuseLock
 //FIXME add kioFuseUTimeNS
