@@ -105,6 +105,8 @@ int main (int argc, char *argv[])
     ops.getattr = kioFuseGetAttr;
     ops.readlink = kioFuseReadLink;
     ops.mkdir = kioFuseMkDir;
+    ops.unlink = kioFuseUnLink;
+    ops.rmdir = kioFuseRmDir;
     ops.mknod = kioFuseMkNod;
     ops.chmod = kioFuseChMod;
     ops.open = kioFuseOpen;

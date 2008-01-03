@@ -25,6 +25,7 @@
 
 #include <kdebug.h>
 #include <kio/netaccess.h>
+#include <kio/deletejob.h>
 
 KioFuseApp *kioFuseApp = NULL;
 
@@ -578,6 +579,38 @@ void KioFuseApp::slotChModResult(KJob* job)
     job = NULL;
 }
 
+/*********** UnLink ***********/
+void KioFuseApp::unLinkMainThread(const KUrl& url, UnLinkHelper* unLinkHelper)
+{
+    KIO::DeleteJob* deleteJob = KIO::del(url, KIO::HideProgressInfo);
+    Q_ASSERT(deleteJob->thread() == this->thread());
+    
+    // Correlate DeleteJob with the UnLinkHelper that needs it
+    m_jobToJobHelper.insert(qobject_cast<KJob*>(deleteJob),
+                            qobject_cast<BaseJobHelper*>(unLinkHelper));
+    kDebug()<<"url"<<url<<endl;
+    connect(deleteJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotUnLinkResult(KJob*)));
+}
+
+void KioFuseApp::slotUnLinkResult(KJob* job)
+{
+    int error = job->error();
+    
+    BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
+    
+    connect(this, SIGNAL(sendJobDone(const int&)),
+            jobHelper, SLOT(jobDone(const int&)), Qt::QueuedConnection);
+    emit sendJobDone(error);
+    
+    // Remove job and jobHelper from map
+    int numJobsRemoved = m_jobToJobHelper.remove(job);
+    Q_ASSERT(numJobsRemoved == 1);
+    
+    Q_ASSERT(job);
+    job->kill();
+    job = NULL;
+}
 
 // Releases FileJob
 void KioFuseApp::releaseJobMainThread(const KUrl& url, const uint64_t& fileHandleId, ReleaseJobHelper* releaseJobHelper)

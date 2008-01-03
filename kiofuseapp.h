@@ -36,6 +36,7 @@ class MkNodHelper;
 class ChModHelper;
 class ReleaseJobHelper;
 class MkDirHelper;
+class UnLinkHelper;
 
 class KioFuseApp : public KApplication
 {
@@ -81,6 +82,8 @@ class KioFuseApp : public KApplication
         void chModMainThread(const KUrl& url, const mode_t& mode,
                              ChModHelper* chModHelper);
         void slotChModResult(KJob* job);
+        void unLinkMainThread(const KUrl& url, UnLinkHelper* unLinkHelper);
+        void slotUnLinkResult(KJob* job);
         void releaseJobMainThread(const KUrl& url, const uint64_t& fileHandleId, ReleaseJobHelper* releaseJobHelper);
 
         

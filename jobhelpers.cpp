@@ -221,6 +221,20 @@ MkDirHelper::~MkDirHelper()
     kDebug()<<"MkDirHelper dtor"<<endl;
 }
 
+/*********** UnLink ***********/
+UnLinkHelper::UnLinkHelper(const KUrl& url, QEventLoop* eventLoop)
+    : BaseJobHelper(eventLoop, url)  // The generalized job helper
+{
+    connect(this, SIGNAL(reqUnLink(const KUrl&, UnLinkHelper*)), kioFuseApp,
+            SLOT(unLinkMainThread(const KUrl&, UnLinkHelper*)), Qt::QueuedConnection);
+    emit reqUnLink(url, this);
+}
+
+UnLinkHelper::~UnLinkHelper()
+{
+    kDebug()<<"UnLinkHelper dtor"<<endl;
+}
+
 /*********** MkNod ***********/
 MkNodHelper::MkNodHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventLoop)
     : BaseJobHelper(eventLoop, url)  // The generalized job helper
@@ -228,7 +242,7 @@ MkNodHelper::MkNodHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventL
     // Needed by Qt::QueuedConnection
     qRegisterMetaType<mode_t>("mode_t");
     connect(this, SIGNAL(reqMkNod(const KUrl&, const mode_t&, MkNodHelper*)), kioFuseApp,
-            SLOT(MkNodMainThread(const KUrl&, const mode_t&, MkNodHelper*)), Qt::QueuedConnection);
+            SLOT(mkNodMainThread(const KUrl&, const mode_t&, MkNodHelper*)), Qt::QueuedConnection);
     emit reqMkNod(url, mode, this);
 }
 
@@ -244,7 +258,7 @@ ChModHelper::ChModHelper(const KUrl& url, const mode_t& mode, QEventLoop* eventL
     // Needed by Qt::QueuedConnection
     qRegisterMetaType<mode_t>("mode_t");
     connect(this, SIGNAL(reqChMod(const KUrl&, const mode_t&, ChModHelper*)), kioFuseApp,
-            SLOT(ChModMainThread(const KUrl&, const mode_t&, ChModHelper*)), Qt::QueuedConnection);
+            SLOT(chModMainThread(const KUrl&, const mode_t&, ChModHelper*)), Qt::QueuedConnection);
     emit reqChMod(url, mode, this);
 }
 

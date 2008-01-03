@@ -154,6 +154,18 @@ class MkDirHelper : public BaseJobHelper  // Helps list a specified directory
         void reqMkDir(const KUrl&, const mode_t&, MkDirHelper*);
 };
 
+class UnLinkHelper : public BaseJobHelper  // Helps list a specified directory
+{
+    Q_OBJECT
+
+    public:
+        UnLinkHelper(const KUrl& url, QEventLoop* eventLoop);
+        ~UnLinkHelper();
+    
+    signals:
+        void reqUnLink(const KUrl&, UnLinkHelper*);
+};
+
 class MkNodHelper : public BaseJobHelper  // Helps list a specified directory
 {
     Q_OBJECT

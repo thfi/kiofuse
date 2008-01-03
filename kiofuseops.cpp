@@ -104,6 +104,32 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
     return res;
 }
 
+int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+    
+    MkNodHelper* helper;  // Helps retrieve the file object
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    int res = 0;
+    
+    helper = new MkNodHelper(url, mode, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+        
+    //eventLoop has finished, so job is now available
+    if (helper->error()){
+        res = -EACCES;  // FIXME covert KIO errors
+    }
+        
+    delete helper;
+    helper = NULL;
+    
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
 int kioFuseMkDir(const char *relPath, mode_t mode)
 {
     kDebug()<<"relPath"<<relPath<<endl;
@@ -130,21 +156,21 @@ int kioFuseMkDir(const char *relPath, mode_t mode)
     return res;
 }
 
-int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
+int kioFuseUnLink(const char *relPath)
 {
     kDebug()<<"relPath"<<relPath<<endl;
     
-    MkNodHelper* helper;  // Helps retrieve the file object
+    UnLinkHelper* helper;  // Helps retrieve the file object
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
     KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
     int res = 0;
     
-    helper = new MkNodHelper(url, mode, eventLoop);
+    helper = new UnLinkHelper(url, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
         
     //eventLoop has finished, so job is now available
     if (helper->error()){
-       res = -EACCES;  // FIXME covert KIO errors
+        res = -EACCES;  // FIXME covert KIO errors
     }
         
     delete helper;
@@ -154,6 +180,11 @@ int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
     eventLoop = NULL;
 
     return res;
+}
+
+int kioFuseRmDir(const char *relPath)
+{
+    return kioFuseUnLink(relPath);
 }
 
 int kioFuseChMod(const char *relPath, mode_t mode)

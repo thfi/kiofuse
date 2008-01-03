@@ -34,8 +34,8 @@ int kioFuseGetAttr(const char *relPath, struct stat *stbuf);
 int kioFuseReadLink(const char *relPath, char *buf, size_t size);
 int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev);
 int kioFuseMkDir(const char *relPath, mode_t mode);
-//int kioFuseUnLink(const char *relPath);
-//int kioFuseRmDir(const char *relPath);
+int kioFuseUnLink(const char *relPath);
+int kioFuseRmDir(const char *relPath);
 //int kioFuseSymLink(const char *from, const char *to);
 //int kioFuseReName(const char *from, const char *to);
 //FIXME add kioFuseLink
