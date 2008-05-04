@@ -17,9 +17,12 @@
  
 #include "fusethread.h"
 
+#include <signal.h>
+//#include "kiofuseapp.h"
+
 #include <QString>
 
-#include <kdebug.h>
+#include <KDebug>
 
 FuseThread::FuseThread(QObject *parent, struct fuse *fuseHandle,
                        struct fuse_chan *fuseChannel, KUrl mountPoint)
@@ -27,6 +30,7 @@ FuseThread::FuseThread(QObject *parent, struct fuse *fuseHandle,
       m_fuseHandle(fuseHandle),
       m_fuseChannel(fuseChannel),
       m_mountPoint(mountPoint)
+      //m_alreadyUnmounted(false)
 {
     kDebug()<<"QThread::currentThread()"<<QThread::currentThread()<<endl;
 }
@@ -34,12 +38,30 @@ FuseThread::FuseThread(QObject *parent, struct fuse *fuseHandle,
 void FuseThread::run()
 {
     kDebug()<<"QThread::currentThread()"<<QThread::currentThread()<<endl;
-    
+
     // Give FUSE the control. It will call functions in ops as they are requested by users of the FS.
     // Since fuse_loop_mt() is used instead of fuse_loop(), every call to the ops will be made in a new thread
     fuse_loop_mt(m_fuseHandle);
+    //fuse_loop(m_fuseHandle);
 
-    // FUSE has quit its event loop, so we tell it to unmount
+    // FUSE has quit its event loop
+
+    // Takes us to exitHandler()
+    raise(SIGQUIT);
+    /*if (!m_alreadyUnmounted){
+        fuse_unmount(m_mountPoint.path().toLatin1(), m_fuseChannel);
+
+        // Tell the main thread to exit
+        QMetaObject::invokeMethod(kioFuseApp, "quit");
+    }*/
+}
+
+void FuseThread::unmount()
+{
+    //m_alreadyUnmounted = true;
+
+    // This will only cause fuse_loop_mt() to return in FuseThread::run()
+    // if the mounpoint is not currently in use.
     fuse_unmount(m_mountPoint.path().toLatin1(), m_fuseChannel);
 }
 

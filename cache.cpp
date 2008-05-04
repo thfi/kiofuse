@@ -20,17 +20,40 @@
 #include <kdebug.h>
 
 FileJobData::FileJobData(KIO::FileJob* aFileJob)
-    : fileJob(aFileJob), jobMutex(QMutex::NonRecursive)
-{}
+    : fileJob(aFileJob),
+      qTime(QTime()),
+      //inUse(false)
+      jobMutex(QMutex::NonRecursive),
+      jobIsAnnulled(false)
+{
+}
 
+FileJobData::~FileJobData()
+{
+    // Only close() the job if it has not been annulled by an error.
+    // Attempting to call fileJob->close() or fileJob->kill() after an error
+    // will result in a crash.
+    if (!jobIsAnnulled){
+        fileJob->close();
+    }
+}
+/*
 Cache::Cache(KFileItem* item)
-    : QObject(), m_item(item), m_nodeType(regularType)
+    : QObject(),
+      cachedChildren(false),
+      lastUpdated(NULL),
+      m_item(item),
+      m_nodeType(regularType)
 {
     kDebug()<<"Cache ctor(item)"<<endl;
 }
 
 Cache::Cache(const QString& rootOfRelPath, NodeType nodeType)
-    : QObject(), m_item(NULL), m_nodeType(nodeType)
+    : QObject(),
+      cachedChildren(false),
+      lastUpdated(NULL),
+      m_item(NULL),
+      m_nodeType(nodeType)
 {
     kDebug()<<"Cache ctor (rootOfRelPath)"<<endl;
     //FIXME item needs to be deleted in the cache as it expires
@@ -46,11 +69,15 @@ Cache::~Cache()
     }
     
     foreach (FileJobData* fileJobData, fhIdtoFileJob){
-        // FileJobData will close the FileJob
+        // FileJobData dtor will close the FileJob
         delete fileJobData;
     }
     fhIdtoFileJob.clear();
-    
+
+    if (lastUpdated){
+        delete lastUpdated;
+    }
+
     delete m_item;
     m_item = 0;
 }
@@ -89,10 +116,6 @@ void Cache::insert(KFileItem* newItem)
             Cache* newChild = new Cache(newItem);
             children.append(newChild);
         }
-        /*// Delete any child that might have the same filename and replace it with the new child
-        removeChild(newItem->url().fileName(KUrl::IgnoreTrailingSlash));
-        Cache* newChild = new Cache(newItem);
-        children.append(newChild);*/
         return;
     }
     
@@ -189,20 +212,6 @@ bool Cache::setExtraData(const KUrl& url, const uint64_t& key,
     }
 }
 
-// Returns true if it actually found a child to remove
-/*bool Cache::removeChild(const QString& fileName)
-{
-    kDebug()<<"removeChild: fileName: "<<fileName<<endl;
-    int i = findIdxOfChildFromFileName(fileName);
-    if (i != -1){
-        kDebug()<<"Found child to remove"<<endl;
-        delete children.at(i);
-        children.removeAt(i);
-        return true;
-    }
-    return false;
-}*/
-
 int Cache::setItem(KFileItem* newItem)
 {
     if (m_item != NULL){
@@ -263,11 +272,11 @@ bool Cache::releaseJob(const uint64_t& fileHandleId)
     if (this->jobsMap().contains(fileHandleId)){
         FileJobData* fileJobData = this->jobsMap().value(fileHandleId);
         int removed = fhIdtoFileJob.remove(fileHandleId);
-        Q_ASSERT(removed == 1);
-        
+        VERIFY(removed == 1);
+
         delete fileJobData;
         fileJobData = NULL;
-        
+
         kDebug()<<"Deleted job"<<endl;
         return true;
     } else {
@@ -307,3 +316,4 @@ QString Cache::stripBegSlashes(const QString& path)
 
     return newPath;
 }
+*/

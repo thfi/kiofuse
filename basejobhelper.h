@@ -33,7 +33,8 @@ public:
     BaseJobHelper(QEventLoop* eventLoop, const KUrl& url);
     ~BaseJobHelper();
 
-    int error() const   {return m_error;}  // Error code returned by the job
+    int error() const {return m_error;}  // Error code returned by the job
+    KUrl url() const {return m_url;}
 
 protected:
     int m_error;  // Error code returned by the job

@@ -1,6 +1,42 @@
 TODO
 -----
 
+- Investigate why it sometimes crashes after ctrl-c.
+
+- Safely abort and deny future requests instead of Q_ASSERT.
+
+- Search and eliminate empty while loops.
+
+- Make KIO slaves deal with named pipes.
+
+- Make slaves' seek() always return the _real_ position instead of the requested one.
+
+- Fix assert if pos != requested.
+
+- Remove kio_smb_moount.cpp
+
+- FIXME deprecated use smbc_setOption*() functions instead.
+
+- SMB KIO slave reads errno multiple times for the same operation, when in fact only the first read yields the correct error. Find other places in KDE where errno is used incorrectly.
+
+- smbc_lseek returns a result different from the requested offset.
+
+- If error, while in Read or Write add FHID or Mutex to terminatedList. In ReleaseJob, lock and unlock the JobMutex immediately after each other so that I'm certain that ReleaseJob has the mutex and that no one else is wating for it.
+
+Are threads always granted lock on a mutex in the order in which the threads requested that lock?
+For example, assume a mutex starts out locked at second 0.  Also assume that thread1 calls mutex->lock() at second 1, thread2 calls mutex->lock() at second 2, and thread3 calls mutex->lock() at second 3. Now at second 9 the mutex is unlocked. Can I be sure that the order in which the threads receive the lock is thread1, then thread2, and then thread3?
+
+
+- Determine whether or not to emit mimetype in IO-slaves and when to do it (open or first read). Also, is mimetype necessary if we're opening the file in write-only mode?
+
+- Transform helpers and event loops from pointers to references, and remove delete statements.
+
+- Cleanup: Might need to add removeSubjob(job) after setErrorText( job->errorText() ) in  FileCopyJob::slotResult() in job.cpp.
+
+- If kio_file fails to write, it should can written(0) not just hang.
+
+- Put conversion between POSIX open modes and QIODevice in kdelibs.
+
 - There should be an error KIO::ERR_ALREADY_CLOSED.
 
 - KIO::file_move ignores the permissions parameter.
@@ -44,6 +80,8 @@ TODO
 
 
 Long-term TODO:
+
+- FUSE takes the liberty to rename temporary files (.fuse_hidden0000000d00000001) on the server and assign them the same fileHandleId.
 
 - FTruncate only possible once KIO gets truncate method.
 

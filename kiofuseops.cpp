@@ -21,8 +21,6 @@
 #include "kiofuseops.h"
 #include "jobhelpers.h"
 
-#include <errno.h>
-
 #include <QThread>
 
 #include <kdebug.h>
@@ -30,32 +28,36 @@
 int kioFuseGetAttr(const char *relPath, struct stat *stbuf)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
+
     int res = 0;
     StatJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
     KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the directory that is being read
 
-    if (false /*kioFuseApp->UDSCacheExpired(url)*/){
-        //TODO get from cache
+    helper = new StatJobHelper(url, eventLoop);  // Get the directory or file descriptor (entry)
+    kDebug()<<"helper"<<helper<<endl;
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished, so entry is now available
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
+        kDebug()<<"relPath"<<relPath<<"error"<<error<<"helper"<<helper<<endl;
     } else {
-        helper = new StatJobHelper(url, eventLoop);  // Get the directory or file descriptor (entry)
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
-        //eventLoop has finished, so entry is now available
-        if (helper->error()){
-            res = -ENOENT;
-        } else {
-            KIO::UDSEntry entry = helper->entry();
-            KFileItem* item = new KFileItem(entry, url,
-                                            true /*delayedMimeTypes*/,
-                                            false /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
-            fillStatBufFromFileItem(stbuf, item);
-            kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
-        }
-        delete helper;
-        helper = NULL;
+        kDebug()<<"relPath"<<relPath<<"helper"<<helper<<endl;
+        KIO::UDSEntry entry = helper->entry();
+        KFileItem* item = new KFileItem(entry, url,
+                                        true /*delayedMimeTypes*/,
+                                        false /*urlIsDirectory*/);
+        fillStatBufFromFileItem(stbuf, item);
+
+        delete item;
+        item = NULL;
     }
+
+    delete helper;
+    helper = NULL;
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -66,64 +68,83 @@ int kioFuseReadLink(const char *relPath, char *buf, size_t size)
 {
     kDebug()<<"relPath"<<relPath<<endl;
     int res = 0;
-    StatJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
+    StatJobHelper* helper;
+    QString destRelPath;
+    QString localPath;
+    bool properLink;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the directory that is being read
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
 
-    if (false){
-        //TODO get from cache
+    helper = new StatJobHelper(url, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished, so entry is now available
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
     } else {
-        helper = new StatJobHelper(url, eventLoop);  // Get the directory or file descriptor (entry)
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
-        //eventLoop has finished, so entry is now available
-        if (helper->error()){
-            res = -ENOENT;
+        KIO::UDSEntry entry = helper->entry();
+        KFileItem* item = new KFileItem(entry, url,
+                                        true /*delayedMimeTypes*/,
+                                        false /*urlIsDirectory*/);
+
+        kDebug()<<"item->isLink()"<<item->isLink()<<"item->linkDest()"<<item->linkDest()<<"kioFuseApp->baseUrl().path()"<<kioFuseApp->baseUrl().path()<<endl;
+
+        if(!item->isLink()){
+            properLink = false;
+        } else if (item->linkDest().startsWith(kioFuseApp->baseUrl().path())){
+            // Fully-qualified path that is a child of baseUrl is specified
+            destRelPath = item->linkDest().section(kioFuseApp->baseUrl().path(), 1, -1);
+            localPath = kioFuseApp->buildLocalUrl(destRelPath).path();
+            properLink = true;
+        } else if (item->linkDest().startsWith("/")){
+            // Fully-qualified path outside of baseUrl is specified
+            properLink = false;
         } else {
-            KIO::UDSEntry entry = helper->entry();
-            KFileItem* item = new KFileItem(entry, url,
-                                            true /*delayedMimeTypes*/,
-                                            false /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
-            // Make sure the item is a link and that it is under the baseURL
-            if(!item->isLink() ||
-               !item->linkDest().startsWith(kioFuseApp->baseUrl().path())){
-                res = -errno;
-            } else {
-                QString destRelPath = item->linkDest().section(kioFuseApp->baseUrl().path(), 1,-1);
-                QString fullLocalPath = kioFuseApp->buildLocalUrl(destRelPath).path();
-                fillLinkBufFromFileItem(buf, size, fullLocalPath);
-                kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
-            }
+            // Relative path is specified
+            localPath = item->linkDest();
+            properLink = true;
         }
-        delete helper;
-        helper = NULL;
+
+        if (properLink){
+            fillLinkBufFromFileItem(buf, size, localPath);
+        } else {
+            res = -ENOENT;
+        }
+
+        delete item;
+        item = NULL;
     }
+    delete helper;
+    helper = NULL;
+
     delete eventLoop;
     eventLoop = NULL;
-    
+
     return res;
 }
 
-int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
+int kioFuseMkNod(const char *relPath, mode_t mode, dev_t /*rdev*/)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
-    MkNodHelper* helper;  // Helps retrieve the file object
+
+    MkNodHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
     int res = 0;
-    
+
     helper = new MkNodHelper(url, mode, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
+
     //eventLoop has finished, so job is now available
-    if (helper->error()){
-        res = -EACCES;  // FIXME covert KIO errors
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
     }
-        
+
     delete helper;
     helper = NULL;
-    
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -133,23 +154,24 @@ int kioFuseMkNod(const char *relPath, mode_t mode, dev_t rdev)
 int kioFuseMkDir(const char *relPath, mode_t mode)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
-    MkDirHelper* helper;  // Helps retrieve the file object
+
+    MkDirHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
     int res = 0;
-    
+
     helper = new MkDirHelper(url, mode, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
+
     //eventLoop has finished, so job is now available
-    if (helper->error()){
-        res = -EACCES;  // FIXME covert KIO errors
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
     }
-        
+
     delete helper;
     helper = NULL;
-    
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -159,23 +181,24 @@ int kioFuseMkDir(const char *relPath, mode_t mode)
 int kioFuseUnLink(const char *relPath)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
-    UnLinkHelper* helper;  // Helps retrieve the file object
+
+    UnLinkHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
     int res = 0;
-    
+
     helper = new UnLinkHelper(url, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
+
     //eventLoop has finished, so job is now available
-    if (helper->error()){
-        res = -EACCES;  // FIXME covert KIO errors
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
     }
-        
+
     delete helper;
     helper = NULL;
-    
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -187,26 +210,105 @@ int kioFuseRmDir(const char *relPath)
     return kioFuseUnLink(relPath);
 }
 
+int kioFuseSymLink(const char *from, const char *to)
+{
+    kDebug()<<"from"<<from<<"to"<<to<<endl;
+
+    SymLinkHelper* helper;
+    int res = 0;
+    KUrl source;
+    KUrl dest;
+    bool properSource;
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    QString sourceStr = QString(from);
+
+    if (sourceStr.startsWith(kioFuseApp->mountPoint().path())){
+        // Fully-specified path that is a child of mountPoint is provided
+        QString relPath = sourceStr.section(kioFuseApp->mountPoint().path(), 1,-1);
+        source = kioFuseApp->buildRemoteUrl(relPath);
+        properSource = true;
+    } else if (!sourceStr.startsWith("/")) {
+        // Relative path is provided
+        source = KUrl(from);
+        properSource = true;
+    } else {
+        // Fully-specified path outside of mountPoint is provided
+        res = -EIO;
+        kDebug()<<"Source doesn't start with the mountPoint path."<<endl;
+        properSource = false;
+    }
+
+    if (properSource){
+        dest = kioFuseApp->buildRemoteUrl(QString(to));
+        kDebug()<<"source"<<source<<"dest"<<dest<<endl;
+        helper = new SymLinkHelper(source, dest, eventLoop);
+        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+        //eventLoop has finished, so job is now available
+        int error = helper->error();
+        if (error){
+            res = -kioFuseApp->sysErrFromKioErr(error);
+        }
+
+        delete helper;
+        helper = NULL;
+    }
+
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
+int kioFuseReName(const char *from, const char *to)
+{
+    kDebug()<<"from"<<from<<"to"<<to<<endl;
+
+    ReNameHelper* helper;
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl source = kioFuseApp->buildRemoteUrl(QString(from)); // The remote source of the file being created
+    KUrl dest = kioFuseApp->buildRemoteUrl(QString(to)); // The remote dest of the file being created
+    int res = 0;
+
+    helper = new ReNameHelper(source, dest, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished, so job is now available
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    }
+
+    delete helper;
+    helper = NULL;
+
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
 int kioFuseChMod(const char *relPath, mode_t mode)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
-    ChModHelper* helper;  // Helps retrieve the file object
+
+    ChModHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being created
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
     int res = 0;
-    
+
     helper = new ChModHelper(url, mode, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
+
     //eventLoop has finished, so job is now available
-    if (helper->error()){
-        res = -EACCES;  // FIXME covert KIO errors
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
     }
-        
+
     delete helper;
     helper = NULL;
-    
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -216,161 +318,166 @@ int kioFuseChMod(const char *relPath, mode_t mode)
 int kioFuseTruncate(const char *relPath, off_t size)
 {
     kDebug()<<"relPath"<<relPath<<"size"<<size<<endl;
-    int res = size;
-    int read;
-    char buf[size];
+    //int read;
+    int chunkSize = 4096;
+    char buf[4096] = {0};
+    int repeatTimes;
+    int leftover;
+    off_t pos;
+    struct stat stbuf;
+    struct fuse_file_info* fi = new struct fuse_file_info;
+    struct fuse_file_info* fiTemp = new struct fuse_file_info;
+
+    kioFuseGetAttr(relPath, &stbuf);
+    int origSize = stbuf.st_size;
+
+    if (size > origSize){
+        int bytesToWrite = size - origSize;
+        repeatTimes = bytesToWrite / chunkSize;
+        leftover = bytesToWrite % chunkSize;
+
+        fi->flags = O_WRONLY | O_APPEND;
+        kioFuseOpen(relPath, fi);
+
+        if (origSize == 0){
+            pos = 0;
+        } else {
+            pos = origSize -1;
+        }
+
+        for (int i = 0; i < repeatTimes; i++){
+            kioFuseWrite(relPath, buf, chunkSize, pos, fi);
+            pos += chunkSize;
+        }
+        kioFuseWrite(relPath, buf, leftover, pos, fi);
+        kioFuseRelease(relPath, fi);
+    } else if (size < origSize) {
+        repeatTimes = size / chunkSize;
+        leftover = size % chunkSize;
+        fi->flags = O_RDONLY;
+        kioFuseOpen(relPath, fi);
+
+        QString relPathTempQString(relPath);
+        kDebug()<<"relPathTempQString"<<relPathTempQString<<endl;
+        char* tmpSuffix = "kiofusetmp";
+        kDebug()<<"tmpSuffix"<<tmpSuffix<<endl;
+        relPathTempQString.append(tmpSuffix);
+        kDebug()<<"relPathTempQString"<<relPathTempQString<<endl;
+        QByteArray relPathArray = relPathTempQString.toLocal8Bit();
+        char* relPathTemp = relPathArray.data();
+
+        
+        
+       //BAD
+        
+        // If a file by that name already exists, fail the truncate
+        /*if (kioFuseGetAttr(relPathTemp, &stbuf) == 0){
+            kioFuseRelease(relPath, fi);
+            delete fi;
+            fi = NULL;
+
+            delete fiTemp;
+            fiTemp = NULL;
+
+            return 0;
+        }*/
+
+
+
+
+//Good
+
+        kioFuseMkNod(relPathTemp, stbuf.st_mode, 0);
+        fiTemp->flags = O_WRONLY | O_TRUNC;
+        kioFuseOpen(relPathTemp, fiTemp);
+
+        pos = 0;
+        for (int i = 0; i < repeatTimes; i++){
+            kioFuseRead(relPath, buf, chunkSize, pos, fi);
+            kioFuseWrite(relPathTemp, buf, chunkSize, pos, fiTemp);
+            pos += chunkSize;
+        }
+        kioFuseRead(relPath, buf, leftover, pos, fi);
+        kioFuseWrite(relPathTemp, buf, leftover, pos, fiTemp);
+
+        kioFuseRelease(relPath, fi);
+        kioFuseRelease(relPathTemp, fiTemp);
+
+        kioFuseUnLink(relPath);
+        kioFuseReName(relPathTemp, relPath);
+    }
+
+    delete fi;
+    fi = NULL;
+
+    delete fiTemp;
+    fiTemp = NULL;
+
+    return 0;
     
+
+
+
+
+
+
+
+
+
+
+//BAD
+    /*//off_t size2 = (off_t) 729608192;
+    //int iSize = int(size2);
+    char buf[xxxxx];
+
     // Read contents up to size
-    struct fuse_file_info* fi = new fuse_file_info();
+    fuse_file_info* fi = new fuse_file_info;
+    kDebug()<<"relPath"<<relPath<<"size"<<size<<endl;
     fi->flags = O_RDONLY;
     kioFuseOpen(relPath, fi);
-    int readSize = kioFuseRead(relPath, buf, size, 0, fi);
+    kioFuseRead(relPath, buf, size, 0, fi);
     kioFuseRelease(relPath, fi);
-    
+
     // Write shortened file
     fi->flags = O_WRONLY | O_TRUNC;
     kioFuseOpen(relPath, fi);
-    kioFuseWrite(relPath, buf, readSize, 0, fi);
+    kioFuseWrite(relPath, buf, size, 0, fi);
     kioFuseRelease(relPath, fi);
-    
+
+    delete fi;
+    fi = NULL;
+
     // FIXME covert KIO errors
-    return 0;
+    return 0;*/
 }
 
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi)
 {
     kDebug()<<"relPath"<<relPath<<endl;
-    
+
     QIODevice::OpenMode qtMode = modeFromPosix(fi->flags);
     int res = 0;
-    OpenJobHelper* helper;  // Helps retrieve the file object
+    OpenJobHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
-    uint64_t fileHandleId = qrand();  // fi->fh is of type uint64_t
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
 
-    fi->fh = fileHandleId;
-    if (false /*kioFuseApp->UDSCacheExpired(url)*/){
-        // TODO get from cache
-    } else {
-        helper = new OpenJobHelper(url, qtMode, eventLoop);
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
-        //eventLoop has finished, so job is now available
-        if (helper->error()){
-            res = -EACCES;  // FIXME covert KIO errors
-        } else {
-            // Store fh in cache
-            kioFuseApp->storeOpenHandle(url, helper->fileJob(), fileHandleId);
-        }
-        delete helper;
-        helper = NULL;
-    }
-    delete eventLoop;
-    eventLoop = NULL;
+    kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.lock();
 
-    return res;
-}
-
-int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
-                  struct fuse_file_info *fi)
-{
-    kDebug()<<"relPath"<<relPath<<endl;
-    
-    ReadJobHelper* helper;  // Helps retrieve the file object
-    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
-    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
-    int res = 0;
-    kDebug()<<"kioFuseRead"<<endl;
-    
-    // No other thread can use fileJob while we're using it
-    KIO::FileJob* fileJob = kioFuseApp->checkOutJob(url, fileHandleId);
-    if (!fileJob){
-        res = -ENOENT;  // Didn't find an opened job
-    } else {
-        kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
-        helper = new ReadJobHelper(fileJob, url, size, offset, eventLoop);
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
-        //eventLoop has finished, so job is now available
-        if (helper->error()){
-            res = -EACCES;  // FIXME covert KIO errors
-        } else {
-            // Copy data to buffer
-            QByteArray data = helper->data();
-            res = data.size();
-            Q_ASSERT(res <= size);
-            memcpy(buf, data.data(), res);
-        }
-        
-        // fileJob will now be available to other threads
-        kioFuseApp->checkInJob(url, fileHandleId);
-        delete helper;
-        helper = NULL;
-    }
-    delete eventLoop;
-    eventLoop = NULL;
-
-    return res;
-}
-
-int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
-                 struct fuse_file_info *fi)
-{
-    kDebug()<<"relPath"<<relPath<<endl;
-    
-    WriteJobHelper* helper;  // Helps retrieve the file object
-    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
-    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
-    int res = 0;
-    
-    // No other thread can use fileJob while we're using it
-    KIO::FileJob* fileJob = kioFuseApp->checkOutJob(url, fileHandleId);
-    if (!fileJob){
-        res = -ENOENT;  // Didn't find an opened job
-    } else {
-        kDebug()<<"fileJob"<<fileJob<<"fileJob->thread()"<<fileJob->thread()<<endl;
-        QByteArray data(buf, size);
-        helper = new WriteJobHelper(fileJob, url, data, offset, eventLoop);
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
-        //eventLoop has finished, so job is now available
-        if (helper->error()){
-            res = -EACCES;  // FIXME covert KIO errors
-        } else {
-            Q_ASSERT(helper->written() == size);
-            res = helper->written();
-        }
-        
-        // fileJob will now be available to other threads
-        kioFuseApp->checkInJob(url, fileHandleId);
-        delete helper;
-        helper = NULL;
-    }
-    delete eventLoop;
-    eventLoop = NULL;
-
-    return res;
-}
-
-int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
-{
-    kDebug()<<"relPath"<<relPath<<endl;
-    
-    ReleaseJobHelper* helper;  // Helps release the file object
-    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper releases FileJob
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the file being opened
-    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
-    int res = 0;
-    
-    helper = new ReleaseJobHelper(url, fileHandleId, eventLoop);
+    helper = new OpenJobHelper(url, qtMode, eventLoop);
     eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
-        
+
     //eventLoop has finished, so job is now available
-    if (helper->error()){
-        res = -EACCES;  // FIXME covert KIO errors
-    }   
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    } else {
+        fi->fh = helper->fileHandleId();
+        kDebug()<<"fi->fh"<<fi->fh<<endl;
+    }
+
+    kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.unlock();
 
     delete helper;
     helper = NULL;
@@ -381,55 +488,280 @@ int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
     return res;
 }
 
-// Get the names of files and directories under a specified directory
+int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
+                  struct fuse_file_info *fi)
+{
+    kDebug()<<"relPath"<<relPath<<"fi->fh"<<fi->fh<<endl;
+
+    ReadJobHelper* readJobhelper;
+    QEventLoop* lockEventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    QEventLoop* readEventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    QMutex* jobMutex;
+    int res = 0;
+
+    kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<"fi->fh"<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.lock();
+    LockHelper* lockHelper = new LockHelper(fileHandleId, lockEventLoop);
+    lockEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished
+    kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.unlock();
+    int error = lockHelper->error();
+    if (error){
+        kDebug()<<"Failed to lock job for reading. fileHandleId"<<fileHandleId<<endl;
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    } else {
+        jobMutex = lockHelper->jobMutex();
+        VERIFY(jobMutex);
+        jobMutex->lock();
+        //kDebug()<<"lock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+
+        if (kioFuseApp->isAnnulled(fi->fh))
+        {
+            jobMutex->unlock();
+            res = -kioFuseApp->sysErrFromKioErr(KIO::ERR_COULD_NOT_READ);
+        } else {
+            readJobhelper = new ReadJobHelper(fileHandleId, url, size, offset, readEventLoop);
+            readEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+            //eventLoop has finished, so job is now available
+            error = readJobhelper->error();
+            if (error){
+                kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<"fi->fh"<<fi->fh<<endl;
+                kioFuseApp->fhIdtoFileJobDataMutex.lock();
+
+                // Tell other jobs that may be waiting to access this fh
+                // that it has died.
+                kioFuseApp->addAnnulledFh(fi->fh);
+                jobMutex->unlock();
+                //kDebug()<<"unlock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+                kioFuseRelease(relPath, fi);
+                kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+                kioFuseApp->removeAnnulledFh(fi->fh);
+                kioFuseApp->fhIdtoFileJobDataMutex.unlock();
+                res = -kioFuseApp->sysErrFromKioErr(error);
+            } else {
+                // Copy data to buffer
+                QByteArray data = readJobhelper->data();
+                res = data.size();
+                VERIFY(static_cast<size_t>(res) <= size);
+                memcpy(buf, data.data(), res);
+                jobMutex->unlock();
+                //kDebug()<<"unlock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+            }
+
+            delete readJobhelper;
+            readJobhelper = NULL;
+        }
+    }
+
+    delete lockHelper;
+    lockHelper = NULL;
+
+    delete lockEventLoop;
+    lockEventLoop = NULL;
+
+    delete readEventLoop;
+    readEventLoop = NULL;
+
+    return res;
+}
+
+int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
+                 struct fuse_file_info *fi)
+{
+    kDebug()<<"relPath"<<relPath<<"buf"<<buf<<endl;
+
+    WriteJobHelper* writeJobHelper;
+    QEventLoop* lockEventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    QEventLoop* writeEventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    QMutex* jobMutex;
+    int res = 0;
+
+    kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<"fi->fh"<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.lock();
+    LockHelper* lockHelper = new LockHelper(fileHandleId, lockEventLoop);
+    lockEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished
+    kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.unlock();
+    int error = lockHelper->error();
+    if (error){
+        kDebug()<<"Failed to lock job for writing. fileHandleId"<<fileHandleId<<endl;
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    } else {
+        jobMutex = lockHelper->jobMutex();
+        VERIFY(jobMutex);
+        jobMutex->lock();
+        //kDebug()<<"lock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+
+        if (kioFuseApp->isAnnulled(fi->fh))
+        {
+            jobMutex->unlock();
+            res = -kioFuseApp->sysErrFromKioErr(KIO::ERR_COULD_NOT_WRITE);
+        } else {
+            QByteArray data(buf, size);
+            writeJobHelper = new WriteJobHelper(fileHandleId, url, data, offset, writeEventLoop);
+            writeEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+            //eventLoop has finished, so job is now available
+            error = writeJobHelper->error();
+            if (error){
+                kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<"fi->fh"<<fi->fh<<endl;
+                kioFuseApp->fhIdtoFileJobDataMutex.lock();
+
+                // Tell other jobs that may be waiting to access this fh
+                // that it has died.
+                kioFuseApp->addAnnulledFh(fi->fh);
+                jobMutex->unlock();
+                //kDebug()<<"unlock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+                kioFuseRelease(relPath, fi);
+                kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+                kioFuseApp->removeAnnulledFh(fi->fh);
+                kioFuseApp->fhIdtoFileJobDataMutex.unlock();
+                res = -kioFuseApp->sysErrFromKioErr(error);
+            } else {
+                VERIFY(writeJobHelper->written() == size);
+                res = writeJobHelper->written();
+                jobMutex->unlock();
+                //kDebug()<<"unlock jobMutex"<<jobMutex<<"fi->fh"<<fi->fh<<endl;
+            }
+
+            delete writeJobHelper;
+            writeJobHelper = NULL;
+        }
+    }
+
+    delete lockHelper;
+    lockHelper = NULL;
+
+    delete lockEventLoop;
+    lockEventLoop = NULL;
+
+    delete writeEventLoop;
+    writeEventLoop = NULL;
+
+    return res;
+}
+
+int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+
+    ReleaseJobHelper* releaseJobHelper;
+    QEventLoop* lockEventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    QEventLoop* releaseEventLoop = new QEventLoop();  // Returns control to this function after helper releases FileJob
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
+    uint64_t fileHandleId = fi->fh;  // fi->fh is of type uint64_t
+    QMutex* jobMutex;
+    int res = 0;
+    bool jobIsAnnulled;
+
+    kDebug()<<"Waiting on fhIdtoFileJobDataMutex.lock()"<<relPath<<"fi->fh"<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.lock();
+
+    LockHelper* lockHelper = new LockHelper(fileHandleId, lockEventLoop);
+    lockEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished
+    int error = lockHelper->error();
+    if (error){
+        kDebug()<<"Failed to lock job for releasing. fileHandleId"<<fileHandleId<<endl;
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    } else {
+        jobMutex = lockHelper->jobMutex();
+
+        // After locking and unlocking jobMutex, we can be sure that no one else
+        // is wating to lock the jobMutex because we've already locked
+        // fhIdtoFileJobDataMutex. We are guaranteed to be the last thread to
+        // request the lock on jobMutex, and we assumes that threads are given
+        // the lock in the order that they request it.
+        VERIFY(jobMutex);
+        jobMutex->lock();
+        jobMutex->unlock();
+
+        jobIsAnnulled = kioFuseApp->isAnnulled(fileHandleId);
+        releaseJobHelper = new ReleaseJobHelper(url, fileHandleId, jobIsAnnulled, releaseEventLoop);
+        releaseEventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+        //eventLoop has finished, so job is now available
+        int error = releaseJobHelper->error();
+        if (error){
+            res = -kioFuseApp->sysErrFromKioErr(error);
+        }
+
+        delete releaseJobHelper;
+        releaseJobHelper = NULL;
+    }
+
+    kDebug()<<"fhIdtoFileJobDataMutex.unlock()"<<relPath<<fi->fh<<endl;
+    kioFuseApp->fhIdtoFileJobDataMutex.unlock();
+
+    delete lockHelper;
+    lockHelper = NULL;
+
+    delete lockEventLoop;
+    lockEventLoop = NULL;
+
+    delete releaseEventLoop;
+    releaseEventLoop = NULL;
+
+    return res;
+}
+
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
-                    off_t offset, struct fuse_file_info *fi)
+                    off_t /*offset*/, struct fuse_file_info* /*fi*/)
 {
     int res = 0;
-    ListJobHelper* helper;  // Helps retrieve the directory descriptors or file descriptors
+    ListJobHelper* helper;
     QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
-    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath)); // The remote URL of the directory that is being read
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
 
     kDebug()<<"kioFuseReadDir relPath: "<<relPath<<"eventLoop->thread()"<<eventLoop->thread()<<endl;
 
-    if (kioFuseApp->childrenNamesCached(url) && !kioFuseApp->UDSCacheExpired(url)){
-        //TODO get from cache
-    } else {
-        helper = new ListJobHelper(url, eventLoop);  // Get the directory or file descriptors (entries)
-        eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+    helper = new ListJobHelper(url, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
 
-        //eventLoop has finished, so entries are now available
-        if (helper->error()){
-            res = -ENOENT;
-        } else {
-            KIO::UDSEntryList entries = helper->entries();
-            for(KIO::UDSEntryList::ConstIterator it = entries.begin();
-                 it!=entries.end(); ++it){
-                KIO::UDSEntry entry = *it;
-                struct stat st;
-                
-                /* The parent (..) directory doesn't belong to us. We need to
-                   get its local permissions. */
-                if (entry.stringValue(KIO::UDSEntry::UDS_NAME) == ".."){
-                    kDebug()<<"Parent dir"<<endl;
-                    memset(&st, 0, sizeof(st));
-                    lstat("..", &st);
-                    filler(buf, "..", &st, 0);
-                } else {
-                    KFileItem* item = new KFileItem(entry, url,
-                            true /*delayedMimeTypes*/,
-                            true /*urlIsDirectory*/);  //FIXME item needs to be deleted in the cache as it expires
-                    fillStatBufFromFileItem(&st, item);
-                    filler(buf, item->name().toLatin1(), &st, 0);  // Tell the name of this item to FUSE
-    
-                    kDebug()<<"KFileItem URL: "<<item->url().path()<<endl;
-                    kioFuseApp->addToCache(item);  // Add this item (and any stub directories that may be needed) to the cache
-                }
+    //eventLoop has finished, so entries are now available
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
+        kDebug()<<"errro"<<error<<endl;
+    } else {
+        KIO::UDSEntryList entries = helper->entries();
+        for(KIO::UDSEntryList::ConstIterator it = entries.begin();
+            it!=entries.end(); ++it){
+            KIO::UDSEntry entry = *it;
+            struct stat st;
+
+            /* The parent (..) directory doesn't belong to us. We need to
+               get its local permissions. */
+            if (entry.stringValue(KIO::UDSEntry::UDS_NAME) == ".."){
+                kDebug()<<"Parent dir"<<endl;
+                memset(&st, 0, sizeof(st));
+                lstat("..", &st);
+                filler(buf, "..", &st, 0);
+            } else {
+                KFileItem* item = new KFileItem(entry, url,
+                        true /*delayedMimeTypes*/,
+                        true /*urlIsDirectory*/);
+                fillStatBufFromFileItem(&st, item);
+                filler(buf, item->name().toLatin1(), &st, 0);  // Tell the name of this item to FUSE
+
+                delete item;
+                item = NULL;
             }
         }
-        delete helper;
-        helper = NULL;
     }
+    delete helper;
+    helper = NULL;
+
     delete eventLoop;
     eventLoop = NULL;
 
@@ -443,7 +775,38 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
     return 0;
 }*/
 
-static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
+int kioFuseUTimeNS(const char *relPath, const struct timespec ts[2])
+{
+    kDebug()<<"relPath"<<relPath<<endl;
+
+    ChTimeHelper* helper;
+    QEventLoop* eventLoop = new QEventLoop();  // Returns control to this function after helper gets the data
+    KUrl url = kioFuseApp->buildRemoteUrl(QString(relPath));
+
+    // ts[1] contains the modification time
+    // ts[0] contains the access time, but KIO can't set it, so we ignore it
+    QDateTime dt = QDateTime::fromTime_t(ts[1].tv_sec);
+    int res = 0;
+
+    helper = new ChTimeHelper(url, dt, eventLoop);
+    eventLoop->exec(QEventLoop::ExcludeUserInputEvents);  // eventLoop->quit() is called in BaseJobHelper::jobDone() of helper
+
+    //eventLoop has finished, so job is now available
+    int error = helper->error();
+    if (error){
+        res = -kioFuseApp->sysErrFromKioErr(error);
+    }
+
+    delete helper;
+    helper = NULL;
+
+    delete eventLoop;
+    eventLoop = NULL;
+
+    return res;
+}
+
+void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
 {
     //kDebug()<<" entry.numberValue(KIO::UDSEntry::UDS_ACCESS)"<<entry.numberValue(KIO::UDSEntry::UDS_ACCESS)<<endl;
     
@@ -458,7 +821,7 @@ static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
     side (currently KioFuse just copies the remote stat, which is not
     applicable to the local system).
     */
-    
+
     memset(stbuf, 0, sizeof(struct stat));
     stbuf->st_dev = 0;
     stbuf->st_ino = 0;
@@ -475,18 +838,19 @@ static void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
     stbuf->st_blocks = 0;
 }
 
-static void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest)
+void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest)
 {
     const char *data = dest.toLatin1();
 
-    unsigned int len = size-1;
+    VERIFY(size > 0);
+    size_t len = size-1;
 
-    if (dest.length()<len)
+    if (static_cast<size_t>(dest.length()) < len)
     {
-        len = dest.length();
+        len = static_cast<size_t>(dest.length());
     }
 
-    for(unsigned int i=0; i<len; i++)
+    for(size_t i=0; i<len; i++)
     {
         buf[i] = data[i];
     }
@@ -497,13 +861,13 @@ static void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest)
 QIODevice::OpenMode modeFromPosix(int flags)
 {
     QIODevice::OpenMode qtMode;
-    if (flags & O_RDONLY){
+    if ((flags & O_ACCMODE) == O_RDONLY){
         qtMode |= QIODevice::ReadOnly;
     }
-    if (flags & O_WRONLY){
+    if ((flags & O_ACCMODE) == O_WRONLY){
         qtMode |= QIODevice::WriteOnly;
     }
-    if (flags & O_RDWR){
+    if ((flags & O_ACCMODE) == O_RDWR){
         qtMode |= QIODevice::ReadWrite;
     }
     if (flags & O_APPEND){

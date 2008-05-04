@@ -30,12 +30,15 @@ class FileJobData
 {
     public:
         FileJobData(KIO::FileJob* aFileJob);
-        ~FileJobData() {fileJob->close();}
+        ~FileJobData();
         KIO::FileJob* fileJob;
+        QTime qTime;
+        //bool inUse;
         QMutex jobMutex;
+        bool jobIsAnnulled;
 };
 
-class Cache : public QObject
+/*class Cache : public QObject
 {
     Q_OBJECT
 
@@ -52,9 +55,10 @@ class Cache : public QObject
         Cache* find(const KUrl &url);
         QMap<uint64_t, FileJobData*> jobsMap() const {return fhIdtoFileJob;}
         void removeExpired();
+        bool cachedChildren;
+        QTime* lastUpdated;
 
     private:
-        /*bool removeChild(const QString& fileName);*/
         int findIdxOfChildFromFileName(const QString& fileName);
         int setItem(KFileItem* newItem);
         QString stripBegSlashes(const QString& path);
@@ -63,6 +67,6 @@ class Cache : public QObject
         QList<Cache*> children;
         NodeType m_nodeType;
         QMap<uint64_t, FileJobData*> fhIdtoFileJob;
-};
+};*/
 
 #endif /* CACHE_H */

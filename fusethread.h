@@ -34,6 +34,7 @@ class FuseThread : public QThread
     public:
         FuseThread(QObject *parent, struct fuse *fuseHandle,
                    struct fuse_chan *fuseChannel, KUrl mountPoint);
+        void unmount();
         ~FuseThread();
 
     protected:
@@ -43,6 +44,7 @@ class FuseThread : public QThread
         struct fuse *m_fuseHandle;
         struct fuse_chan *m_fuseChannel;
         KUrl m_mountPoint;
+        //bool m_alreadyUnmounted;
 };
 
 #endif /* FUSE_THREAD_H */
