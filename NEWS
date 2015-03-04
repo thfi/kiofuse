@@ -1,9 +1,8 @@
 News
 -----
 
-KioFuse is being re-written for KDE4 and currently doesn't do much. The KDE3 version is functional and can be used as a reference:
-
-    http://websvn.kde.org/tags/unmaintained/3/fuse_kio
+After a long period without much activity, the Subversion repository at KDE has been cloned into a Git repository.
+The code's license has been migrated to the GNU General Public License version 3 or any later version.
 
 Contact
 --------
