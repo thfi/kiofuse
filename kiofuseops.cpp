@@ -361,7 +361,7 @@ int kioFuseTruncate(const char *relPath, off_t size)
 
         QString relPathTempQString(relPath);
         kDebug()<<"relPathTempQString"<<relPathTempQString<<endl;
-        char* tmpSuffix = "kiofusetmp";
+        char tmpSuffix[] = "kiofusetmp";
         kDebug()<<"tmpSuffix"<<tmpSuffix<<endl;
         relPathTempQString.append(tmpSuffix);
         kDebug()<<"relPathTempQString"<<relPathTempQString<<endl;
