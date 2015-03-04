@@ -23,6 +23,9 @@
 #include <QThread>
 
 #include <kdebug.h>
+extern "C" {
+#include <unistd.h>
+}
 
 int kioFuseGetAttr(const char *relPath, struct stat *stbuf)
 {

@@ -21,6 +21,9 @@
 #define KIO_FUSE_APP_H
 
 #include <errno.h>
+extern "C" {
+#include <stdint.h>
+}
 
 #include "cache.h"
 #include "jobhelpers.h"
