@@ -315,7 +315,8 @@ void KioFuseApp::statJobMainThread(const KUrl& url,
 void KioFuseApp::slotStatJobResult(KJob* job)
 {
     int error = job->error();
-    kDebug()<<"error"<<error<<job->errorString()<<endl;
+    kDebug()<<"error"<<error<<endl;
+    if (error != 0) kDebug()<<job->errorString()<<endl;
 
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
     StatJobHelper* statJobHelper = qobject_cast<StatJobHelper*>(jobHelper);
