@@ -315,7 +315,7 @@ void KioFuseApp::statJobMainThread(const KUrl& url,
 void KioFuseApp::slotStatJobResult(KJob* job)
 {
     int error = job->error();
-    kDebug()<<"error"<<error<<endl;
+    kDebug()<<"error"<<error<<job->errorString()<<endl;
 
     BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
     StatJobHelper* statJobHelper = qobject_cast<StatJobHelper*>(jobHelper);
@@ -395,7 +395,8 @@ void KioFuseApp::fileJobOpened(KIO::Job* job)
     if (!error){
         // Store fh in cache and in the openJobHelper
         kioFuseApp->storeOpenHandle(fileJob, openJobHelper);
-    }
+    } else
+        kDebug()<<job->errorString();
 
     // Remove job and jobHelper from map
     int numJobsRemoved = m_jobToJobHelper.remove(qobject_cast<KJob*>(job));
@@ -441,7 +442,7 @@ void KioFuseApp::jobErrorReadWrite(KJob* job)
     // If there's no error, ignore and don't call slotResult.
     // fileJobOpened will handle it
     if (error){
-        kDebug()<<"Error reading/writing to fileJob. error"<<error<<endl;
+        kDebug()<<"Error reading/writing to fileJob. error"<<error<<endl<<job->errorString();
 
         BaseJobHelper* jobHelper = m_jobToJobHelper.value(job);
 
