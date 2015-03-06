@@ -46,6 +46,17 @@ int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
 int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
+/**
+ * Returns information about filesystem.
+ * A description of 'struct statvfs' is found in statvfs(2)
+ * as well as in /usr/include/sys/statvfs.h and
+ * /usr/include/bits/statvfs.h.
+ *
+ * @brief Get file system statistics
+ * @param path Any file in the filesystem, usually '/'
+ * @param stbuf Will contain data on filesystem upon successful return
+ * @return On success, zero is returned
+ */
 int kioFuseStatFs(const char *path, struct statvfs *stbuf);
 //FIXME add kioFuseFlush
 int kioFuseRelease(const char* relPath, struct fuse_file_info *fi);

@@ -666,9 +666,22 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
 
 int kioFuseStatFs(const char *path, struct statvfs *stbuf)
 {
-    Q_UNUSED(stbuf)
-    kDebug()<<"EOPNOTSUPP: path="<<path;
-    return -EOPNOTSUPP;
+    kDebug()<<"path="<<path;
+
+    // TODO is there a way to probe those values through KIO?
+    stbuf->f_bsize = 0;
+    stbuf->f_frsize = 0;
+    stbuf->f_blocks = 0;
+    stbuf->f_bfree = 0;
+    stbuf->f_bavail = 0;
+    stbuf->f_files = 0;
+    stbuf->f_ffree = 0;
+    stbuf->f_favail = 0;
+    stbuf->f_fsid = 0;
+    stbuf->f_flag = 0;
+    stbuf->f_namemax = 0;
+
+    return 0;
 }
 
 int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
