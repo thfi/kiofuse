@@ -37,23 +37,23 @@ int kioFuseUnLink(const char *relPath);
 int kioFuseRmDir(const char *relPath);
 int kioFuseSymLink(const char *from, const char *to);
 int kioFuseReName(const char *from, const char *to);
-//FIXME add kioFuseLink
+int kioFuseLink(const char *from, const char *to);
 int kioFuseChMod(const char *relPath, mode_t mode);
-//FIXME add kioFuseChOwn
+int kioFuseChOwn(const char *path, uid_t uid, gid_t gid);
 int kioFuseTruncate(const char *relPath, off_t size);
 int kioFuseOpen(const char *relPath, struct fuse_file_info *fi);
 int kioFuseRead(const char *relPath, char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
 int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset,
                   struct fuse_file_info *fi);
-//FIXME add kioFuseStatFS
+int kioFuseStatFs(const char *path, struct statvfs *stbuf);
 //FIXME add kioFuseFlush
 int kioFuseRelease(const char* relPath, struct fuse_file_info *fi);
-//FIXME add kioFuseFSync
-//FIXME add kioFuseSetXAttr
-//FIXME add kioFuseGetXAttr
-//FIXME add kioFuseListXAttr
-//FIXME add kioFuseRemoveXAttr
+int kioFuseFSync(const char *path, int isdatasync, struct fuse_file_info *fi);
+int kioFuseSetXAttr(const char *path, const char *name, const char *value, size_t size, int flags);
+int kioFuseGetXAttr(const char *path, const char *name, char *value, size_t size);
+int kioFuseListXAttr(const char *path, char *list, size_t size);
+int kioFuseRemoveXAttr(const char *path, const char *name);
 //FIXME add kioFuseOpenDir
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                    off_t /*offset*/, struct fuse_file_info* /*fi*/);
@@ -67,6 +67,9 @@ int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
 //FIXME add kioFuseFGetAttr
 //FIXME add kioFuseLock
 int kioFuseUTimeNS(const char *relPath, const struct timespec ts[2]);
+// TODO #ifdef HAVE_POSIX_FALLOCATE
+int kioFuseFAllocate(const char *path, int mode, off_t offset, off_t length, struct fuse_file_info *fi);
+// TODO #endif // HAVE_POSIX_FALLOCATE
 
 void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item);
 void fillLinkBufFromFileItem(char *buf, size_t size, const QString& dest);
