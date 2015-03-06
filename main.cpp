@@ -40,10 +40,10 @@ static const KAboutData aboutData("kiofuse",
                         ki18n("KioFuse"),
                         "0.1",
                         ki18n("Expose KIO filesystems to all POSIX-compliant applications"),
-                        KAboutData::License_GPL,
-                        ki18n("(c) 2007-2008"),
+                        KAboutData::License_GPL_V3,
+                        ki18n("(c) 2007-2015 The KioFuse Authors"),
                         KLocalizedString(),
-                        "http://techbase.kde.org/index.php?title=Projects/KioFuse",
+                        "https://techbase.kde.org/Projects/KioFuse",
                         "submit@bugs.kde.org");
 
 
