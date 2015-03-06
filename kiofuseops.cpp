@@ -292,8 +292,7 @@ int kioFuseReName(const char *from, const char *to)
 
 int kioFuseLink(const char *from, const char *to)
 {
-    Q_UNUSED(from)
-    Q_UNUSED(to)
+    kDebug()<<"EOPNOTSUPP: from="<<from<<" to="<<to;
     return -EOPNOTSUPP;
 }
 
@@ -326,9 +325,7 @@ int kioFuseChMod(const char *relPath, mode_t mode)
 
 int kioFuseChOwn(const char *path, uid_t uid, gid_t gid)
 {
-    Q_UNUSED(path)
-    Q_UNUSED(uid)
-    Q_UNUSED(gid)
+    kDebug()<<"EOPNOTSUPP: path="<<path<<" uid="<<uid<<" gid="<<gid;
     return -EOPNOTSUPP;
 }
 
@@ -669,8 +666,8 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
 
 int kioFuseStatFs(const char *path, struct statvfs *stbuf)
 {
-    Q_UNUSED(path)
     Q_UNUSED(stbuf)
+    kDebug()<<"EOPNOTSUPP: path="<<path;
     return -EOPNOTSUPP;
 }
 
@@ -741,7 +738,7 @@ int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
 
 int kioFuseFSync(const char *path, int isdatasync, struct fuse_file_info *fi)
 {
-    Q_UNUSED(path)
+    kDebug()<<"EOPNOTSUPP: path="<<path;
     Q_UNUSED(isdatasync)
     Q_UNUSED(fi)
     return -EOPNOTSUPP;
@@ -750,18 +747,13 @@ int kioFuseFSync(const char *path, int isdatasync, struct fuse_file_info *fi)
 // TODO #ifdef HAVE_SETXATTR
 int kioFuseSetXAttr(const char *path, const char *name, const char *value, size_t size, int flags)
 {
-    Q_UNUSED(path)
-    Q_UNUSED(name)
-    Q_UNUSED(value)
-    Q_UNUSED(size)
-    Q_UNUSED(flags)
+    kDebug()<<"EOPNOTSUPP: path="<<path<<"  name="<<name<<"  value="<<value<<"  size="<<size<<"  flags="<<flags;
     return -EOPNOTSUPP;
 }
 
 int kioFuseGetXAttr(const char *path, const char *name, char *value, size_t size)
 {
-    Q_UNUSED(path)
-    Q_UNUSED(name)
+    kDebug()<<"EOPNOTSUPP: path="<<path<<"  name="<<name;
     Q_UNUSED(value)
     Q_UNUSED(size)
     return -EOPNOTSUPP;
@@ -769,7 +761,7 @@ int kioFuseGetXAttr(const char *path, const char *name, char *value, size_t size
 
 int kioFuseListXAttr(const char *path, char *list, size_t size)
 {
-    Q_UNUSED(path)
+    kDebug()<<"EOPNOTSUPP: path="<<path;
     Q_UNUSED(list)
     Q_UNUSED(size)
     return -EOPNOTSUPP;
@@ -777,8 +769,7 @@ int kioFuseListXAttr(const char *path, char *list, size_t size)
 
 int kioFuseRemoveXAttr(const char *path, const char *name)
 {
-    Q_UNUSED(path)
-    Q_UNUSED(name)
+    kDebug()<<"EOPNOTSUPP: path="<<path<<"  name="<<name;
     return -EOPNOTSUPP;
 }
 // TODO #endif // HAVE_SETXATTR
@@ -877,10 +868,7 @@ int kioFuseUTimeNS(const char *relPath, const struct timespec ts[2])
 // TODO #ifdef HAVE_POSIX_FALLOCATE
 int kioFuseFAllocate(const char *path, int mode, off_t offset, off_t length, struct fuse_file_info *fi)
 {
-    Q_UNUSED(path)
-    Q_UNUSED(mode)
-    Q_UNUSED(offset)
-    Q_UNUSED(length)
+    kDebug()<<"EOPNOTSUPP: path="<<path<<"  mode="<<mode<<"  offset="<<offset<<"  length="<<length;
     Q_UNUSED(fi)
     return -EOPNOTSUPP;
 }
