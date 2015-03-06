@@ -168,7 +168,22 @@ int main (int argc, char *argv[])
     ops.release = kioFuseRelease;
     ops.truncate = kioFuseTruncate;
     //ops.access = kioFuseAccess;
+// TODO #ifdef HAVE_UTIMENSAT
     ops.utimens = kioFuseUTimeNS;
+// TODO #endif // HAVE_UTIMENSAT
+    ops.link = kioFuseLink;
+    ops.chown = kioFuseChOwn;
+    ops.statfs = kioFuseStatFs;
+    ops.fsync = kioFuseFSync;
+// TODO #ifdef HAVE_POSIX_FALLOCATE
+    ops.fallocate = kioFuseFAllocate;
+// TODO #endif // HAVE_POSIX_FALLOCATE
+// TODO #ifdef HAVE_SETXATTR
+    ops.setxattr = kioFuseSetXAttr,
+    ops.getxattr = kioFuseGetXAttr,
+    ops.listxattr = kioFuseListXAttr,
+    ops.removexattr = kioFuseRemoveXAttr,
+// TODO #endif // HAVE_SETXATTR
 
     // Tell FUSE about the KioFuse implementations of FS operations
     fuseHandle = fuse_new(fuseChannel, &fuseArguments, &ops, sizeof(ops), NULL);

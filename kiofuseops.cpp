@@ -290,6 +290,13 @@ int kioFuseReName(const char *from, const char *to)
     return res;
 }
 
+int kioFuseLink(const char *from, const char *to)
+{
+    Q_UNUSED(from)
+    Q_UNUSED(to)
+    return -EOPNOTSUPP;
+}
+
 int kioFuseChMod(const char *relPath, mode_t mode)
 {
     kDebug()<<"relPath"<<relPath<<endl;
@@ -315,6 +322,14 @@ int kioFuseChMod(const char *relPath, mode_t mode)
     eventLoop = NULL;
 
     return res;
+}
+
+int kioFuseChOwn(const char *path, uid_t uid, gid_t gid)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(uid)
+    Q_UNUSED(gid)
+    return -EOPNOTSUPP;
 }
 
 int kioFuseTruncate(const char *relPath, off_t size)
@@ -652,6 +667,13 @@ int kioFuseWrite(const char *relPath, const char *buf, size_t size, off_t offset
     return res;
 }
 
+int kioFuseStatFs(const char *path, struct statvfs *stbuf)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(stbuf)
+    return -EOPNOTSUPP;
+}
+
 int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
 {
     kDebug()<<"relPath"<<relPath<<endl;
@@ -716,6 +738,50 @@ int kioFuseRelease(const char* relPath, struct fuse_file_info *fi)
 
     return res;
 }
+
+int kioFuseFSync(const char *path, int isdatasync, struct fuse_file_info *fi)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(isdatasync)
+    Q_UNUSED(fi)
+    return -EOPNOTSUPP;
+}
+
+// TODO #ifdef HAVE_SETXATTR
+int kioFuseSetXAttr(const char *path, const char *name, const char *value, size_t size, int flags)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(name)
+    Q_UNUSED(value)
+    Q_UNUSED(size)
+    Q_UNUSED(flags)
+    return -EOPNOTSUPP;
+}
+
+int kioFuseGetXAttr(const char *path, const char *name, char *value, size_t size)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(name)
+    Q_UNUSED(value)
+    Q_UNUSED(size)
+    return -EOPNOTSUPP;
+}
+
+int kioFuseListXAttr(const char *path, char *list, size_t size)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(list)
+    Q_UNUSED(size)
+    return -EOPNOTSUPP;
+}
+
+int kioFuseRemoveXAttr(const char *path, const char *name)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(name)
+    return -EOPNOTSUPP;
+}
+// TODO #endif // HAVE_SETXATTR
 
 int kioFuseReadDir(const char *relPath, void *buf, fuse_fill_dir_t filler,
                     off_t /*offset*/, struct fuse_file_info* /*fi*/)
@@ -807,6 +873,18 @@ int kioFuseUTimeNS(const char *relPath, const struct timespec ts[2])
 
     return res;
 }
+
+// TODO #ifdef HAVE_POSIX_FALLOCATE
+int kioFuseFAllocate(const char *path, int mode, off_t offset, off_t length, struct fuse_file_info *fi)
+{
+    Q_UNUSED(path)
+    Q_UNUSED(mode)
+    Q_UNUSED(offset)
+    Q_UNUSED(length)
+    Q_UNUSED(fi)
+    return -EOPNOTSUPP;
+}
+// TODO #endif // HAVE_POSIX_FALLOCATE
 
 void fillStatBufFromFileItem(struct stat *stbuf, KFileItem *item)
 {
